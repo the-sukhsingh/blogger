@@ -67,6 +67,7 @@ export interface Article {
   excerpt: string
   content: string
   publishedAt: string
+  updatedAt: string
   readingTime: string
   gitBranch: string
   commitHash: string
@@ -98,6 +99,7 @@ export const SEED_ARTICLES: Article[] = [
     excerpt:
       'A production-grade guide to implementing the Model Context Protocol (MCP) using TypeScript, structured JSON-RPC, and secure local tool execution.',
     publishedAt: '2 days ago',
+    updatedAt: '2026-10-06 14:22',
     readingTime: '7 min read',
     gitBranch: 'main',
     commitHash: '7f91a2e',
@@ -340,6 +342,7 @@ main().catch((err) => {
     excerpt:
       'An intuitive yet mathematically rigorous breakdown of vector similarity, embedding spaces, and retrieval augmented generation pitfalls.',
     publishedAt: '2 months ago',
+    updatedAt: '2026-08-12 10:15',
     readingTime: '9 min read',
     gitBranch: 'main',
     commitHash: '4a1b8c0',
@@ -533,6 +536,7 @@ const results = await collection.query({
     excerpt:
       'Prevent prompt injection, indirect data exfiltration, and tenant leakage in enterprise RAG pipelines with verifiable safety guardrails.',
     publishedAt: '1 week ago',
+    updatedAt: '2026-10-01 09:30',
     readingTime: '8 min read',
     gitBranch: 'main',
     commitHash: '9e2c4f1',
@@ -653,6 +657,7 @@ When rendering context into prompts, wrap retrieved text in unmistakable syntact
     excerpt:
       'How to build topic clusters, avoid orphan content, and treat internal links like software dependency graphs.',
     publishedAt: '3 weeks ago',
+    updatedAt: '2026-09-18 11:00',
     readingTime: '5 min read',
     gitBranch: 'main',
     commitHash: '2b8e1a7',
@@ -731,6 +736,7 @@ An internal link architecture should mirror a software package dependency graph:
     excerpt:
       'Why treating technical content like code with Git commits, pull requests, and automated linting unlocks superior publishing workflows.',
     publishedAt: '1 month ago',
+    updatedAt: '2026-09-08 16:45',
     readingTime: '6 min read',
     gitBranch: 'main',
     commitHash: '8c3d9a1',
@@ -819,7 +825,18 @@ export const BlogStore = {
         return SEED_ARTICLES
       }
       const parsed = JSON.parse(data) as Article[]
-      return Array.isArray(parsed) && parsed.length > 0 ? parsed : SEED_ARTICLES
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((a) => ({
+          ...a,
+          updatedAt:
+            a.updatedAt ||
+            a.revisionHistory[0]?.timestamp ||
+            (a.publishedAt.includes('202')
+              ? a.publishedAt
+              : '2026-10-06 14:22'),
+        }))
+      }
+      return SEED_ARTICLES
     } catch {
       return SEED_ARTICLES
     }
@@ -876,6 +893,9 @@ export const BlogStore = {
       content: articleData.content || existing?.content || '',
       publishedAt:
         articleData.publishedAt || existing?.publishedAt || 'Just now',
+      updatedAt:
+        articleData.updatedAt ||
+        new Date().toISOString().replace('T', ' ').substring(0, 16),
       readingTime: readingTime,
       gitBranch: articleData.gitBranch || existing?.gitBranch || 'main',
       commitHash:
@@ -961,6 +981,10 @@ export const BlogStore = {
     if (!diff) return null
 
     diff.status = 'accepted'
+    article.updatedAt = new Date()
+      .toISOString()
+      .replace('T', ' ')
+      .substring(0, 16)
     // Stale issue resolved once diff accepted
     article.isStale = article.proposedDiffs.some((d) => d.status === 'pending')
 
@@ -989,6 +1013,10 @@ export const BlogStore = {
     if (!diff) return null
 
     diff.status = 'rejected'
+    article.updatedAt = new Date()
+      .toISOString()
+      .replace('T', ' ')
+      .substring(0, 16)
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(articles))
     }
@@ -1173,4 +1201,57 @@ export const BlogStore = {
 
     return { outbound, suggestions }
   },
+}
+
+export function formatUpdateDate(dateStr?: string): {
+  date: string
+  time: string
+  full: string
+} {
+  if (!dateStr) return { date: 'Recently', time: '', full: 'Recently' }
+
+  // Normalize timestamp (handle "2026-10-06 14:22" or ISO)
+  const normalized = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T')
+  const d = new Date(normalized)
+
+  if (isNaN(d.getTime())) {
+    return { date: dateStr, time: '', full: dateStr }
+  }
+
+  const dateFormatted = d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+
+  const hours = String(d.getHours()).padStart(2, '0')
+  const mins = String(d.getMinutes()).padStart(2, '0')
+  const timeFormatted = `${hours}:${mins}`
+
+  return {
+    date: dateFormatted,
+    time: timeFormatted,
+    full: `${dateFormatted} · ${timeFormatted}`,
+  }
+}
+
+export function getArticleTimestamp(art: Article): number {
+  if (art.updatedAt) {
+    const t = new Date(
+      art.updatedAt.includes('T')
+        ? art.updatedAt
+        : art.updatedAt.replace(' ', 'T'),
+    ).getTime()
+    if (!isNaN(t)) return t
+  }
+  if (art.revisionHistory.length > 0) {
+    const rev = art.revisionHistory[0]
+    const t = new Date(
+      rev.timestamp.includes('T')
+        ? rev.timestamp
+        : rev.timestamp.replace(' ', 'T'),
+    ).getTime()
+    if (!isNaN(t)) return t
+  }
+  return 0
 }

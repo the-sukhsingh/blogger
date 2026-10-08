@@ -23,7 +23,11 @@ import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
 import { DeleteConfirmPopover } from '#/components/ui/delete-confirm-popover'
-import { BlogStore } from '#/lib/blog-store'
+import {
+  BlogStore,
+  formatUpdateDate,
+  getArticleTimestamp,
+} from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
 
@@ -32,7 +36,7 @@ export const Route = createFileRoute('/blogs')({
 })
 
 type FilterTab = 'all' | 'published' | 'draft' | 'review'
-type SortOrder = 'newest' | 'oldest' | 'title'
+type SortOrder = 'newest-update' | 'oldest-update' | 'title'
 
 function BlogsIndexPage() {
   const navigate = useNavigate()
@@ -42,7 +46,7 @@ function BlogsIndexPage() {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [activeTab, setActiveTab] = React.useState<FilterTab>('all')
   const [selectedTopic, setSelectedTopic] = React.useState<string>('all')
-  const [sortOrder, setSortOrder] = React.useState<SortOrder>('newest')
+  const [sortOrder, setSortOrder] = React.useState<SortOrder>('newest-update')
 
   // Load articles from localStorage on mount
   const refreshArticles = React.useCallback(() => {
@@ -118,11 +122,14 @@ function BlogsIndexPage() {
       )
     }
 
-    // 4. Sorting
+    // 4. Sorting by latest date of updation
     if (sortOrder === 'title') {
       result.sort((a, b) => a.title.localeCompare(b.title))
-    } else if (sortOrder === 'oldest') {
-      result.reverse()
+    } else if (sortOrder === 'oldest-update') {
+      result.sort((a, b) => getArticleTimestamp(a) - getArticleTimestamp(b))
+    } else {
+      // Default 'newest-update': latest date of updation first
+      result.sort((a, b) => getArticleTimestamp(b) - getArticleTimestamp(a))
     }
 
     return result
@@ -357,6 +364,27 @@ function BlogsIndexPage() {
                 </kbd>
               )}
             </div>
+
+            {/* Sort Toggle Button */}
+            <button
+              type="button"
+              onClick={() =>
+                setSortOrder((prev) =>
+                  prev === 'newest-update' ? 'oldest-update' : 'newest-update',
+                )
+              }
+              className="px-2.5 py-1.5 rounded-[8px] text-[11px] font-mono border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] text-[#292524] dark:text-[#fafaf9] hover:border-[#615fff] transition-colors flex items-center gap-1.5 shrink-0"
+              title="Toggle sort order by updation date"
+            >
+              <ArrowUpDown className="h-3 w-3 text-[#615fff]" />
+              <span>
+                {sortOrder === 'newest-update'
+                  ? 'Latest Updated'
+                  : sortOrder === 'oldest-update'
+                    ? 'Oldest Updated'
+                    : 'Title (A-Z)'}
+              </span>
+            </button>
           </div>
 
           {/* Bottom row: Topic Filter Chips */}
@@ -405,8 +433,28 @@ function BlogsIndexPage() {
                   <th className="py-3 px-5 text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-[#79716b] dark:text-[#a6a09b]">
                     Article
                   </th>
-                  <th className="py-3 px-5 text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-[#79716b] dark:text-[#a6a09b] w-48">
-                    Published / Time
+                  <th
+                    onClick={() =>
+                      setSortOrder((prev) =>
+                        prev === 'newest-update'
+                          ? 'oldest-update'
+                          : 'newest-update',
+                      )
+                    }
+                    className="py-3 px-5 text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-[#79716b] dark:text-[#a6a09b] w-48 cursor-pointer select-none hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
+                    title="Click to sort by updation date"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>Updated</span>
+                      <ArrowUpDown
+                        className={cn(
+                          'h-3 w-3 transition-opacity',
+                          sortOrder.includes('update')
+                            ? 'opacity-100 text-[#615fff]'
+                            : 'opacity-40',
+                        )}
+                      />
+                    </div>
                   </th>
                   <th className="py-3 px-5 text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-[#79716b] dark:text-[#a6a09b] text-right w-44">
                     Actions
@@ -537,14 +585,20 @@ function BlogsIndexPage() {
                           </div>
                         </td>
 
-                        {/* Date & Reading Time Column */}
+                        {/* Date & Reading Time Column: Latest Date of Updation */}
                         <td className="py-4 px-5 align-middle whitespace-nowrap">
                           <div className="space-y-0.5">
-                            <div className="text-xs font-mono text-[#292524] dark:text-[#fafaf9]">
-                              {art.publishedAt}
+                            <div className="text-xs font-mono font-medium text-[#292524] dark:text-[#fafaf9]">
+                              {formatUpdateDate(art.updatedAt).date}
                             </div>
-                            <div className="text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b] flex items-center gap-1">
-                              <Clock className="h-3 w-3 text-[#a6a09b]" />
+                            <div className="text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b] flex items-center gap-1.5">
+                              <span>
+                                {formatUpdateDate(art.updatedAt).time ||
+                                  '12:00'}
+                              </span>
+                              <span className="text-[#e7e5e4] dark:text-[#292524]">
+                                ·
+                              </span>
                               <span>{art.readingTime}</span>
                             </div>
                           </div>

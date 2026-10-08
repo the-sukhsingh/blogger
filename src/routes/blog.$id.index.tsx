@@ -29,7 +29,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { HealthGauge } from '#/components/ui/health-gauge'
 import { DiffViewer } from '#/components/ui/diff-viewer'
 import { DeleteConfirmPopover } from '#/components/ui/delete-confirm-popover'
-import { BlogStore } from '#/lib/blog-store'
+import { BlogStore, formatUpdateDate } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
 
@@ -398,7 +398,7 @@ function BlogReaderPage() {
                   {article.readingTime}
                 </span>
                 <span>·</span>
-                <span>Published {article.publishedAt}</span>
+                <span>Updated {formatUpdateDate(article.updatedAt).date}</span>
                 <span>·</span>
                 <span>Author: Sukhadia / Engineering</span>
                 <span>·</span>
