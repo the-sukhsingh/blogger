@@ -24,7 +24,7 @@ import {
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
 import { Card } from '#/components/ui/card'
-import { ThemeSwitcher } from '#/components/ui/theme-switcher'
+import { Navbar } from '#/components/navbar'
 import { DiffViewer } from '#/components/ui/diff-viewer'
 import type { DiffLine } from '#/components/ui/diff-viewer'
 
@@ -82,56 +82,8 @@ function AutoSendLandingPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
-      {/* =================================================================
-          1. FLOATING MINIMAL TOP NAVIGATION (scratch/image.png)
-          ================================================================= */}
-      <header className="sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md transition-colors border-b border-border/40">
-        <div className="max-w-[1240px] mx-auto px-6 h-14 flex items-center justify-between">
-          {/* Brand Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-2 text-[14px] font-bold tracking-[0.08em] uppercase text-foreground hover:opacity-90 transition-opacity"
-          >
-            <div className="h-5 w-5 rounded-[4px] bg-[#615fff] flex items-center justify-center text-white text-xs font-mono font-bold">
-              ✦
-            </div>
-            <span>AUTOSEND</span>
-          </Link>
-
-          {/* Center Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-            <Link
-              to="/blogs"
-              className="hover:text-foreground transition-colors"
-            >
-              ARTICLES
-            </Link>
-            <Link to="/new" className="hover:text-foreground transition-colors">
-              NEW POST
-            </Link>
-          </nav>
-
-          {/* Right Action Buttons */}
-          <div className="flex items-center gap-3">
-            <ThemeSwitcher />
-            <Link
-              to="/blogs"
-              className="text-[12px] font-semibold uppercase tracking-[0.05em] text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
-            >
-              WORKSPACE
-            </Link>
-            <Link to="/new">
-              <Button
-                variant="default"
-                size="default"
-                className="h-8 px-3.5 text-xs font-semibold uppercase tracking-[0.04em]"
-              >
-                WRITE POST
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* Global Unified Navigation */}
+      <Navbar />
 
       {/* Main Page Body */}
       <main className="flex-1 max-w-[1240px] mx-auto px-6 w-full space-y-24 pt-10 pb-28">
