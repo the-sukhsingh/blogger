@@ -1,52 +1,35 @@
 import * as React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import {
-  Sparkles,
-  GitBranch,
-  Search,
   ArrowRight,
-  RefreshCw,
+  ArrowUpRight,
+  Plus,
+  Send,
+  GitBranch,
+  FileText,
+  Sparkles,
   Layers,
   ChevronDown,
+  AlertCircle,
+  Code2,
+  Cpu,
+  RefreshCw,
+  GitCommit,
+  Globe,
+  FolderGit2,
+  Bot,
+  Zap,
 } from 'lucide-react'
 
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
-import { Input } from '#/components/ui/input'
-import { Textarea } from '#/components/ui/textarea'
-import { Switch } from '#/components/ui/switch'
-import { Checkbox } from '#/components/ui/checkbox'
 import { Card } from '#/components/ui/card'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '#/components/ui/tabs'
-import { Tooltip } from '#/components/ui/tooltip'
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from '#/components/ui/dialog'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from '#/components/ui/dropdown-menu'
-import { Callout } from '#/components/ui/callout'
 import { ThemeSwitcher } from '#/components/ui/theme-switcher'
 import { DiffViewer } from '#/components/ui/diff-viewer'
 import type { DiffLine } from '#/components/ui/diff-viewer'
-import { SlashCommandMenu } from '#/components/ui/slash-command'
-import { HealthGauge } from '#/components/ui/health-gauge'
-import { ArticleCard } from '#/components/ui/article-card'
 
 export const Route = createFileRoute('/')({
-  component: AutoSendStylePage,
+  component: AutoSendLandingPage,
 })
 
 const SAMPLE_DIFFS: DiffLine[] = [
@@ -89,883 +72,1263 @@ const SAMPLE_DIFFS: DiffLine[] = [
   },
 ]
 
-function AutoSendStylePage() {
-  // State toggles for interactive components
-  const [buttonLoading, setButtonLoading] = React.useState(false)
-  const [checkboxChecked, setCheckboxChecked] = React.useState(true)
-  const [switchChecked, setSwitchChecked] = React.useState(true)
-  const [selectedSlashCommand, setSelectedSlashCommand] = React.useState<
-    string | null
-  >(null)
-  const [dialogOpen, setDialogOpen] = React.useState(false)
+function AutoSendLandingPage() {
+  const [activeCodeTab, setActiveCodeTab] = React.useState<
+    'diff' | 'curl' | 'typescript' | 'rust'
+  >('diff')
+  const [heroPrompt, setHeroPrompt] = React.useState(
+    'Create an in-depth technical analysis for our MCP TypeScript architecture and review stale claims.',
+  )
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0c0a09] text-[#292524] dark:text-[#fafaf9] font-sans transition-colors duration-150">
+    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0c0a09] text-[#292524] dark:text-[#fafaf9] flex flex-col font-sans transition-colors duration-200">
       {/* =================================================================
-          Top Navigation Bar (design.md: Full-width on Warm Bone, no bottom border)
+          1. FLOATING MINIMAL TOP NAVIGATION (scratch/image.png)
           ================================================================= */}
-      <header className="w-full bg-[#fafaf9] dark:bg-[#0c0a09]">
-        <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
-          {/* Left: Brand mark + 'AGENT' in Geist 14px 600 uppercase */}
-          <div className="flex items-center gap-6">
-            <a href="/" className="flex items-center gap-2.5 group">
-              <span className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-[#292524] dark:bg-[#fafaf9] text-[#fafaf9] dark:text-[#0c0a09] font-mono text-xs font-bold">
-                ♣
-              </span>
-              <span className="font-sans text-[14px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9]">
-                Agent
-              </span>
-            </a>
-
-            {/* Git working tree status badge */}
-            <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-[#e7e5e4] dark:border-[#292524] text-[12px] text-[#79716b] dark:text-[#a6a09b] font-mono">
-              <GitBranch className="h-3.5 w-3.5" />
-              <span>main</span>
-              <span>·</span>
-              <span className="inline-flex items-center gap-1 text-[#5ea500]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#5ea500]" />
-                repo connected
-              </span>
+      <header className="sticky top-0 z-40 w-full bg-[#fafaf9]/90 dark:bg-[#0c0a09]/90 backdrop-blur-md transition-colors">
+        <div className="max-w-[1240px] mx-auto px-6 h-14 flex items-center justify-between">
+          {/* Brand Logo */}
+          <a
+            href="/"
+            className="flex items-center gap-2 text-[14px] font-bold tracking-[0.08em] uppercase text-[#0c0a09] dark:text-white"
+          >
+            <div className="h-5 w-5 rounded-[4px] bg-[#615fff] flex items-center justify-center text-white text-xs font-mono font-bold">
+              ✦
             </div>
-          </div>
+            <span>AUTOSEND</span>
+          </a>
 
-          {/* Center Links (Geist 14px 400 Charcoal) */}
-          <nav className="hidden md:flex items-center gap-8 text-[14px] text-[#292524] dark:text-[#fafaf9]">
-            <a
-              href="#features"
-              className="hover:text-[#615fff] transition-colors"
-            >
-              Features
-            </a>
-            <div className="flex items-center gap-1 hover:text-[#615fff] cursor-pointer transition-colors">
-              <span>Solutions</span>
-              <ChevronDown className="h-3 w-3 text-[#79716b]" />
+          {/* Center Navigation Links */}
+          <nav className="hidden md:flex items-center gap-7 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#79716b] dark:text-[#a6a09b]">
+            <div className="flex items-center gap-1 cursor-pointer hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors">
+              <span>SOLUTIONS</span>
+              <ChevronDown className="h-3 w-3 opacity-60" />
             </div>
             <a
-              href="#primitives"
-              className="hover:text-[#615fff] transition-colors"
+              href="#agents"
+              className="hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
             >
-              Components
+              AGENTS
             </a>
-            <div className="flex items-center gap-1 hover:text-[#615fff] cursor-pointer transition-colors">
-              <span>Docs</span>
-              <ChevronDown className="h-3 w-3 text-[#79716b]" />
-            </div>
+            <a
+              href="#pricing"
+              className="hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
+            >
+              PRICING
+            </a>
+            <a
+              href="#docs"
+              className="flex items-center gap-1 hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
+            >
+              <span>DOCS</span>
+              <ArrowUpRight className="h-3 w-3 opacity-60" />
+            </a>
+            <a
+              href="#blog"
+              className="hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
+            >
+              BLOG
+            </a>
           </nav>
 
-          {/* Right Actions: Ghost button + Electric Indigo CTA + Theme */}
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden sm:inline-flex text-[14px]"
+          {/* Right Action Buttons */}
+          <div className="flex items-center gap-3">
+            <ThemeSwitcher />
+            <a
+              href="#login"
+              className="text-[12px] font-semibold uppercase tracking-[0.05em] text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors px-2 py-1"
             >
-              Log In
-            </Button>
+              LOG IN
+            </a>
             <Button
               variant="default"
-              size="sm"
-              className="h-[38px] px-4 text-[13px]"
+              size="default"
+              className="h-8 px-3.5 text-xs font-semibold uppercase tracking-[0.04em]"
             >
-              Sign Up
+              SIGN UP
             </Button>
-            <ThemeSwitcher />
           </div>
         </div>
       </header>
 
-      {/* =================================================================
-          Hero Section (design.md: Centered single-column, Cooper serif headline with italic)
-          ================================================================= */}
-      <section className="pt-20 pb-20 px-6 max-w-[1200px] mx-auto text-center space-y-7">
-        {/* Section Eyebrow Tag: Geist Mono 12px weight 600 uppercase 0.10em */}
-        <div className="eyebrow-tag">
-          AN AI-NATIVE PUBLISHING WORKSPACE FOR TECHNICAL WRITERS
-        </div>
-
-        {/* Cooper Serif Display Headline with exactly one italic word */}
-        <h1 className="font-serif text-[48px] sm:text-[68px] lg:text-[76px] font-normal leading-[1.08] tracking-tight text-[#292524] dark:text-[#fafaf9] max-w-[960px] mx-auto">
-          Treat a technical blog like a{' '}
-          <em className="italic font-normal text-[#615fff] dark:text-[#7f7dff]">
-            codebase
-          </em>
-          .
-        </h1>
-
-        {/* Subtext: Geist 18px 400 Bark Grey across two short lines */}
-        <p className="text-[17px] sm:text-[18px] text-[#79716b] dark:text-[#a6a09b] max-w-[700px] mx-auto leading-[1.56]">
-          A growing publication needs diffs, staleness detection, internal link
-          maintenance, and answer-engine intelligence — directly connected to
-          your Git workflow.
-        </p>
-
-        {/* CTA Pair: Ghost outline BOOK A DEMO + Filled Electric Indigo SIGN UP */}
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-          <Button variant="outline" size="default">
-            Book A Demo
-          </Button>
-          <Button
-            variant="default"
-            size="default"
-            rightIcon={<ArrowRight className="h-4 w-4" />}
-          >
-            Connect Repository
-          </Button>
-        </div>
-      </section>
-
-      {/* =================================================================
-          Product Showcase Card (design.md: 16px radius, soft drop shadow)
-          ================================================================= */}
-      <section className="max-w-[1200px] mx-auto px-6 mb-20">
-        <Card variant="showcase" className="p-6 sm:p-8 space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#e7e5e4] dark:border-[#292524] pb-4">
-            <div className="space-y-1">
-              <div className="eyebrow-tag text-left">
-                INTELLIGENT AI REVIEW LAYER
-              </div>
-              <h2 className="text-[20px] font-semibold text-[#292524] dark:text-[#fafaf9] tracking-tight">
-                Review proposed modifications as visual diffs
-              </h2>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" size="sm" shape="pill">
-                Branch: main
-              </Badge>
-              <Badge variant="lichen" size="sm" shape="pill">
-                AI Proposes · Author Decides
-              </Badge>
-            </div>
+      {/* Main Page Body */}
+      <main className="flex-1 max-w-[1240px] mx-auto px-6 w-full space-y-24 pt-10 pb-28">
+        {/* =================================================================
+            2. HERO SECTION (Serif headline with single italic accent)
+            ================================================================= */}
+        <section className="text-center max-w-[860px] mx-auto space-y-6 pt-6">
+          {/* Eyebrow Pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+            <span className="bg-[#0c0a09] dark:bg-white text-white dark:text-[#0c0a09] text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[3px] uppercase">
+              NEW
+            </span>
+            <span>
+              Git-native Publishing: Treat your technical blog like a codebase.
+            </span>
           </div>
 
-          {/* Interactive Live Diff Viewer */}
-          <DiffViewer
-            title="Writing Agent · Technical Precision & Freshness Upgrade"
-            description="Upgraded MCP definition and replaced outdated 0.4.0 SDK installation command with current 1.0.0 guidelines."
-            diffs={SAMPLE_DIFFS}
-            onAccept={() =>
-              alert('Diff accepted! Applied to repository draft.')
-            }
-            onReject={() => alert('Diff rejected.')}
-          />
-        </Card>
-      </section>
+          {/* Display Serif Headline */}
+          <h1 className="font-serif text-[46px] md:text-[62px] leading-[1.08] tracking-[-0.02em] text-[#0c0a09] dark:text-white font-normal">
+            Publishing for <em>teams</em> who ship with <em>agents</em>
+          </h1>
 
-      {/* =================================================================
-          Stats Bar (design.md: Full-width white band, 1px borders, 4 columns)
-          ================================================================= */}
-      <section className="w-full bg-white dark:bg-[#171514] border-y border-[#e7e5e4] dark:border-[#292524] mb-20">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[#e7e5e4] dark:divide-[#292524]">
-          {/* Col 1 */}
-          <div className="py-6 px-6 text-center space-y-1">
-            <div className="font-mono text-[24px] font-normal text-[#292524] dark:text-[#fafaf9] tabular-nums">
-              42
-            </div>
-            <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b] uppercase tracking-wider font-medium">
-              Articles Indexed
-            </div>
-          </div>
-
-          {/* Col 2 */}
-          <div className="py-6 px-6 text-center space-y-1">
-            <div className="font-mono text-[24px] font-normal text-[#292524] dark:text-[#fafaf9] tabular-nums">
-              96.82%
-            </div>
-            <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b] uppercase tracking-wider font-medium">
-              AEO Readiness
-            </div>
-          </div>
-
-          {/* Col 3 */}
-          <div className="py-6 px-6 text-center space-y-1">
-            <div className="font-mono text-[24px] font-normal text-[#292524] dark:text-[#fafaf9] tabular-nums">
-              3
-            </div>
-            <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b] uppercase tracking-wider font-medium">
-              Stale APIs Flagged
-            </div>
-          </div>
-
-          {/* Col 4 */}
-          <div className="py-6 px-6 text-center space-y-1">
-            <div className="font-mono text-[24px] font-normal text-[#292524] dark:text-[#fafaf9] tabular-nums">
-              0.15s
-            </div>
-            <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b] uppercase tracking-wider font-medium">
-              Git Commit Latency
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =================================================================
-          Feature Cards (design.md: 3-column grid with 24px gaps, 8px radius)
-          ================================================================= */}
-      <section
-        id="features"
-        className="max-w-[1200px] mx-auto px-6 mb-20 space-y-8"
-      >
-        <div className="text-center space-y-2">
-          <div className="eyebrow-tag">DIFFERENTIATION BY INTELLIGENCE</div>
-          <h2 className="font-serif text-[32px] sm:text-[40px] text-[#292524] dark:text-[#fafaf9]">
-            Content intelligence across the entire publication
-          </h2>
-          <p className="text-[14px] text-[#79716b] dark:text-[#a6a09b] max-w-[600px] mx-auto">
-            Traditional CMSs focus on rich text formatting. Agent understands
-            the relationships between topics, claims, and search intent.
+          {/* Subtitle */}
+          <p className="text-[15px] md:text-[17px] text-[#79716b] dark:text-[#a6a09b] max-w-[620px] mx-auto leading-relaxed">
+            Content intelligence, git-native diffs, and AEO optimization in one
+            platform. Priced by publication, not page views.
           </p>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <Card variant="feature" className="space-y-4">
-            <div className="h-8 w-8 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] flex items-center justify-center text-[#615fff]">
-              <Layers className="h-4 w-4" />
+          {/* Hero CTAs */}
+          <div className="flex items-center justify-center gap-4 pt-2">
+            <Button
+              variant="ghost"
+              size="default"
+              className="h-8 px-3 text-xs font-semibold uppercase tracking-[0.06em] text-[#292524] dark:text-[#fafaf9]"
+            >
+              BOOK A DEMO
+            </Button>
+            <Button
+              variant="default"
+              size="default"
+              className="h-8 px-4 text-xs font-semibold uppercase tracking-[0.04em]"
+            >
+              SIGN UP
+            </Button>
+          </div>
+        </section>
+
+        {/* =================================================================
+            3. PRODUCT SHOWCASE CARD (The lone drop shadow per design.md)
+            ================================================================= */}
+        <section className="relative">
+          <Card
+            variant="showcase"
+            className="overflow-hidden border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-0"
+          >
+            {/* Visual Header Canvas / Art Banner */}
+            <div className="relative w-full h-[320px] md:h-[400px] bg-[#1a2e26] dark:bg-[#0f1d17] overflow-hidden flex items-center justify-center">
+              {/* Pixel Art / Ambient Landscape Background Simulation */}
+              <div
+                className="absolute inset-0 opacity-80"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(to bottom, rgba(16,37,28,0.2), rgba(12,26,20,0.85)),
+                    repeating-linear-gradient(45deg, rgba(34,80,58,0.15) 0, rgba(34,80,58,0.15) 2px, transparent 2px, transparent 8px)
+                  `,
+                }}
+              />
+
+              {/* Mountains & Forest Pixel Silhouettes */}
+              <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0e2118] via-[#163326]/70 to-transparent flex items-end justify-center pointer-events-none">
+                <div className="w-full h-24 opacity-30 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4ade80]/40 via-transparent to-transparent" />
+              </div>
+
+              {/* Floating Prompt Input Box (scratch/image.png) */}
+              <div className="relative z-10 w-full max-w-[620px] mx-4 p-4 rounded-[14px] bg-white/95 dark:bg-[#1c1917]/95 backdrop-blur-md border border-[#e7e5e4] dark:border-[#292524] shadow-lg">
+                <div className="text-[13px] text-[#292524] dark:text-[#fafaf9] font-normal leading-relaxed pb-3">
+                  {heroPrompt}
+                </div>
+                <div className="flex items-center justify-between pt-1 border-t border-[#f5f5f4] dark:border-[#262321]">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setHeroPrompt(
+                        'Analyze recent Git commits, update code blocks to TypeScript 5.5, and draft unified diff.',
+                      )
+                    }
+                    className="h-6 w-6 rounded-full border border-[#e7e5e4] dark:border-[#383330] flex items-center justify-center text-[#79716b] hover:text-[#292524] hover:border-[#292524] transition-colors"
+                    title="Insert prompt suggestion"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    className="h-7 w-7 rounded-full bg-[#d97757] hover:bg-[#c36445] text-white flex items-center justify-center shadow-sm transition-transform active:scale-95"
+                    title="Run review agent"
+                  >
+                    <Send className="h-3 w-3 translate-x-[-0.5px] translate-y-[-0.5px]" />
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <h3 className="text-[18px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                Publication Knowledge Graph
-              </h3>
-              <p className="text-[14px] text-[#79716b] dark:text-[#a6a09b] leading-[1.43]">
-                Connects articles through shared entities and concepts,
-                identifying unlinked opportunities and duplicate topic overlaps.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-[#e7e5e4] dark:border-[#292524] flex items-center justify-between">
-              <a
-                href="#primitives"
-                className="font-mono text-[12px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
-              >
-                Docs →
-              </a>
-              <Badge variant="secondary" size="sm">
-                v1.2.0
-              </Badge>
+
+            {/* 3-Column Split Footer with Hairline Borders (scratch/image.png) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#e7e5e4] dark:divide-[#292524] bg-white dark:bg-[#171514]">
+              {/* Column 1 */}
+              <div className="p-6 space-y-2 flex flex-col justify-between">
+                <div>
+                  <div className="text-[13px] font-bold text-[#0c0a09] dark:text-white font-mono uppercase tracking-[0.05em]">
+                    Content Graph
+                  </div>
+                  <p className="text-[12px] text-[#79716b] dark:text-[#a6a09b] pt-1 leading-relaxed">
+                    Build mental models, cluster topics, and discover missing
+                    concepts across existing articles.
+                  </p>
+                </div>
+                <div className="pt-3">
+                  <a
+                    href="#docs"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
+                  >
+                    <span>DOCS</span>
+                    <ArrowUpRight className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Column 2 */}
+              <div className="p-6 space-y-2 flex flex-col justify-between">
+                <div>
+                  <div className="text-[13px] font-bold text-[#0c0a09] dark:text-white font-mono uppercase tracking-[0.05em]">
+                    MCP Server
+                  </div>
+                  <p className="text-[12px] text-[#79716b] dark:text-[#a6a09b] pt-1 leading-relaxed">
+                    Inspect articles, evaluate citations, and sync directly with
+                    your local engineering tools.
+                  </p>
+                </div>
+                <div className="pt-3">
+                  <a
+                    href="#docs"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
+                  >
+                    <span>DOCS</span>
+                    <ArrowUpRight className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Column 3 */}
+              <div className="p-6 space-y-2 flex flex-col justify-between">
+                <div>
+                  <div className="text-[13px] font-bold text-[#0c0a09] dark:text-white font-mono uppercase tracking-[0.05em]">
+                    skill.md
+                  </div>
+                  <p className="text-[12px] text-[#79716b] dark:text-[#a6a09b] pt-1 leading-relaxed">
+                    Give your agent full knowledge of publication rules, author
+                    style, and technical linting.
+                  </p>
+                </div>
+                <div className="pt-3">
+                  <a
+                    href="#docs"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
+                  >
+                    <span>DOCS</span>
+                    <ArrowUpRight className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
             </div>
           </Card>
+        </section>
 
-          {/* Card 2 */}
-          <Card variant="feature" className="space-y-4">
-            <div className="h-8 w-8 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] flex items-center justify-center text-[#5ea500]">
-              <RefreshCw className="h-4 w-4" />
+        {/* =================================================================
+            4. 4-COLUMN STATS BAR & SOCIAL PROOF (scratch/image.png)
+            ================================================================= */}
+        <section className="space-y-12">
+          {/* Stats Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[#e7e5e4] dark:divide-[#292524] border-y border-[#e7e5e4] dark:border-[#292524] py-8 text-center">
+            <div className="p-4 space-y-1">
+              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-[#0c0a09] dark:text-white">
+                3,844,720
+              </div>
+              <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                Words indexed across Git repos
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <h3 className="text-[18px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                Content Refresh Agent
-              </h3>
-              <p className="text-[14px] text-[#79716b] dark:text-[#a6a09b] leading-[1.43]">
-                Periodically flags outdated packages, deprecated framework
-                methods, and broken external links, proposing fixes as
-                reviewable diffs.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-[#e7e5e4] dark:border-[#292524] flex items-center justify-between">
-              <a
-                href="#primitives"
-                className="font-mono text-[12px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
-              >
-                Docs →
-              </a>
-              <Badge variant="lichen" size="sm">
-                Active
-              </Badge>
-            </div>
-          </Card>
 
-          {/* Card 3 */}
-          <Card variant="feature" className="space-y-4">
-            <div className="h-8 w-8 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] flex items-center justify-center text-[#d97757]">
-              <Sparkles className="h-4 w-4" />
+            <div className="p-4 space-y-1">
+              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-[#0c0a09] dark:text-white">
+                98.21%
+              </div>
+              <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                AEO answer engine readiness
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <h3 className="text-[18px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                Answer Engine Optimization
-              </h3>
-              <p className="text-[14px] text-[#79716b] dark:text-[#a6a09b] leading-[1.43]">
-                Audits definition positions and direct answers so modern answer
-                engines (Perplexity, ChatGPT, Claude) accurately cite your
-                posts.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-[#e7e5e4] dark:border-[#292524] flex items-center justify-between">
-              <a
-                href="#primitives"
-                className="font-mono text-[12px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
-              >
-                Docs →
-              </a>
-              <Badge variant="terracotta" size="sm">
-                AEO 94%
-              </Badge>
-            </div>
-          </Card>
-        </div>
-      </section>
 
-      {/* =================================================================
-          Interactive Component Workbench & Micro Design Decisions
-          ================================================================= */}
-      <section
-        id="primitives"
-        className="max-w-[1200px] mx-auto px-6 mb-20 space-y-8"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#e7e5e4] dark:border-[#292524] pb-4">
-          <div>
-            <div className="eyebrow-tag">INTERACTIVE WORKBENCH</div>
-            <h2 className="text-[28px] font-semibold text-[#292524] dark:text-[#fafaf9] tracking-tight">
-              AutoSend Component Design System
+            <div className="p-4 space-y-1">
+              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-[#0c0a09] dark:text-white">
+                1.87s
+              </div>
+              <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                Average review and diff latency
+              </div>
+            </div>
+
+            <div className="p-4 space-y-1">
+              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-[#0c0a09] dark:text-white">
+                0
+              </div>
+              <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                Unresolved stale API claims
+              </div>
+            </div>
+          </div>
+
+          {/* Social Proof Logos Bar */}
+          <div className="space-y-6 text-center">
+            <div className="text-[11px] font-mono uppercase tracking-[0.12em] font-semibold text-[#79716b] dark:text-[#a6a09b]">
+              TECHNICAL BLOGS POWERED BY BIG AND SMALL TEAMS ALIKE!
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all">
+              <span className="font-serif text-[18px] tracking-tight font-bold text-[#292524] dark:text-white">
+                Peerlist
+              </span>
+              <span className="font-sans text-[17px] font-bold tracking-tight text-[#292524] dark:text-white">
+                * supermemory™
+              </span>
+              <span className="font-serif italic text-[19px] font-medium text-[#292524] dark:text-white">
+                gistr
+              </span>
+              <span className="font-sans text-[17px] font-semibold text-[#292524] dark:text-white">
+                guidejar
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* =================================================================
+            5. FEATURE SECTION #01 — TRANSACTIONAL PUBLISHING & CODE / DIFF
+            ================================================================= */}
+        <section className="space-y-8 pt-6">
+          <div className="space-y-2">
+            <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#d97757]">
+              #01 — TRANSACTIONAL PUBLISHING
+            </div>
+            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-[#0c0a09] dark:text-white">
+              OTPs, updates, and diffs your readers can rely on.
             </h2>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" size="sm">
-              Palette: Warm Bone + Stone Mist + Electric Indigo
-            </Badge>
-          </div>
-        </div>
 
-        <Tabs defaultValue="components">
-          <TabsList variant="underline" className="mb-6">
-            <TabsTrigger value="components" variant="underline">
-              Component Primitives
-            </TabsTrigger>
-            <TabsTrigger value="editorial" variant="underline">
-              Publishing & Editorial Tools
-            </TabsTrigger>
-            <TabsTrigger value="tokens" variant="underline">
-              Tokens Reference (design.md)
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Tab 1: Component Primitives */}
-          <TabsContent value="components" className="space-y-8">
-            {/* Buttons Row */}
-            <Card className="p-6 space-y-6">
-              <div className="flex items-center justify-between border-b border-[#e7e5e4] dark:border-[#292524] pb-3">
-                <div className="space-y-0.5">
-                  <h3 className="text-[16px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                    Button Hierarchy
-                  </h3>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b]">
-                    Primary action is Electric Indigo (#615fff); secondary
-                    actions are Ghost Outline (#e7e5e4). 8px radius, uppercase
-                    0.04em tracking.
-                  </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Features List */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <FolderGit2 className="h-3.5 w-3.5" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-[#79716b]">Loading State:</span>
-                  <Switch
-                    checked={buttonLoading}
-                    onCheckedChange={setButtonLoading}
-                  />
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    GIT INTEGRATION / REST
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Connect existing Markdown/MDX blogs programmatically with a
+                    clean, reliable REST API or local Git hooks.
+                  </p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <Button variant="default" isLoading={buttonLoading}>
-                  Primary Action
-                </Button>
-                <Button variant="outline" isLoading={buttonLoading}>
-                  Ghost Outline
-                </Button>
-                <Button variant="ghost" isLoading={buttonLoading}>
-                  Ghost Text Only
-                </Button>
-                <Button variant="secondary" isLoading={buttonLoading}>
-                  Secondary Flat
-                </Button>
-                <Button variant="destructive" isLoading={buttonLoading}>
-                  Alarm Red
-                </Button>
-                <Button variant="success" isLoading={buttonLoading}>
-                  Lichen Green
-                </Button>
-                <Button
-                  variant="arrow"
-                  rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <Code2 className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    DIFF REVIEWS
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Drop-in libraries for Node, Next, and Astro. Every AI
+                    suggestion is rendered as a clean, reviewable Git diff.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <RefreshCw className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    FRESHNESS AGENT
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Scans for outdated documentation, changed APIs, and broken
+                    links before your readers notice.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <Zap className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    WEBHOOKS & CI
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Get real-time event notifications for every draft, lint
+                    pass, content health audit, or publish failure.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <a
+                  href="#transactional"
+                  className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#615fff] hover:underline"
                 >
-                  Arrow Link →
-                </Button>
+                  <span>ALL ABOUT TRANSACTIONAL PUBLISHING</span>
+                  <ArrowRight className="h-3 w-3" />
+                </a>
               </div>
-            </Card>
+            </div>
 
-            {/* Inputs & Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="p-6 space-y-5">
-                <div className="space-y-0.5">
-                  <h3 className="text-[16px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                    Form Inputs (design.md)
-                  </h3>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b]">
-                    12px radius, stone border #e7e5e4, focus shifts to #615fff
-                    with 3px rgba(97,95,255,0.15) ring.
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  <Input
-                    leftIcon={<Search className="h-4 w-4" />}
-                    placeholder="Search articles by concept or topic..."
-                  />
-
-                  <Input
-                    placeholder="name@company.com"
-                    defaultValue="sarah@engineering.dev"
-                  />
-
-                  <Textarea
-                    placeholder="Write article outline, thesis statement, or raw code thoughts..."
-                    rows={3}
-                  />
-                </div>
-              </Card>
-
-              {/* Toggles, Checkboxes & Badges */}
-              <Card className="p-6 space-y-5">
-                <div className="space-y-0.5">
-                  <h3 className="text-[16px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                    Toggles & Status Badges
-                  </h3>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b]">
-                    Accessible switches, 8px tags, 9999px pills, and section
-                    eyebrow tracking.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-[13px] font-medium text-[#292524] dark:text-[#fafaf9]">
-                        Git auto-commit on publish
-                      </div>
-                      <div className="text-[11px] text-[#79716b]">
-                        Create clean commits in your local blog repo
-                      </div>
-                    </div>
-                    <Switch
-                      checked={switchChecked}
-                      onCheckedChange={setSwitchChecked}
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-1">
-                    <Checkbox
-                      checked={checkboxChecked}
-                      onCheckedChange={setCheckboxChecked}
-                    />
-                    <span className="text-[13px] text-[#292524] dark:text-[#fafaf9]">
-                      Run Content Refresh Agent before deploy
-                    </span>
-                  </div>
-
-                  <div className="pt-2 flex flex-wrap gap-2">
-                    <Badge variant="default" shape="pill">
-                      Published
-                    </Badge>
-                    <Badge variant="secondary" shape="tag">
+            {/* Right Mockup Code & Diff Card */}
+            <div className="lg:col-span-7">
+              <div className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] overflow-hidden shadow-sm">
+                {/* Code Tabs Header */}
+                <div className="flex items-center justify-between border-b border-[#e7e5e4] dark:border-[#292524] px-4 py-2.5 bg-[#fafaf9] dark:bg-[#121110]">
+                  <div className="flex items-center gap-1.5 overflow-x-auto text-[11px] font-mono">
+                    <button
+                      type="button"
+                      onClick={() => setActiveCodeTab('diff')}
+                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'diff' ? 'bg-white dark:bg-[#1c1917] font-semibold text-[#0c0a09] dark:text-white shadow-xs' : 'text-[#79716b] hover:text-[#292524]'}`}
+                    >
+                      Unified Diff
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveCodeTab('curl')}
+                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'curl' ? 'bg-white dark:bg-[#1c1917] font-semibold text-[#0c0a09] dark:text-white shadow-xs' : 'text-[#79716b] hover:text-[#292524]'}`}
+                    >
+                      cURL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveCodeTab('typescript')}
+                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'typescript' ? 'bg-white dark:bg-[#1c1917] font-semibold text-[#0c0a09] dark:text-white shadow-xs' : 'text-[#79716b] hover:text-[#292524]'}`}
+                    >
                       TypeScript
-                    </Badge>
-                    <Badge variant="lichen" shape="tag">
-                      Lichen Green
-                    </Badge>
-                    <Badge variant="terracotta" shape="tag">
-                      Terracotta
-                    </Badge>
-                    <Badge variant="teal" shape="tag">
-                      Tide Teal
-                    </Badge>
-                    <Badge variant="alarm" shape="tag">
-                      Alarm Red
-                    </Badge>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveCodeTab('rust')}
+                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'rust' ? 'bg-white dark:bg-[#1c1917] font-semibold text-[#0c0a09] dark:text-white shadow-xs' : 'text-[#79716b] hover:text-[#292524]'}`}
+                    >
+                      Rust
+                    </button>
+                  </div>
+                  <div className="text-[10px] font-mono uppercase text-[#79716b]">
+                    api.autosend.dev
                   </div>
                 </div>
-              </Card>
-            </div>
 
-            {/* Modal Dialog & Overlays */}
-            <Card className="p-6 space-y-4">
-              <div className="space-y-0.5">
-                <h3 className="text-[16px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                  Dialogs & Editorial Overlays
-                </h3>
-                <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b]">
-                  Centered modals with 16px radius, stone border, and backdrop
-                  blur.
-                </p>
-              </div>
+                {/* Tab Content */}
+                <div className="p-4">
+                  {activeCodeTab === 'diff' ? (
+                    <DiffViewer
+                      title="posts/building-mcp-server-typescript.md"
+                      diffs={SAMPLE_DIFFS}
+                    />
+                  ) : (
+                    <pre className="text-xs font-mono p-4 rounded-[12px] bg-[#fafaf9] dark:bg-[#0c0a09] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] overflow-x-auto leading-relaxed">
+                      {activeCodeTab === 'curl' &&
+                        `curl --location 'https://api.autosend.dev/v1/publish' \\
+--header 'Authorization: Bearer YOUR_API_KEY' \\
+--header 'Content-Type: application/json' \\
+--data-raw '{
+  "slug": "mcp-server-architecture",
+  "branch": "main",
+  "review": {
+    "freshness": true,
+    "aeo_optimize": true
+  }
+}'`}
+                      {activeCodeTab === 'typescript' &&
+                        `import { AutoSend } from '@autosend/client'
 
-              <div className="flex flex-wrap items-center gap-4">
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="default">Open AI Review Modal</Button>
-                  </DialogTrigger>
-                  <DialogContent onClose={() => setDialogOpen(false)}>
-                    <DialogHeader>
-                      <DialogTitle>AI Technical Review (AGENTS.md)</DialogTitle>
-                      <DialogDescription>
-                        Examined 42 articles across your technical blog's Git
-                        repository.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-3 py-2">
-                      <Callout type="ai" title="Concept Overlap Detected">
-                        You already explain RAG pipelines in{' '}
-                        <em>Understanding Vector Databases</em>. Focus this post
-                        exclusively on production security.
-                      </Callout>
-                      <Callout
-                        type="warning"
-                        title="Outdated Documentation Link"
-                      >
-                        One external link to{' '}
-                        <code>docs.modelcontextprotocol.io</code> redirects to
-                        v1 spec.
-                      </Callout>
-                    </div>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant="outline">Dismiss</Button>
-                      </DialogClose>
-                      <Button
-                        variant="default"
-                        onClick={() => setDialogOpen(false)}
-                      >
-                        Apply Changes
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+const client = new AutoSend({ apiKey: process.env.AUTOSEND_KEY })
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">Publication Menu ▾</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="left">
-                    <DropdownMenuLabel>Git & Publishing</DropdownMenuLabel>
-                    <DropdownMenuItem>Commit Changes</DropdownMenuItem>
-                    <DropdownMenuItem>Trigger Deploy</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem destructive>
-                      Unpublish Article
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+await client.articles.sync({
+  path: './content/blog',
+  onProposedDiff: async (diff) => {
+    console.log('AI proposed review diff:', diff.summary)
+  }
+})`}
+                      {activeCodeTab === 'rust' &&
+                        `use autosend_sdk::AutoSend;
 
-                <Tooltip content="Tooltips open instantly on adjacent hover!">
-                  <Button variant="outline">Hover For Tooltip</Button>
-                </Tooltip>
-              </div>
-            </Card>
-
-            {/* Editorial Callouts */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Callout type="ai" title="Content Refresh Agent Found 3 Changes">
-                Referenced API endpoint updated from <code>/v1/models</code> to{' '}
-                <code>/v2/models</code>. A unified diff is ready for review.
-              </Callout>
-              <Callout
-                type="warning"
-                title="Primary Definition Appears Too Late"
-              >
-                Moving your vector database definition to paragraph 1 increases
-                AEO answerability score from 81% to 94%.
-              </Callout>
-            </div>
-          </TabsContent>
-
-          {/* Tab 2: Publishing & Editorial Tools */}
-          <TabsContent value="editorial" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-              {/* Slash Command Menu */}
-              <div className="space-y-3">
-                <div className="eyebrow-tag">SLASH COMMAND SYSTEM</div>
-                <h3 className="text-[18px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                  Editor Commands (AGENTS.md § 9)
-                </h3>
-                <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b]">
-                  Minimal slash commands for blocks and subtle AI actions.
-                </p>
-                <div className="p-6 rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] flex flex-col items-center justify-center">
-                  <SlashCommandMenu
-                    onSelect={(cmd) => setSelectedSlashCommand(cmd.label)}
-                  />
-                  {selectedSlashCommand && (
-                    <div className="mt-4 text-xs font-mono text-[#79716b]">
-                      Command Triggered:{' '}
-                      <strong className="text-[#615fff]">
-                        {selectedSlashCommand}
-                      </strong>
-                    </div>
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = AutoSend::new("API_KEY");
+    let review = client.review_post("mcp-typescript.md").await?;
+    println!("Status: {:?}", review.health);
+    Ok(())
+}`}
+                    </pre>
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
 
-              {/* Health Gauge */}
-              <div className="space-y-3">
-                <div className="eyebrow-tag">PUBLICATION HEALTH AGENT</div>
-                <h3 className="text-[18px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                  Article Health Analysis (AGENTS.md § 19)
-                </h3>
-                <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b]">
-                  The numbers are secondary. The explanation is what matters.
-                </p>
-                <HealthGauge
-                  overallScore={84}
-                  statusText="Building an MCP Server in TypeScript"
-                  metrics={[
-                    {
-                      name: 'Content',
-                      score: 92,
-                      note: 'Complete code examples',
-                    },
-                    { name: 'SEO', score: 87, note: 'Clear title and slug' },
-                    {
-                      name: 'AEO',
-                      score: 81,
-                      note: 'Direct answers structured',
-                    },
-                    {
-                      name: 'Links',
-                      score: 95,
-                      note: '5 internal connections',
-                    },
-                    {
-                      name: 'Freshness',
-                      score: 63,
-                      note: 'SDK version outdated',
-                    },
-                    {
-                      name: 'Technical',
-                      score: 89,
-                      note: 'Valid TypeScript types',
-                    },
-                  ]}
-                  warnings={[
-                    'Referenced package @modelcontextprotocol/sdk has updated from 0.4.0 to 1.0.0.',
-                    'The definition of "MCP Tool" appears after the code example instead of before.',
-                    'One external documentation link has returned an HTTP 301 redirect.',
-                  ]}
-                />
+        {/* =================================================================
+            6. FEATURE SECTION #02 — THE CUSTOM WRITING EXPERIENCE
+            ================================================================= */}
+        <section className="space-y-8 pt-6">
+          <div className="space-y-2">
+            <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#22b8cd]">
+              #02 — CUSTOM WRITING WORKSPACE
+            </div>
+            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-[#0c0a09] dark:text-white">
+              Technical articles that reach, educate, and convert.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Features List */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <FileText className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    CAMPAIGNS & DRAFTS
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Create, personalize, and publish technical guides. From
+                    quick API notes to 20-page architecture deep-dives.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <Sparkles className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    SLASH COMMANDS
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Type <code>/</code> for instant headings, code blocks,
+                    diffs, citations, and contextual AI suggestions without
+                    leaving the keyboard.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <Layers className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    CONTENT GRAPH LINKING
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Segment and connect articles dynamically based on concepts,
+                    search intent, and reader knowledge levels.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <GitCommit className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    MARKDOWN BUILDER
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Write in Markdown/MDX without bugging your design team.
+                    Visual editing for speed, source control for ownership.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <a
+                  href="#articles"
+                  className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#615fff] hover:underline"
+                >
+                  <span>ALL ABOUT THE EDITOR</span>
+                  <ArrowRight className="h-3 w-3" />
+                </a>
               </div>
             </div>
 
-            {/* Article Cards */}
-            <div className="space-y-4">
-              <div className="eyebrow-tag">PUBLICATION ARTICLES</div>
-              <h3 className="text-[18px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                Articles in Workspace
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ArticleCard
-                  id="post-1"
-                  title="Building an MCP Server with TypeScript"
-                  excerpt="A comprehensive guide to implementing the Model Context Protocol in TypeScript, connecting local tools to AI clients."
-                  slug="building-mcp-server-typescript"
-                  publishedAt="Oct 4, 2026"
-                  readingTime="7 min read"
-                  gitBranch="main"
-                  healthScore={84}
-                  topics={['MCP', 'TypeScript', 'Agents']}
-                  pendingDiffsCount={2}
-                  isStale={true}
-                  staleReason="Model Context Protocol v1.0 SDK introduced schema breaking changes."
-                  onEdit={() => alert('Opening in Editor...')}
-                  onReviewDiffs={() => alert('Reviewing Diffs...')}
-                />
+            {/* Right Mockup Campaigns / Articles List (scratch/image.png) */}
+            <div className="lg:col-span-7">
+              <div className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-5 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-[#e7e5e4] dark:border-[#292524] pb-3">
+                  <div>
+                    <h3 className="text-[14px] font-bold text-[#0c0a09] dark:text-white">
+                      Articles & Campaigns
+                    </h3>
+                    <p className="text-[11px] text-[#79716b]">
+                      Connected to git repository:{' '}
+                      <code>github.com/org/blog</code>
+                    </p>
+                  </div>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="h-7 px-2.5 text-[11px] gap-1 font-semibold"
+                  >
+                    <Plus className="h-3 w-3" />
+                    <span>NEW ARTICLE</span>
+                  </Button>
+                </div>
 
-                <ArticleCard
-                  id="post-2"
-                  title="Production Security for RAG Applications"
-                  excerpt="Defending retrieval-augmented generation pipelines against indirect prompt injection and vector context poisoning."
-                  slug="production-security-rag"
-                  publishedAt="Oct 1, 2026"
-                  readingTime="12 min read"
-                  gitBranch="feature/rag-sec"
-                  healthScore={94}
-                  topics={['RAG', 'Vector DB', 'Security']}
-                  pendingDiffsCount={0}
-                  isStale={false}
-                  onEdit={() => alert('Opening in Editor...')}
-                />
+                {/* Article item 1 (sending/published) */}
+                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <div className="flex items-center gap-2 font-mono text-[#5ea500] font-semibold">
+                      <Send className="h-3 w-3" />
+                      <span>PUBLISHED • 24 Mar, 2026 • 10:24 AM</span>
+                    </div>
+                    <Badge variant="lichen" shape="tag">
+                      Health 96%
+                    </Badge>
+                  </div>
+                  <div className="font-semibold text-[13px] text-[#292524] dark:text-white">
+                    Product Release Mar 26: MCP Standard Architecture
+                  </div>
+                  <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                    Subject: What we shipped this month + an exciting surprise!
+                  </div>
+                </div>
+
+                {/* Article item 2 (past/stale) */}
+                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <div className="flex items-center gap-2 font-mono text-[#d97757] font-semibold">
+                      <AlertCircle className="h-3 w-3" />
+                      <span>NEEDS REVIEW • 20 Mar, 2026 • 10:40 AM</span>
+                    </div>
+                    <Badge variant="terracotta" shape="tag">
+                      Stale API
+                    </Badge>
+                  </div>
+                  <div className="font-semibold text-[13px] text-[#292524] dark:text-white">
+                    Weekly Deep-Dive: Understanding Vector Databases
+                  </div>
+                  <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                    Subject: Jobs are changing and here's what you can do.
+                  </div>
+                </div>
+
+                {/* Article item 3 */}
+                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <div className="flex items-center gap-2 font-mono text-[#79716b]">
+                      <GitBranch className="h-3 w-3" />
+                      <span>DRAFT • 18 Mar, 2026 • 09:12 AM</span>
+                    </div>
+                    <Badge variant="outline" shape="tag">
+                      Draft
+                    </Badge>
+                  </div>
+                  <div className="font-semibold text-[13px] text-[#292524] dark:text-white">
+                    Production Security for RAG Applications
+                  </div>
+                  <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                    Defending retrieval pipelines against indirect prompt
+                    injection.
+                  </div>
+                </div>
               </div>
             </div>
-          </TabsContent>
+          </div>
+        </section>
 
-          {/* Tab 3: Tokens Reference */}
-          <TabsContent value="tokens" className="space-y-6">
-            <Card className="p-6 space-y-6">
-              <div className="space-y-1 border-b border-[#e7e5e4] dark:border-[#292524] pb-4">
-                <div className="eyebrow-tag">AUTOSEND TOKEN AUDIT</div>
-                <h3 className="text-[18px] font-semibold text-[#292524] dark:text-[#fafaf9]">
-                  Design Tokens from design.md
-                </h3>
-                <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b]">
-                  Every color, typography role, spacing unit, and radius
-                  strictly follows the AutoSend style reference.
-                </p>
+        {/* =================================================================
+            7. FEATURE SECTION #03 — AUTOMATION & HEALTH PIPELINE
+            ================================================================= */}
+        <section className="space-y-8 pt-6">
+          <div className="space-y-2">
+            <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#5ea500]">
+              #03 — CONTENT HEALTH & AUTOMATION
+            </div>
+            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-[#0c0a09] dark:text-white">
+              Automate all articles from draft to continuous freshness.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Features List */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <Zap className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    CONTENT AUTOMATION
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Create maintenance triggers, onboarding sequences, and
+                    refresh campaigns that run quietly in the background.
+                  </p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
-                {/* Token 1 */}
-                <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] p-3 space-y-2 bg-[#fafaf9] dark:bg-[#121110]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full border border-[#e7e5e4] bg-[#fafaf9]" />
-                    <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-                      Warm Bone
-                    </span>
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <Cpu className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    SMART TRIGGERS
                   </div>
-                  <div className="text-[#79716b]">#fafaf9</div>
-                  <div className="text-[11px] font-sans text-[#79716b]">
-                    Page canvas & secondary fills
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    Trigger automated reviews based on git commits, upstream
+                    package releases, or broken documentation URLs.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3.5">
+                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                  <Globe className="h-3.5 w-3.5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                    ANALYTICS & AEO INSIGHTS
+                  </div>
+                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                    See search queries, LLM citations, and link clicks. Spot
+                    what's working and apply learnings to your next article.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <a
+                  href="#automation"
+                  className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#615fff] hover:underline"
+                >
+                  <span>ALL ABOUT CONTENT AUTOMATION</span>
+                  <ArrowRight className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Right Mockup Workflow Diagram (scratch/image.png) */}
+            <div className="lg:col-span-7">
+              <div className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-6 shadow-sm space-y-4">
+                {/* Node 1: Trigger */}
+                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] space-y-1">
+                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#79716b]">
+                    TRIGGER
+                  </div>
+                  <div className="text-[13px] font-medium text-[#292524] dark:text-white flex items-center gap-2">
+                    <span>Upstream package updated:</span>
+                    <span className="font-mono text-xs px-2 py-0.5 rounded-[4px] bg-white dark:bg-[#1c1917] border border-[#e7e5e4] dark:border-[#292524]">
+                      @modelcontextprotocol/sdk@1.0.0
+                    </span>
                   </div>
                 </div>
 
-                {/* Token 2 */}
-                <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] p-3 space-y-2 bg-[#fafaf9] dark:bg-[#121110]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full border border-[#e7e5e4] bg-[#ffffff]" />
-                    <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-                      Paper White
-                    </span>
+                {/* Connecting Line */}
+                <div className="w-[1px] h-6 bg-[#e7e5e4] dark:bg-[#292524] mx-auto" />
+
+                {/* Node 2: Wait & Condition */}
+                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#79716b]">
+                      WAIT FOR
+                    </div>
+                    <div className="text-[13px] font-medium text-[#292524] dark:text-white">
+                      Review approval or author verification
+                    </div>
                   </div>
-                  <div className="text-[#79716b]">#ffffff</div>
-                  <div className="text-[11px] font-sans text-[#79716b]">
-                    Card surfaces & elevated panels
+                  <Badge variant="outline" shape="tag">
+                    8 hrs
+                  </Badge>
+                </div>
+
+                {/* Connecting Line */}
+                <div className="w-[1px] h-6 bg-[#e7e5e4] dark:bg-[#292524] mx-auto" />
+
+                {/* Node 3: Action */}
+                <div className="p-3.5 rounded-[12px] border border-[#615fff]/30 bg-[#615fff]/5 space-y-1">
+                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#615fff]">
+                    DIFF STAGED & PUBLISHED
+                  </div>
+                  <div className="text-[13px] font-medium text-[#292524] dark:text-white">
+                    3 code snippets updated to v1.0.0 API definitions.
                   </div>
                 </div>
 
-                {/* Token 3 */}
-                <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] p-3 space-y-2 bg-[#fafaf9] dark:bg-[#121110]">
+                {/* Workflow End */}
+                <div className="text-center pt-2">
+                  <span className="text-[10px] font-mono uppercase tracking-[0.10em] text-[#79716b]">
+                    AUTOMATION ENDS ✓
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =================================================================
+            8. MULTI PROJECT SUPPORT (scratch/image.png)
+            ================================================================= */}
+        <section className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#e7e5e4] dark:divide-[#292524]">
+            {/* Left Description */}
+            <div className="p-8 md:p-12 space-y-4 flex flex-col justify-center">
+              <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#d97757]">
+                MULTI PROJECT SUPPORT
+              </div>
+              <h2 className="text-[28px] md:text-[34px] font-sans font-medium text-[#0c0a09] dark:text-white">
+                Multiple Blogs, One Workspace.
+              </h2>
+              <p className="text-[14px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                Create isolated projects for every product, client, or
+                publication environment you manage—each with its own Git
+                repository, custom domains, and author voice models.
+              </p>
+            </div>
+
+            {/* Right Project Switcher Card (scratch/image.png) */}
+            <div className="p-8 md:p-12 bg-[#fafaf9] dark:bg-[#121110] flex items-center justify-center">
+              <div className="w-full max-w-[340px] rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-3 space-y-2 shadow-xs">
+                <div className="flex items-center justify-between px-3 py-2 rounded-[8px] bg-[#fafaf9] dark:bg-[#1c1917] border border-[#e7e5e4] dark:border-[#292524]">
                   <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full border border-[#e7e5e4] bg-[#e7e5e4]" />
-                    <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-                      Stone Mist
+                    <span className="h-3 w-3 rounded-full bg-[#615fff]" />
+                    <span className="text-xs font-semibold text-[#292524] dark:text-white">
+                      ConnectSphere
                     </span>
                   </div>
-                  <div className="text-[#79716b]">#e7e5e4</div>
-                  <div className="text-[11px] font-sans text-[#79716b]">
-                    Hairline borders & dividers
-                  </div>
+                  <ChevronDown className="h-3.5 w-3.5 text-[#79716b]" />
                 </div>
 
-                {/* Token 4 */}
-                <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] p-3 space-y-2 bg-[#fafaf9] dark:bg-[#121110]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full bg-[#615fff]" />
-                    <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-                      Electric Indigo
-                    </span>
-                  </div>
-                  <div className="text-[#79716b]">#615fff</div>
-                  <div className="text-[11px] font-sans text-[#79716b]">
-                    Primary CTA fill & brand spark
-                  </div>
+                <div className="px-3 py-1.5 flex items-center justify-between text-xs text-[#79716b]">
+                  <span>csphere.com</span>
+                  <span className="text-[10px] font-mono uppercase">
+                    ACTIVE
+                  </span>
                 </div>
 
-                {/* Token 5 */}
-                <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] p-3 space-y-2 bg-[#fafaf9] dark:bg-[#121110]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full bg-[#292524]" />
-                    <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-                      Charcoal
-                    </span>
+                <div className="border-t border-[#e7e5e4] dark:border-[#292524] pt-2 px-1 space-y-1">
+                  <div className="px-2 py-1.5 rounded-[6px] hover:bg-[#fafaf9] dark:hover:bg-[#1c1917] flex items-center gap-2 text-xs text-[#292524] dark:text-white cursor-pointer">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#d97757]" />
+                    <span>Frostline (frostline.io)</span>
                   </div>
-                  <div className="text-[#79716b]">#292524</div>
-                  <div className="text-[11px] font-sans text-[#79716b]">
-                    Primary text & headings
+                  <div className="px-2 py-1.5 rounded-[6px] hover:bg-[#fafaf9] dark:hover:bg-[#1c1917] flex items-center gap-2 text-xs font-semibold text-[#615fff] cursor-pointer">
+                    <Plus className="h-3 w-3" />
+                    <span>NEW PROJECT</span>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                {/* Token 6 */}
-                <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] p-3 space-y-2 bg-[#fafaf9] dark:bg-[#121110]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full bg-[#79716b]" />
-                    <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-                      Bark Grey
-                    </span>
-                  </div>
-                  <div className="text-[#79716b]">#79716b</div>
-                  <div className="text-[11px] font-sans text-[#79716b]">
-                    Muted text & secondary labels
-                  </div>
+        {/* =================================================================
+            9. AGENTIC INTEGRATIONS (8-card grid per scratch/image.png)
+            ================================================================= */}
+        <section className="space-y-8">
+          <div className="space-y-1 text-center md:text-left">
+            <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#615fff]">
+              AGENTIC INTEGRATIONS
+            </div>
+            <h2 className="text-[28px] md:text-[34px] font-sans font-medium text-[#0c0a09] dark:text-white">
+              Works with your favorite agent.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { name: 'CHATGPT', color: 'text-emerald-600' },
+              { name: 'CODEX', color: 'text-indigo-600' },
+              { name: 'CLAUDE', color: 'text-amber-600' },
+              { name: 'ANTIGRAVITY', color: 'text-blue-600' },
+              { name: 'CURSOR', color: 'text-cyan-600' },
+              { name: 'LOVABLE', color: 'text-pink-600' },
+              { name: 'COPILOT', color: 'text-violet-600' },
+              { name: 'OTHERS', color: 'text-stone-500' },
+            ].map((agent) => (
+              <a
+                key={agent.name}
+                href="#agent"
+                className="p-4 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] hover:border-[#292524] dark:hover:border-white/40 transition-colors flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Bot className={`h-4 w-4 ${agent.color}`} />
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.05em] text-[#292524] dark:text-white">
+                    {agent.name}
+                  </span>
                 </div>
+                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+              </a>
+            ))}
+          </div>
+        </section>
 
-                {/* Token 7 */}
-                <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] p-3 space-y-2 bg-[#fafaf9] dark:bg-[#121110]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full bg-[#d97757]" />
-                    <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-                      Terracotta
-                    </span>
+        {/* =================================================================
+            10. TESTIMONIALS (scratch/image.png)
+            ================================================================= */}
+        <section className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="p-6 space-y-4 bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
+              <p className="text-[13px] text-[#292524] dark:text-[#fafaf9] leading-relaxed italic font-serif">
+                "AutoSend has transformed First Dollar. Our team is responsive
+                and adding 190k users on our $50 plan was huge saving."
+              </p>
+              <div className="pt-2 border-t border-[#f5f5f4] dark:border-[#262321] flex items-center justify-between">
+                <div>
+                  <div className="text-[12px] font-bold text-[#0c0a09] dark:text-white">
+                    PRATYUSH RUNGTA
                   </div>
-                  <div className="text-[#79716b]">#d97757</div>
-                  <div className="text-[11px] font-sans text-[#79716b]">
-                    Warm orange highlight accent
-                  </div>
+                  <div className="text-[11px] text-[#79716b]">First Dollar</div>
                 </div>
-
-                {/* Token 8 */}
-                <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] p-3 space-y-2 bg-[#fafaf9] dark:bg-[#121110]">
-                  <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full bg-[#5ea500]" />
-                    <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-                      Lichen Green
-                    </span>
-                  </div>
-                  <div className="text-[#79716b]">#5ea500</div>
-                  <div className="text-[11px] font-sans text-[#79716b]">
-                    Green outline accent for tags
-                  </div>
+                <div className="font-mono text-xs font-bold text-[#79716b]">
+                  PEERLIST
                 </div>
               </div>
             </Card>
-          </TabsContent>
-        </Tabs>
-      </section>
 
-      {/* =================================================================
-          Social Proof Strip (design.md: 40px vertical padding, opacity 0.6)
-          ================================================================= */}
-      <section className="border-t border-[#e7e5e4] dark:border-[#292524] py-12 px-6">
-        <div className="max-w-[1200px] mx-auto text-center space-y-4">
-          <div className="eyebrow-tag">
-            NATIVE INTEGRATION WITH EXISTING TECHNICAL BLOG STACKS
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 text-[#292524] dark:text-[#fafaf9] font-mono text-[14px] opacity-60">
-            <span>Next.js</span>
-            <span>·</span>
-            <span>Astro</span>
-            <span>·</span>
-            <span>Hugo</span>
-            <span>·</span>
-            <span>VitePress</span>
-            <span>·</span>
-            <span>Docusaurus</span>
-            <span>·</span>
-            <span>GitHub Pages</span>
-          </div>
-        </div>
-      </section>
+            <Card className="p-6 space-y-4 bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
+              <p className="text-[13px] text-[#292524] dark:text-[#fafaf9] leading-relaxed italic font-serif">
+                "Switching to AutoSend was smooth. The migration was quick, the
+                team responsive, and the product matches big players in
+                features."
+              </p>
+              <div className="pt-2 border-t border-[#f5f5f4] dark:border-[#262321] flex items-center justify-between">
+                <div>
+                  <div className="text-[12px] font-bold text-[#0c0a09] dark:text-white">
+                    ARUN ANTHONY
+                  </div>
+                  <div className="text-[11px] text-[#79716b]">
+                    Founder, Gistr
+                  </div>
+                </div>
+                <div className="font-serif italic text-xs font-bold text-[#79716b]">
+                  gistr
+                </div>
+              </div>
+            </Card>
 
-      {/* =================================================================
-          Footer
-          ================================================================= */}
-      <footer className="border-t border-[#e7e5e4] dark:border-[#292524] py-8 text-xs text-[#79716b] dark:text-[#a6a09b]">
-        <div className="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-[#292524] dark:text-[#fafaf9]">
-              Agent
-            </span>
-            <span>— AI Publishing System for Technical Blogs</span>
+            <Card className="p-6 space-y-4 bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
+              <p className="text-[13px] text-[#292524] dark:text-[#fafaf9] leading-relaxed italic font-serif">
+                "We chose AutoSend for its first-class email handling for LLMs
+                and AI agents. It fits how agents think and allows LLMs to send
+                reliable emails."
+              </p>
+              <div className="pt-2 border-t border-[#f5f5f4] dark:border-[#262321] flex items-center justify-between">
+                <div>
+                  <div className="text-[12px] font-bold text-[#0c0a09] dark:text-white">
+                    C. C. FAN
+                  </div>
+                  <div className="text-[11px] text-[#79716b]">CEO Vivgrid</div>
+                </div>
+                <div className="font-mono text-xs font-bold text-[#79716b]">
+                  vivgrid
+                </div>
+              </div>
+            </Card>
           </div>
-          <div className="flex items-center gap-4 font-mono text-[11px]">
-            <span>AutoSend Design Reference</span>
-            <span>·</span>
-            <span>Warm Stone Atelier</span>
-            <span>·</span>
-            <span>Git-friendly</span>
+        </section>
+
+        {/* =================================================================
+            11. STILL WONDERING? (scratch/image.png)
+            ================================================================= */}
+        <section className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-8 md:p-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-5 space-y-2">
+              <h2 className="text-[26px] md:text-[32px] font-sans font-medium text-[#0c0a09] dark:text-white">
+                Still wondering?
+              </h2>
+              <p className="text-[14px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                See what your favorite LLM has to say about us, then make an
+                informed decision.
+              </p>
+            </div>
+
+            <div className="lg:col-span-7 grid grid-cols-2 gap-3">
+              <a
+                href="https://chatgpt.com"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3.5 rounded-[10px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] hover:border-[#292524] transition-colors flex items-center justify-between group"
+              >
+                <span className="text-xs font-mono font-semibold uppercase text-[#292524] dark:text-white">
+                  ASK CHATGPT
+                </span>
+                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+              </a>
+
+              <a
+                href="https://gemini.google.com"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3.5 rounded-[10px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] hover:border-[#292524] transition-colors flex items-center justify-between group"
+              >
+                <span className="text-xs font-mono font-semibold uppercase text-[#292524] dark:text-white">
+                  ASK GEMINI
+                </span>
+                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+              </a>
+
+              <a
+                href="https://claude.ai"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3.5 rounded-[10px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] hover:border-[#292524] transition-colors flex items-center justify-between group"
+              >
+                <span className="text-xs font-mono font-semibold uppercase text-[#292524] dark:text-white">
+                  ASK CLAUDE
+                </span>
+                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+              </a>
+
+              <a
+                href="https://perplexity.ai"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3.5 rounded-[10px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] hover:border-[#292524] transition-colors flex items-center justify-between group"
+              >
+                <span className="text-xs font-mono font-semibold uppercase text-[#292524] dark:text-white">
+                  ASK PERPLEXITY
+                </span>
+                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+              </a>
+
+              <div className="col-span-2 pt-1 text-center">
+                <a
+                  href="#contact"
+                  className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-[#292524] dark:text-white hover:text-[#615fff] transition-colors inline-flex items-center gap-1"
+                >
+                  <span>TALK TO A HUMAN</span>
+                  <ArrowRight className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
-      </footer>
+        </section>
+
+        {/* =================================================================
+            12. FOOTER NAVIGATION (scratch/image.png)
+            ================================================================= */}
+        <footer className="space-y-12 border-t border-[#e7e5e4] dark:border-[#292524] pt-12">
+          {/* Columns */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-[12px]">
+            <div className="space-y-3">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+                SOLUTIONS
+              </div>
+              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+                <li>
+                  <a href="#transactional" className="hover:text-[#292524]">
+                    Transactional Emails
+                  </a>
+                </li>
+                <li>
+                  <a href="#marketing" className="hover:text-[#292524]">
+                    Marketing Emails
+                  </a>
+                </li>
+                <li>
+                  <a href="#automation" className="hover:text-[#292524]">
+                    Email Automation
+                  </a>
+                </li>
+                <li>
+                  <a href="#agents" className="hover:text-[#292524]">
+                    Agents & LLMs
+                  </a>
+                </li>
+                <li>
+                  <a href="#deliverability" className="hover:text-[#292524]">
+                    Deliverability
+                  </a>
+                </li>
+                <li>
+                  <a href="#inbound" className="hover:text-[#292524]">
+                    Inbound Email API
+                  </a>
+                </li>
+                <li>
+                  <a href="#builder" className="hover:text-[#292524]">
+                    Email Builder
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+                DOCS
+              </div>
+              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+                <li>
+                  <a href="#getting-started" className="hover:text-[#292524]">
+                    Getting Started
+                  </a>
+                </li>
+                <li>
+                  <a href="#api" className="hover:text-[#292524]">
+                    API Reference
+                  </a>
+                </li>
+                <li>
+                  <a href="#agents" className="hover:text-[#292524]">
+                    Agents
+                  </a>
+                </li>
+                <li>
+                  <a href="#wiki" className="hover:text-[#292524]">
+                    Wiki
+                  </a>
+                </li>
+                <li>
+                  <a href="#changelog" className="hover:text-[#292524]">
+                    Changelog
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+                RESOURCES
+              </div>
+              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+                <li>
+                  <a href="#faq" className="hover:text-[#292524]">
+                    FAQ
+                  </a>
+                </li>
+                <li>
+                  <a href="#blog" className="hover:text-[#292524]">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="#glossary" className="hover:text-[#292524]">
+                    Glossary
+                  </a>
+                </li>
+                <li>
+                  <a href="#affiliate" className="hover:text-[#292524]">
+                    Be an Affiliate
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+                COMPARE
+              </div>
+              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+                <li>
+                  <a href="#sendgrid" className="hover:text-[#292524]">
+                    SendGrid
+                  </a>
+                </li>
+                <li>
+                  <a href="#loops" className="hover:text-[#292524]">
+                    Loops
+                  </a>
+                </li>
+                <li>
+                  <a href="#resend" className="hover:text-[#292524]">
+                    Resend
+                  </a>
+                </li>
+                <li>
+                  <a href="#postmark" className="hover:text-[#292524]">
+                    Postmark
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+                LEGAL
+              </div>
+              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+                <li>
+                  <a href="#fair-use" className="hover:text-[#292524]">
+                    Fair Use
+                  </a>
+                </li>
+                <li>
+                  <a href="#privacy" className="hover:text-[#292524]">
+                    Privacy
+                  </a>
+                </li>
+                <li>
+                  <a href="#terms" className="hover:text-[#292524]">
+                    Terms
+                  </a>
+                </li>
+                <li>
+                  <a href="#sub-processors" className="hover:text-[#292524]">
+                    Sub-Processors
+                  </a>
+                </li>
+                <li>
+                  <a href="#dpa" className="hover:text-[#292524]">
+                    Data Processing Addendum
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar (scratch/image.png) */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#e7e5e4] dark:border-[#292524] text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b]">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-[#0c0a09] dark:text-white">
+                AUTOSEND
+              </span>
+              <span>© 2026 • PEERLIST INC.</span>
+            </div>
+
+            {/* Status indicator */}
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514]">
+              <span className="h-2 w-2 rounded-full bg-[#5ea500] animate-pulse" />
+              <span className="text-[10px] font-semibold text-[#292524] dark:text-white uppercase tracking-wider">
+                ALL SYSTEMS OPERATIONAL
+              </span>
+            </div>
+
+            {/* Social Links */}
+            <div className="flex items-center gap-4 text-[#79716b] dark:text-[#a6a09b]">
+              <a
+                href="https://discord.com"
+                aria-label="Discord"
+                className="hover:text-[#292524]"
+              >
+                Discord
+              </a>
+              <a
+                href="https://x.com"
+                aria-label="X"
+                className="hover:text-[#292524]"
+              >
+                X
+              </a>
+              <a
+                href="https://github.com"
+                aria-label="GitHub"
+                className="hover:text-[#292524]"
+              >
+                GitHub
+              </a>
+              <a
+                href="https://linkedin.com"
+                aria-label="LinkedIn"
+                className="hover:text-[#292524]"
+              >
+                LinkedIn
+              </a>
+            </div>
+          </div>
+        </footer>
+      </main>
     </div>
   )
 }

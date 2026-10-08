@@ -18,37 +18,37 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary CTA (Electric Indigo #615fff, hover Deep Violet #4f39f6 per design.md)
+        // Primary CTA (Electric Indigo #615fff, hover Deep Violet #4f39f6 per design.md & image.png)
         default:
-          'bg-[#615fff] text-white font-semibold uppercase tracking-[0.04em] hover:bg-[#4f39f6] active:bg-[#4f39f6]',
+          'bg-[#615fff] text-white font-semibold text-xs tracking-[0.03em] hover:bg-[#4f39f6] active:bg-[#4f39f6] shadow-none',
         // Ghost Outline (Stone Mist border #e7e5e4, Charcoal text #292524 per design.md)
         outline:
-          'bg-transparent border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-semibold uppercase tracking-[0.04em] hover:border-[#292524] dark:hover:border-[#fafaf9]',
+          'bg-transparent border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-medium text-xs tracking-[0.02em] hover:border-[#292524] dark:hover:border-[#fafaf9] shadow-none',
         // Ghost Text Only
         ghost:
-          'bg-transparent text-[#292524] dark:text-[#fafaf9] font-semibold uppercase tracking-[0.04em] hover:bg-stone-200/50 dark:hover:bg-stone-800/50',
+          'bg-transparent text-[#292524] dark:text-[#fafaf9] font-medium text-xs tracking-[0.02em] hover:bg-stone-200/50 dark:hover:bg-stone-800/50',
         // Secondary Flat Surface
         secondary:
-          'bg-[#ffffff] dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-medium text-xs hover:border-[#292524]/60',
+          'bg-[#ffffff] dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-medium text-xs hover:border-[#292524]/60 shadow-none',
         // Arrow Link (Geist Mono 12px uppercase tracked 0.04em per design.md)
         arrow:
           'font-mono text-xs font-medium uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] p-0 h-auto hover:opacity-60 enabled:active:scale-100',
         // Destructive / Alarm Red (#ff0000)
         destructive:
-          'bg-[#ff0000] text-white font-semibold uppercase tracking-[0.04em] hover:bg-[#d90000]',
+          'bg-[#ff0000] text-white font-semibold text-xs tracking-[0.03em] hover:bg-[#d90000]',
         // Lichen Green Accent
         success:
-          'bg-[#5ea500] text-white font-semibold uppercase tracking-[0.04em] hover:bg-[#529000]',
+          'bg-[#5ea500] text-white font-semibold text-xs tracking-[0.03em] hover:bg-[#529000]',
         // Standard Text Link
         link: 'text-[#007ebb] hover:underline p-0 h-auto font-normal enabled:active:scale-100',
       },
       size: {
-        default: 'h-[42px] px-4 py-2.5 text-[14px]',
-        sm: 'h-8 px-3 text-xs',
-        xs: 'h-7 px-2.5 text-[11px]',
-        lg: 'h-12 px-6 text-[15px]',
-        icon: 'h-9 w-9 p-0',
-        'icon-sm': 'h-7 w-7 p-0',
+        default: 'h-8 px-3.5 text-xs',
+        sm: 'h-7 px-2.5 text-[11px]',
+        xs: 'h-6 px-2 text-[10px]',
+        lg: 'h-9 px-4 text-xs font-semibold',
+        icon: 'h-8 w-8 p-0',
+        'icon-sm': 'h-6 w-6 p-0',
       },
       static: {
         true: 'enabled:active:scale-100',

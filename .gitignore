@@ -13,4 +13,6 @@ __unconfig*
 todos.json
 .vscode/
 .tanstack
-.agents/
+.agents
+.scratch
+scratch/
