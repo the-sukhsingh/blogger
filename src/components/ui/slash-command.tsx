@@ -130,7 +130,7 @@ export function SlashCommandMenu({
       (item) =>
         item.label.toLowerCase().includes(lower) ||
         item.description.toLowerCase().includes(lower) ||
-        item.category.toLowerCase().includes(lower)
+        item.category.toLowerCase().includes(lower),
     )
   }, [items, query])
 
@@ -144,7 +144,10 @@ export function SlashCommandMenu({
       setSelectedIndex((prev) => (prev + 1) % (filteredItems.length || 1))
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      setSelectedIndex((prev) => (prev - 1 + filteredItems.length) % (filteredItems.length || 1))
+      setSelectedIndex(
+        (prev) =>
+          (prev - 1 + filteredItems.length) % (filteredItems.length || 1),
+      )
     } else if (e.key === 'Enter') {
       e.preventDefault()
       if (filteredItems[selectedIndex]) {
@@ -159,7 +162,7 @@ export function SlashCommandMenu({
         'w-80 rounded-xl border border-border bg-popover p-2 text-popover-foreground shadow-lg overflow-hidden',
         // Emil Kowalski principle: Origin aware scale
         'animate-in fade-in zoom-in-95 duration-125 ease-out',
-        className
+        className,
       )}
       onKeyDown={handleKeyDown}
     >
@@ -194,7 +197,7 @@ export function SlashCommandMenu({
                   'flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left cursor-pointer transition-colors',
                   isSelected
                     ? 'bg-accent text-accent-foreground'
-                    : 'text-foreground hover:bg-accent/50'
+                    : 'text-foreground hover:bg-accent/50',
                 )}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -203,7 +206,9 @@ export function SlashCommandMenu({
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold">{item.label}</span>
+                      <span className="font-mono text-xs font-semibold">
+                        {item.label}
+                      </span>
                       <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                         {item.category}
                       </span>

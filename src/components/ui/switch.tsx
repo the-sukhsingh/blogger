@@ -1,7 +1,10 @@
 import * as React from 'react'
 import { cn } from '#/lib/utils'
 
-export interface SwitchProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+export interface SwitchProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'onChange'
+> {
   checked?: boolean
   defaultChecked?: boolean
   onCheckedChange?: (checked: boolean) => void
@@ -17,9 +20,10 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const [uncontrolledChecked, setUncontrolledChecked] = React.useState(defaultChecked)
+    const [uncontrolledChecked, setUncontrolledChecked] =
+      React.useState(defaultChecked)
     const isControlled = controlledChecked !== undefined
     const checked = isControlled ? controlledChecked : uncontrolledChecked
 
@@ -60,7 +64,7 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
           'transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           'disabled:cursor-not-allowed disabled:opacity-50',
           checked ? 'bg-primary' : 'bg-muted-foreground/30 dark:bg-muted',
-          className
+          className,
         )}
         {...props}
       >
@@ -68,11 +72,11 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
           className={cn(
             'pointer-events-none block h-4 w-4 rounded-full bg-background shadow-xs ring-0',
             'transition-transform duration-150 ease-out',
-            checked ? 'translate-x-4' : 'translate-x-0'
+            checked ? 'translate-x-4' : 'translate-x-0',
           )}
         />
       </button>
     )
-  }
+  },
 )
 Switch.displayName = 'Switch'

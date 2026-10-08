@@ -2,7 +2,10 @@ import * as React from 'react'
 import { Check } from 'lucide-react'
 import { cn } from '#/lib/utils'
 
-export interface CheckboxProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+export interface CheckboxProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'onChange'
+> {
   checked?: boolean
   defaultChecked?: boolean
   onCheckedChange?: (checked: boolean) => void
@@ -18,9 +21,10 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const [uncontrolledChecked, setUncontrolledChecked] = React.useState(defaultChecked)
+    const [uncontrolledChecked, setUncontrolledChecked] =
+      React.useState(defaultChecked)
     const isControlled = controlledChecked !== undefined
     const checked = isControlled ? controlledChecked : uncontrolledChecked
 
@@ -56,13 +60,15 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           checked
             ? 'bg-primary text-primary-foreground border-primary'
             : 'bg-background hover:border-primary',
-          className
+          className,
         )}
         {...props}
       >
-        {checked && <Check className="h-3 w-3 stroke-[2.5]" aria-hidden="true" />}
+        {checked && (
+          <Check className="h-3 w-3 stroke-[2.5]" aria-hidden="true" />
+        )}
       </button>
     )
-  }
+  },
 )
 Checkbox.displayName = 'Checkbox'

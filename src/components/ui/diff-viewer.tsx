@@ -30,8 +30,12 @@ export function DiffViewer({
   defaultViewMode = 'unified',
   className,
 }: DiffViewerProps) {
-  const [viewMode, setViewMode] = React.useState<'split' | 'unified'>(defaultViewMode)
-  const [status, setStatus] = React.useState<'pending' | 'accepted' | 'rejected'>('pending')
+  const [viewMode, setViewMode] = React.useState<'split' | 'unified'>(
+    defaultViewMode,
+  )
+  const [status, setStatus] = React.useState<
+    'pending' | 'accepted' | 'rejected'
+  >('pending')
 
   const additionsCount = diffs.filter((d) => d.type === 'addition').length
   const deletionsCount = diffs.filter((d) => d.type === 'deletion').length
@@ -50,7 +54,7 @@ export function DiffViewer({
     <div
       className={cn(
         'rounded-lg border border-border bg-card overflow-hidden shadow-xs text-xs',
-        className
+        className,
       )}
     >
       {/* Diff Header */}
@@ -58,17 +62,29 @@ export function DiffViewer({
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <GitCommit className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold text-foreground text-sm tracking-tight">{title}</span>
+            <span className="font-semibold text-foreground text-sm tracking-tight">
+              {title}
+            </span>
             <div className="flex items-center gap-1.5 ml-1">
-              <Badge variant="outline" size="sm" className="text-success border-success/30 bg-success/5 font-mono">
+              <Badge
+                variant="outline"
+                size="sm"
+                className="text-success border-success/30 bg-success/5 font-mono"
+              >
                 +{additionsCount}
               </Badge>
-              <Badge variant="outline" size="sm" className="text-destructive border-destructive/30 bg-destructive/5 font-mono">
+              <Badge
+                variant="outline"
+                size="sm"
+                className="text-destructive border-destructive/30 bg-destructive/5 font-mono"
+              >
                 -{deletionsCount}
               </Badge>
             </div>
           </div>
-          {description && <p className="text-muted-foreground">{description}</p>}
+          {description && (
+            <p className="text-muted-foreground">{description}</p>
+          )}
         </div>
 
         {/* View mode toggle & Actions */}
@@ -79,7 +95,9 @@ export function DiffViewer({
               onClick={() => setViewMode('unified')}
               className={cn(
                 'px-2 py-1 rounded-sm text-xs font-medium cursor-pointer transition-colors',
-                viewMode === 'unified' ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground'
+                viewMode === 'unified'
+                  ? 'bg-secondary text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
               title="Unified diff view"
             >
@@ -90,7 +108,9 @@ export function DiffViewer({
               onClick={() => setViewMode('split')}
               className={cn(
                 'px-2 py-1 rounded-sm text-xs font-medium cursor-pointer transition-colors',
-                viewMode === 'split' ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground'
+                viewMode === 'split'
+                  ? 'bg-secondary text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
               title="Split diff view"
             >
@@ -138,13 +158,16 @@ export function DiffViewer({
             {diffs.map((diff, idx) => (
               <div
                 key={idx}
-                className={cn('flex items-start px-3 py-1 font-mono leading-relaxed select-text', {
-                  'bg-success/10 text-success-foreground border-l-2 border-success':
-                    diff.type === 'addition',
-                  'bg-destructive/10 text-destructive border-l-2 border-destructive':
-                    diff.type === 'deletion',
-                  'text-muted-foreground': diff.type === 'unchanged',
-                })}
+                className={cn(
+                  'flex items-start px-3 py-1 font-mono leading-relaxed select-text',
+                  {
+                    'bg-success/10 text-success-foreground border-l-2 border-success':
+                      diff.type === 'addition',
+                    'bg-destructive/10 text-destructive border-l-2 border-destructive':
+                      diff.type === 'deletion',
+                    'text-muted-foreground': diff.type === 'unchanged',
+                  },
+                )}
               >
                 <span className="w-10 shrink-0 text-right pr-3 select-none text-muted-foreground/50 tabular-nums">
                   {diff.oldLineNumber || ''}
@@ -153,7 +176,11 @@ export function DiffViewer({
                   {diff.newLineNumber || ''}
                 </span>
                 <span className="w-5 shrink-0 select-none font-bold">
-                  {diff.type === 'addition' ? '+' : diff.type === 'deletion' ? '-' : ' '}
+                  {diff.type === 'addition'
+                    ? '+'
+                    : diff.type === 'deletion'
+                      ? '-'
+                      : ' '}
                 </span>
                 <span className="flex-1 whitespace-pre-wrap break-all text-foreground">
                   {diff.content}
@@ -173,10 +200,14 @@ export function DiffViewer({
                 .map((diff, idx) => (
                   <div
                     key={idx}
-                    className={cn('flex items-start px-3 py-1 leading-relaxed select-text', {
-                      'bg-destructive/10 text-destructive': diff.type === 'deletion',
-                      'text-muted-foreground': diff.type === 'unchanged',
-                    })}
+                    className={cn(
+                      'flex items-start px-3 py-1 leading-relaxed select-text',
+                      {
+                        'bg-destructive/10 text-destructive':
+                          diff.type === 'deletion',
+                        'text-muted-foreground': diff.type === 'unchanged',
+                      },
+                    )}
                   >
                     <span className="w-8 shrink-0 text-right pr-2 select-none text-muted-foreground/50 tabular-nums">
                       {diff.oldLineNumber || ''}
@@ -201,10 +232,14 @@ export function DiffViewer({
                 .map((diff, idx) => (
                   <div
                     key={idx}
-                    className={cn('flex items-start px-3 py-1 leading-relaxed select-text', {
-                      'bg-success/10 text-success-foreground': diff.type === 'addition',
-                      'text-muted-foreground': diff.type === 'unchanged',
-                    })}
+                    className={cn(
+                      'flex items-start px-3 py-1 leading-relaxed select-text',
+                      {
+                        'bg-success/10 text-success-foreground':
+                          diff.type === 'addition',
+                        'text-muted-foreground': diff.type === 'unchanged',
+                      },
+                    )}
                   >
                     <span className="w-8 shrink-0 text-right pr-2 select-none text-muted-foreground/50 tabular-nums">
                       {diff.newLineNumber || ''}

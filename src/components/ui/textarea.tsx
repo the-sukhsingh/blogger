@@ -21,11 +21,11 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/50',
           'resize-y leading-relaxed',
           error && 'border-destructive focus-visible:ring-destructive/30',
-          className
+          className,
         )}
         {...props}
       />
     )
-  }
+  },
 )
 Textarea.displayName = 'Textarea'

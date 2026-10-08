@@ -1,8 +1,15 @@
 import * as React from 'react'
-import { Info, AlertTriangle, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react'
+import {
+  Info,
+  AlertTriangle,
+  AlertCircle,
+  Sparkles,
+  CheckCircle2,
+} from 'lucide-react'
 import { cn } from '#/lib/utils'
 
-export type CalloutType = 'info' | 'tip' | 'warning' | 'error' | 'ai' | 'success'
+export type CalloutType =
+  'info' | 'tip' | 'warning' | 'error' | 'ai' | 'success'
 
 export interface CalloutProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: CalloutType
@@ -35,16 +42,21 @@ export function Callout({
         // Restrained editorial styling (hallmark & AGENTS.md - avoid loud SaaS cards)
         'bg-secondary/40 border-border/80 text-foreground',
         type === 'warning' && 'border-warning/40 bg-warning/5 text-foreground',
-        type === 'error' && 'border-destructive/40 bg-destructive/5 text-foreground',
+        type === 'error' &&
+          'border-destructive/40 bg-destructive/5 text-foreground',
         type === 'success' && 'border-success/40 bg-success/5 text-foreground',
         type === 'ai' && 'border-primary/30 bg-accent/40 text-foreground',
-        className
+        className,
       )}
       {...props}
     >
       <div className="mt-0.5">{icon || icons[type]}</div>
       <div className="flex-1 space-y-1">
-        {title && <div className="font-semibold text-foreground tracking-tight">{title}</div>}
+        {title && (
+          <div className="font-semibold text-foreground tracking-tight">
+            {title}
+          </div>
+        )}
         <div className="text-muted-foreground leading-relaxed">{children}</div>
       </div>
     </div>

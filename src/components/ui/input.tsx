@@ -8,7 +8,18 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = 'text', leftIcon, rightIcon, error, disabled, ...props }, ref) => {
+  (
+    {
+      className,
+      type = 'text',
+      leftIcon,
+      rightIcon,
+      error,
+      disabled,
+      ...props
+    },
+    ref,
+  ) => {
     return (
       <div className="relative flex items-center w-full">
         {leftIcon && (
@@ -31,7 +42,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             leftIcon && 'pl-9',
             rightIcon && 'pr-9',
             error && 'border-destructive focus-visible:ring-destructive/30',
-            className
+            className,
           )}
           {...props}
         />
@@ -42,6 +53,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     )
-  }
+  },
 )
 Input.displayName = 'Input'

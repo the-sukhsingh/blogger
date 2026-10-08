@@ -70,9 +70,12 @@ export function Tooltip({
             // Emil principle: scale from 0.95 with opacity, under 150ms ease-out
             'animate-in fade-in zoom-in-95 duration-125 ease-out',
             side === 'top' && '-top-8 left-1/2 -translate-x-1/2 origin-bottom',
-            side === 'bottom' && '-bottom-8 left-1/2 -translate-x-1/2 origin-top',
-            side === 'left' && '-left-2 top-1/2 -translate-y-1/2 -translate-x-full origin-right',
-            side === 'right' && '-right-2 top-1/2 -translate-y-1/2 translate-x-full origin-left'
+            side === 'bottom' &&
+              '-bottom-8 left-1/2 -translate-x-1/2 origin-top',
+            side === 'left' &&
+              '-left-2 top-1/2 -translate-y-1/2 -translate-x-full origin-right',
+            side === 'right' &&
+              '-right-2 top-1/2 -translate-y-1/2 translate-x-full origin-left',
           )}
         >
           {content}
