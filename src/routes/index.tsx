@@ -81,16 +81,16 @@ function AutoSendLandingPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0c0a09] text-[#292524] dark:text-[#fafaf9] flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
       {/* =================================================================
           1. FLOATING MINIMAL TOP NAVIGATION (scratch/image.png)
           ================================================================= */}
-      <header className="sticky top-0 z-40 w-full bg-[#fafaf9]/90 dark:bg-[#0c0a09]/90 backdrop-blur-md transition-colors">
+      <header className="sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md transition-colors border-b border-border/40">
         <div className="max-w-[1240px] mx-auto px-6 h-14 flex items-center justify-between">
           {/* Brand Logo */}
           <a
             href="/"
-            className="flex items-center gap-2 text-[14px] font-bold tracking-[0.08em] uppercase text-[#0c0a09] dark:text-white"
+            className="flex items-center gap-2 text-[14px] font-bold tracking-[0.08em] uppercase text-foreground"
           >
             <div className="h-5 w-5 rounded-[4px] bg-[#615fff] flex items-center justify-center text-white text-xs font-mono font-bold">
               ✦
@@ -99,34 +99,31 @@ function AutoSendLandingPage() {
           </a>
 
           {/* Center Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#79716b] dark:text-[#a6a09b]">
-            <div className="flex items-center gap-1 cursor-pointer hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors">
+          <nav className="hidden md:flex items-center gap-7 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">
+            <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors">
               <span>SOLUTIONS</span>
               <ChevronDown className="h-3 w-3 opacity-60" />
             </div>
             <a
               href="#agents"
-              className="hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
+              className="hover:text-foreground transition-colors"
             >
               AGENTS
             </a>
             <a
               href="#pricing"
-              className="hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
+              className="hover:text-foreground transition-colors"
             >
               PRICING
             </a>
             <a
               href="#docs"
-              className="flex items-center gap-1 hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
+              className="flex items-center gap-1 hover:text-foreground transition-colors"
             >
               <span>DOCS</span>
               <ArrowUpRight className="h-3 w-3 opacity-60" />
             </a>
-            <a
-              href="#blog"
-              className="hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
-            >
+            <a href="#blog" className="hover:text-foreground transition-colors">
               BLOG
             </a>
           </nav>
@@ -136,7 +133,7 @@ function AutoSendLandingPage() {
             <ThemeSwitcher />
             <a
               href="#login"
-              className="text-[12px] font-semibold uppercase tracking-[0.05em] text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors px-2 py-1"
+              className="text-[12px] font-semibold uppercase tracking-[0.05em] text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
             >
               LOG IN
             </a>
@@ -158,8 +155,8 @@ function AutoSendLandingPage() {
             ================================================================= */}
         <section className="text-center max-w-[860px] mx-auto space-y-6 pt-6">
           {/* Eyebrow Pill */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] text-[12px] text-[#79716b] dark:text-[#a6a09b]">
-            <span className="bg-[#0c0a09] dark:bg-white text-white dark:text-[#0c0a09] text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[3px] uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-card text-[12px] text-muted-foreground">
+            <span className="bg-foreground text-background text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[3px] uppercase">
               NEW
             </span>
             <span>
@@ -168,12 +165,12 @@ function AutoSendLandingPage() {
           </div>
 
           {/* Display Serif Headline */}
-          <h1 className="font-serif text-[46px] md:text-[62px] leading-[1.08] tracking-[-0.02em] text-[#0c0a09] dark:text-white font-normal">
+          <h1 className="font-serif text-[46px] md:text-[62px] leading-[1.08] tracking-[-0.02em] text-foreground font-normal">
             Publishing for <em>teams</em> who ship with <em>agents</em>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[15px] md:text-[17px] text-[#79716b] dark:text-[#a6a09b] max-w-[620px] mx-auto leading-relaxed">
+          <p className="text-[15px] md:text-[17px] text-muted-foreground max-w-[620px] mx-auto leading-relaxed">
             Content intelligence, git-native diffs, and AEO optimization in one
             platform. Priced by publication, not page views.
           </p>
@@ -183,7 +180,7 @@ function AutoSendLandingPage() {
             <Button
               variant="ghost"
               size="default"
-              className="h-8 px-3 text-xs font-semibold uppercase tracking-[0.06em] text-[#292524] dark:text-[#fafaf9]"
+              className="h-8 px-3 text-xs font-semibold uppercase tracking-[0.06em] text-foreground"
             >
               BOOK A DEMO
             </Button>
@@ -203,7 +200,7 @@ function AutoSendLandingPage() {
         <section className="relative">
           <Card
             variant="showcase"
-            className="overflow-hidden border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-0"
+            className="overflow-hidden border border-border bg-card p-0"
           >
             {/* Visual Header Canvas / Art Banner */}
             <div className="relative w-full h-[320px] md:h-[400px] bg-[#1a2e26] dark:bg-[#0f1d17] overflow-hidden flex items-center justify-center">
@@ -224,11 +221,11 @@ function AutoSendLandingPage() {
               </div>
 
               {/* Floating Prompt Input Box (scratch/image.png) */}
-              <div className="relative z-10 w-full max-w-[620px] mx-4 p-4 rounded-[14px] bg-white/95 dark:bg-[#1c1917]/95 backdrop-blur-md border border-[#e7e5e4] dark:border-[#292524] shadow-lg">
-                <div className="text-[13px] text-[#292524] dark:text-[#fafaf9] font-normal leading-relaxed pb-3">
+              <div className="relative z-10 w-full max-w-[620px] mx-4 p-4 rounded-[14px] bg-card/95 backdrop-blur-md border border-border shadow-lg">
+                <div className="text-[13px] text-foreground font-normal leading-relaxed pb-3">
                   {heroPrompt}
                 </div>
-                <div className="flex items-center justify-between pt-1 border-t border-[#f5f5f4] dark:border-[#262321]">
+                <div className="flex items-center justify-between pt-1 border-t border-border/60">
                   <button
                     type="button"
                     onClick={() =>
@@ -236,7 +233,7 @@ function AutoSendLandingPage() {
                         'Analyze recent Git commits, update code blocks to TypeScript 5.5, and draft unified diff.',
                       )
                     }
-                    className="h-6 w-6 rounded-full border border-[#e7e5e4] dark:border-[#383330] flex items-center justify-center text-[#79716b] hover:text-[#292524] hover:border-[#292524] transition-colors"
+                    className="h-6 w-6 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
                     title="Insert prompt suggestion"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -253,14 +250,14 @@ function AutoSendLandingPage() {
             </div>
 
             {/* 3-Column Split Footer with Hairline Borders (scratch/image.png) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#e7e5e4] dark:divide-[#292524] bg-white dark:bg-[#171514]">
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border bg-card">
               {/* Column 1 */}
               <div className="p-6 space-y-2 flex flex-col justify-between">
                 <div>
-                  <div className="text-[13px] font-bold text-[#0c0a09] dark:text-white font-mono uppercase tracking-[0.05em]">
+                  <div className="text-[13px] font-bold text-foreground font-mono uppercase tracking-[0.05em]">
                     Content Graph
                   </div>
-                  <p className="text-[12px] text-[#79716b] dark:text-[#a6a09b] pt-1 leading-relaxed">
+                  <p className="text-[12px] text-muted-foreground pt-1 leading-relaxed">
                     Build mental models, cluster topics, and discover missing
                     concepts across existing articles.
                   </p>
@@ -268,7 +265,7 @@ function AutoSendLandingPage() {
                 <div className="pt-3">
                   <a
                     href="#docs"
-                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-foreground hover:opacity-60 transition-opacity"
                   >
                     <span>DOCS</span>
                     <ArrowUpRight className="h-3 w-3" />
@@ -279,10 +276,10 @@ function AutoSendLandingPage() {
               {/* Column 2 */}
               <div className="p-6 space-y-2 flex flex-col justify-between">
                 <div>
-                  <div className="text-[13px] font-bold text-[#0c0a09] dark:text-white font-mono uppercase tracking-[0.05em]">
+                  <div className="text-[13px] font-bold text-foreground font-mono uppercase tracking-[0.05em]">
                     MCP Server
                   </div>
-                  <p className="text-[12px] text-[#79716b] dark:text-[#a6a09b] pt-1 leading-relaxed">
+                  <p className="text-[12px] text-muted-foreground pt-1 leading-relaxed">
                     Inspect articles, evaluate citations, and sync directly with
                     your local engineering tools.
                   </p>
@@ -290,7 +287,7 @@ function AutoSendLandingPage() {
                 <div className="pt-3">
                   <a
                     href="#docs"
-                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-foreground hover:opacity-60 transition-opacity"
                   >
                     <span>DOCS</span>
                     <ArrowUpRight className="h-3 w-3" />
@@ -301,10 +298,10 @@ function AutoSendLandingPage() {
               {/* Column 3 */}
               <div className="p-6 space-y-2 flex flex-col justify-between">
                 <div>
-                  <div className="text-[13px] font-bold text-[#0c0a09] dark:text-white font-mono uppercase tracking-[0.05em]">
+                  <div className="text-[13px] font-bold text-foreground font-mono uppercase tracking-[0.05em]">
                     skill.md
                   </div>
-                  <p className="text-[12px] text-[#79716b] dark:text-[#a6a09b] pt-1 leading-relaxed">
+                  <p className="text-[12px] text-muted-foreground pt-1 leading-relaxed">
                     Give your agent full knowledge of publication rules, author
                     style, and technical linting.
                   </p>
@@ -312,7 +309,7 @@ function AutoSendLandingPage() {
                 <div className="pt-3">
                   <a
                     href="#docs"
-                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] hover:opacity-60 transition-opacity"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] text-foreground hover:opacity-60 transition-opacity"
                   >
                     <span>DOCS</span>
                     <ArrowUpRight className="h-3 w-3" />
@@ -328,39 +325,39 @@ function AutoSendLandingPage() {
             ================================================================= */}
         <section className="space-y-12">
           {/* Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[#e7e5e4] dark:divide-[#292524] border-y border-[#e7e5e4] dark:border-[#292524] py-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border border-y border-border py-8 text-center">
             <div className="p-4 space-y-1">
-              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-[#0c0a09] dark:text-white">
+              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-foreground">
                 3,844,720
               </div>
-              <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+              <div className="text-[12px] text-muted-foreground">
                 Words indexed across Git repos
               </div>
             </div>
 
             <div className="p-4 space-y-1">
-              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-[#0c0a09] dark:text-white">
+              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-foreground">
                 98.21%
               </div>
-              <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+              <div className="text-[12px] text-muted-foreground">
                 AEO answer engine readiness
               </div>
             </div>
 
             <div className="p-4 space-y-1">
-              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-[#0c0a09] dark:text-white">
+              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-foreground">
                 1.87s
               </div>
-              <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+              <div className="text-[12px] text-muted-foreground">
                 Average review and diff latency
               </div>
             </div>
 
             <div className="p-4 space-y-1">
-              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-[#0c0a09] dark:text-white">
+              <div className="text-[28px] md:text-[34px] font-normal font-sans tabular-nums text-foreground">
                 0
               </div>
-              <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+              <div className="text-[12px] text-muted-foreground">
                 Unresolved stale API claims
               </div>
             </div>
@@ -368,20 +365,20 @@ function AutoSendLandingPage() {
 
           {/* Social Proof Logos Bar */}
           <div className="space-y-6 text-center">
-            <div className="text-[11px] font-mono uppercase tracking-[0.12em] font-semibold text-[#79716b] dark:text-[#a6a09b]">
+            <div className="text-[11px] font-mono uppercase tracking-[0.12em] font-semibold text-muted-foreground">
               TECHNICAL BLOGS POWERED BY BIG AND SMALL TEAMS ALIKE!
             </div>
             <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all">
-              <span className="font-serif text-[18px] tracking-tight font-bold text-[#292524] dark:text-white">
+              <span className="font-serif text-[18px] tracking-tight font-bold text-foreground">
                 Peerlist
               </span>
-              <span className="font-sans text-[17px] font-bold tracking-tight text-[#292524] dark:text-white">
+              <span className="font-sans text-[17px] font-bold tracking-tight text-foreground">
                 * supermemory™
               </span>
-              <span className="font-serif italic text-[19px] font-medium text-[#292524] dark:text-white">
+              <span className="font-serif italic text-[19px] font-medium text-foreground">
                 gistr
               </span>
-              <span className="font-sans text-[17px] font-semibold text-[#292524] dark:text-white">
+              <span className="font-sans text-[17px] font-semibold text-foreground">
                 guidejar
               </span>
             </div>
@@ -396,7 +393,7 @@ function AutoSendLandingPage() {
             <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#d97757]">
               #01 — TRANSACTIONAL PUBLISHING
             </div>
-            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-[#0c0a09] dark:text-white">
+            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-foreground">
               OTPs, updates, and diffs your readers can rely on.
             </h2>
           </div>
@@ -405,14 +402,14 @@ function AutoSendLandingPage() {
             {/* Left Features List */}
             <div className="lg:col-span-5 space-y-6">
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <FolderGit2 className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     GIT INTEGRATION / REST
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Connect existing Markdown/MDX blogs programmatically with a
                     clean, reliable REST API or local Git hooks.
                   </p>
@@ -420,14 +417,14 @@ function AutoSendLandingPage() {
               </div>
 
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <Code2 className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     DIFF REVIEWS
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Drop-in libraries for Node, Next, and Astro. Every AI
                     suggestion is rendered as a clean, reviewable Git diff.
                   </p>
@@ -435,14 +432,14 @@ function AutoSendLandingPage() {
               </div>
 
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <RefreshCw className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     FRESHNESS AGENT
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Scans for outdated documentation, changed APIs, and broken
                     links before your readers notice.
                   </p>
@@ -450,14 +447,14 @@ function AutoSendLandingPage() {
               </div>
 
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <Zap className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     WEBHOOKS & CI
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Get real-time event notifications for every draft, lint
                     pass, content health audit, or publish failure.
                   </p>
@@ -477,40 +474,40 @@ function AutoSendLandingPage() {
 
             {/* Right Mockup Code & Diff Card */}
             <div className="lg:col-span-7">
-              <div className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] overflow-hidden shadow-sm">
+              <div className="rounded-[16px] border border-border bg-card overflow-hidden shadow-sm">
                 {/* Code Tabs Header */}
-                <div className="flex items-center justify-between border-b border-[#e7e5e4] dark:border-[#292524] px-4 py-2.5 bg-[#fafaf9] dark:bg-[#121110]">
+                <div className="flex items-center justify-between border-b border-border px-4 py-2.5 bg-muted">
                   <div className="flex items-center gap-1.5 overflow-x-auto text-[11px] font-mono">
                     <button
                       type="button"
                       onClick={() => setActiveCodeTab('diff')}
-                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'diff' ? 'bg-white dark:bg-[#1c1917] font-semibold text-[#0c0a09] dark:text-white shadow-xs' : 'text-[#79716b] hover:text-[#292524]'}`}
+                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'diff' ? 'bg-card font-semibold text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       Unified Diff
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveCodeTab('curl')}
-                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'curl' ? 'bg-white dark:bg-[#1c1917] font-semibold text-[#0c0a09] dark:text-white shadow-xs' : 'text-[#79716b] hover:text-[#292524]'}`}
+                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'curl' ? 'bg-card font-semibold text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       cURL
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveCodeTab('typescript')}
-                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'typescript' ? 'bg-white dark:bg-[#1c1917] font-semibold text-[#0c0a09] dark:text-white shadow-xs' : 'text-[#79716b] hover:text-[#292524]'}`}
+                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'typescript' ? 'bg-card font-semibold text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       TypeScript
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveCodeTab('rust')}
-                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'rust' ? 'bg-white dark:bg-[#1c1917] font-semibold text-[#0c0a09] dark:text-white shadow-xs' : 'text-[#79716b] hover:text-[#292524]'}`}
+                      className={`px-2.5 py-1 rounded-[6px] transition-colors ${activeCodeTab === 'rust' ? 'bg-card font-semibold text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       Rust
                     </button>
                   </div>
-                  <div className="text-[10px] font-mono uppercase text-[#79716b]">
+                  <div className="text-[10px] font-mono uppercase text-muted-foreground">
                     api.autosend.dev
                   </div>
                 </div>
@@ -523,7 +520,7 @@ function AutoSendLandingPage() {
                       diffs={SAMPLE_DIFFS}
                     />
                   ) : (
-                    <pre className="text-xs font-mono p-4 rounded-[12px] bg-[#fafaf9] dark:bg-[#0c0a09] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] overflow-x-auto leading-relaxed">
+                    <pre className="text-xs font-mono p-4 rounded-[12px] bg-background border border-border text-foreground overflow-x-auto leading-relaxed">
                       {activeCodeTab === 'curl' &&
                         `curl --location 'https://api.autosend.dev/v1/publish' \\
 --header 'Authorization: Bearer YOUR_API_KEY' \\
@@ -573,7 +570,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#22b8cd]">
               #02 — CUSTOM WRITING WORKSPACE
             </div>
-            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-[#0c0a09] dark:text-white">
+            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-foreground">
               Technical articles that reach, educate, and convert.
             </h2>
           </div>
@@ -582,14 +579,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             {/* Left Features List */}
             <div className="lg:col-span-5 space-y-6">
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <FileText className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     CAMPAIGNS & DRAFTS
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Create, personalize, and publish technical guides. From
                     quick API notes to 20-page architecture deep-dives.
                   </p>
@@ -597,14 +594,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
               </div>
 
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <Sparkles className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     SLASH COMMANDS
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Type <code>/</code> for instant headings, code blocks,
                     diffs, citations, and contextual AI suggestions without
                     leaving the keyboard.
@@ -613,14 +610,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
               </div>
 
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <Layers className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     CONTENT GRAPH LINKING
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Segment and connect articles dynamically based on concepts,
                     search intent, and reader knowledge levels.
                   </p>
@@ -628,14 +625,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
               </div>
 
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <GitCommit className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     MARKDOWN BUILDER
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Write in Markdown/MDX without bugging your design team.
                     Visual editing for speed, source control for ownership.
                   </p>
@@ -655,13 +652,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             {/* Right Mockup Campaigns / Articles List (scratch/image.png) */}
             <div className="lg:col-span-7">
-              <div className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-5 shadow-sm space-y-4">
-                <div className="flex items-center justify-between border-b border-[#e7e5e4] dark:border-[#292524] pb-3">
+              <div className="rounded-[16px] border border-border bg-card p-5 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-border pb-3">
                   <div>
-                    <h3 className="text-[14px] font-bold text-[#0c0a09] dark:text-white">
+                    <h3 className="text-[14px] font-bold text-foreground">
                       Articles & Campaigns
                     </h3>
-                    <p className="text-[11px] text-[#79716b]">
+                    <p className="text-[11px] text-muted-foreground">
                       Connected to git repository:{' '}
                       <code>github.com/org/blog</code>
                     </p>
@@ -676,8 +673,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                   </Button>
                 </div>
 
-                {/* Article item 1 (sending/published) */}
-                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] space-y-1.5">
+                {/* Article item 1 (published) */}
+                <div className="p-3.5 rounded-[12px] border border-border bg-muted space-y-1.5">
                   <div className="flex items-center justify-between text-[11px]">
                     <div className="flex items-center gap-2 font-mono text-[#5ea500] font-semibold">
                       <Send className="h-3 w-3" />
@@ -687,16 +684,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                       Health 96%
                     </Badge>
                   </div>
-                  <div className="font-semibold text-[13px] text-[#292524] dark:text-white">
+                  <div className="font-semibold text-[13px] text-foreground">
                     Product Release Mar 26: MCP Standard Architecture
                   </div>
-                  <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                  <div className="text-[12px] text-muted-foreground">
                     Subject: What we shipped this month + an exciting surprise!
                   </div>
                 </div>
 
-                {/* Article item 2 (past/stale) */}
-                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] space-y-1.5">
+                {/* Article item 2 (stale) */}
+                <div className="p-3.5 rounded-[12px] border border-border bg-card space-y-1.5">
                   <div className="flex items-center justify-between text-[11px]">
                     <div className="flex items-center gap-2 font-mono text-[#d97757] font-semibold">
                       <AlertCircle className="h-3 w-3" />
@@ -706,18 +703,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                       Stale API
                     </Badge>
                   </div>
-                  <div className="font-semibold text-[13px] text-[#292524] dark:text-white">
+                  <div className="font-semibold text-[13px] text-foreground">
                     Weekly Deep-Dive: Understanding Vector Databases
                   </div>
-                  <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                  <div className="text-[12px] text-muted-foreground">
                     Subject: Jobs are changing and here's what you can do.
                   </div>
                 </div>
 
-                {/* Article item 3 */}
-                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] space-y-1.5">
+                {/* Article item 3 (draft) */}
+                <div className="p-3.5 rounded-[12px] border border-border bg-card space-y-1.5">
                   <div className="flex items-center justify-between text-[11px]">
-                    <div className="flex items-center gap-2 font-mono text-[#79716b]">
+                    <div className="flex items-center gap-2 font-mono text-muted-foreground">
                       <GitBranch className="h-3 w-3" />
                       <span>DRAFT • 18 Mar, 2026 • 09:12 AM</span>
                     </div>
@@ -725,10 +722,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                       Draft
                     </Badge>
                   </div>
-                  <div className="font-semibold text-[13px] text-[#292524] dark:text-white">
+                  <div className="font-semibold text-[13px] text-foreground">
                     Production Security for RAG Applications
                   </div>
-                  <div className="text-[12px] text-[#79716b] dark:text-[#a6a09b]">
+                  <div className="text-[12px] text-muted-foreground">
                     Defending retrieval pipelines against indirect prompt
                     injection.
                   </div>
@@ -746,7 +743,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#5ea500]">
               #03 — CONTENT HEALTH & AUTOMATION
             </div>
-            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-[#0c0a09] dark:text-white">
+            <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-foreground">
               Automate all articles from draft to continuous freshness.
             </h2>
           </div>
@@ -755,14 +752,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             {/* Left Features List */}
             <div className="lg:col-span-5 space-y-6">
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <Zap className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     CONTENT AUTOMATION
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Create maintenance triggers, onboarding sequences, and
                     refresh campaigns that run quietly in the background.
                   </p>
@@ -770,14 +767,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
               </div>
 
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <Cpu className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     SMART TRIGGERS
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     Trigger automated reviews based on git commits, upstream
                     package releases, or broken documentation URLs.
                   </p>
@@ -785,14 +782,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
               </div>
 
               <div className="flex gap-3.5">
-                <div className="h-6 w-6 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center shrink-0 text-[#292524] dark:text-[#fafaf9]">
+                <div className="h-6 w-6 rounded-[6px] border border-border flex items-center justify-center shrink-0 text-foreground">
                   <Globe className="h-3.5 w-3.5" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[13px] font-bold font-mono tracking-wide text-[#292524] dark:text-[#fafaf9] uppercase">
+                  <div className="text-[13px] font-bold font-mono tracking-wide text-foreground uppercase">
                     ANALYTICS & AEO INSIGHTS
                   </div>
-                  <p className="text-[13px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     See search queries, LLM citations, and link clicks. Spot
                     what's working and apply learnings to your next article.
                   </p>
@@ -812,30 +809,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             {/* Right Mockup Workflow Diagram (scratch/image.png) */}
             <div className="lg:col-span-7">
-              <div className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-6 shadow-sm space-y-4">
+              <div className="rounded-[16px] border border-border bg-card p-6 shadow-sm space-y-4">
                 {/* Node 1: Trigger */}
-                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] space-y-1">
-                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#79716b]">
+                <div className="p-3.5 rounded-[12px] border border-border bg-muted space-y-1">
+                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
                     TRIGGER
                   </div>
-                  <div className="text-[13px] font-medium text-[#292524] dark:text-white flex items-center gap-2">
+                  <div className="text-[13px] font-medium text-foreground flex items-center gap-2">
                     <span>Upstream package updated:</span>
-                    <span className="font-mono text-xs px-2 py-0.5 rounded-[4px] bg-white dark:bg-[#1c1917] border border-[#e7e5e4] dark:border-[#292524]">
+                    <span className="font-mono text-xs px-2 py-0.5 rounded-[4px] bg-card border border-border">
                       @modelcontextprotocol/sdk@1.0.0
                     </span>
                   </div>
                 </div>
 
                 {/* Connecting Line */}
-                <div className="w-[1px] h-6 bg-[#e7e5e4] dark:bg-[#292524] mx-auto" />
+                <div className="w-[1px] h-6 bg-border mx-auto" />
 
                 {/* Node 2: Wait & Condition */}
-                <div className="p-3.5 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] flex items-center justify-between">
+                <div className="p-3.5 rounded-[12px] border border-border bg-muted flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#79716b]">
+                    <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
                       WAIT FOR
                     </div>
-                    <div className="text-[13px] font-medium text-[#292524] dark:text-white">
+                    <div className="text-[13px] font-medium text-foreground">
                       Review approval or author verification
                     </div>
                   </div>
@@ -845,21 +842,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 </div>
 
                 {/* Connecting Line */}
-                <div className="w-[1px] h-6 bg-[#e7e5e4] dark:bg-[#292524] mx-auto" />
+                <div className="w-[1px] h-6 bg-border mx-auto" />
 
                 {/* Node 3: Action */}
                 <div className="p-3.5 rounded-[12px] border border-[#615fff]/30 bg-[#615fff]/5 space-y-1">
                   <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#615fff]">
                     DIFF STAGED & PUBLISHED
                   </div>
-                  <div className="text-[13px] font-medium text-[#292524] dark:text-white">
+                  <div className="text-[13px] font-medium text-foreground">
                     3 code snippets updated to v1.0.0 API definitions.
                   </div>
                 </div>
 
                 {/* Workflow End */}
                 <div className="text-center pt-2">
-                  <span className="text-[10px] font-mono uppercase tracking-[0.10em] text-[#79716b]">
+                  <span className="text-[10px] font-mono uppercase tracking-[0.10em] text-muted-foreground">
                     AUTOMATION ENDS ✓
                   </span>
                 </div>
@@ -871,17 +868,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         {/* =================================================================
             8. MULTI PROJECT SUPPORT (scratch/image.png)
             ================================================================= */}
-        <section className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#e7e5e4] dark:divide-[#292524]">
+        <section className="rounded-[16px] border border-border bg-card overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
             {/* Left Description */}
             <div className="p-8 md:p-12 space-y-4 flex flex-col justify-center">
               <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#d97757]">
                 MULTI PROJECT SUPPORT
               </div>
-              <h2 className="text-[28px] md:text-[34px] font-sans font-medium text-[#0c0a09] dark:text-white">
+              <h2 className="text-[28px] md:text-[34px] font-sans font-medium text-foreground">
                 Multiple Blogs, One Workspace.
               </h2>
-              <p className="text-[14px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+              <p className="text-[14px] text-muted-foreground leading-relaxed">
                 Create isolated projects for every product, client, or
                 publication environment you manage—each with its own Git
                 repository, custom domains, and author voice models.
@@ -889,31 +886,31 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             </div>
 
             {/* Right Project Switcher Card (scratch/image.png) */}
-            <div className="p-8 md:p-12 bg-[#fafaf9] dark:bg-[#121110] flex items-center justify-center">
-              <div className="w-full max-w-[340px] rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-3 space-y-2 shadow-xs">
-                <div className="flex items-center justify-between px-3 py-2 rounded-[8px] bg-[#fafaf9] dark:bg-[#1c1917] border border-[#e7e5e4] dark:border-[#292524]">
+            <div className="p-8 md:p-12 bg-muted flex items-center justify-center">
+              <div className="w-full max-w-[340px] rounded-[12px] border border-border bg-card p-3 space-y-2 shadow-xs">
+                <div className="flex items-center justify-between px-3 py-2 rounded-[8px] bg-muted border border-border">
                   <div className="flex items-center gap-2">
                     <span className="h-3 w-3 rounded-full bg-[#615fff]" />
-                    <span className="text-xs font-semibold text-[#292524] dark:text-white">
+                    <span className="text-xs font-semibold text-foreground">
                       ConnectSphere
                     </span>
                   </div>
-                  <ChevronDown className="h-3.5 w-3.5 text-[#79716b]" />
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
 
-                <div className="px-3 py-1.5 flex items-center justify-between text-xs text-[#79716b]">
+                <div className="px-3 py-1.5 flex items-center justify-between text-xs text-muted-foreground">
                   <span>csphere.com</span>
                   <span className="text-[10px] font-mono uppercase">
                     ACTIVE
                   </span>
                 </div>
 
-                <div className="border-t border-[#e7e5e4] dark:border-[#292524] pt-2 px-1 space-y-1">
-                  <div className="px-2 py-1.5 rounded-[6px] hover:bg-[#fafaf9] dark:hover:bg-[#1c1917] flex items-center gap-2 text-xs text-[#292524] dark:text-white cursor-pointer">
+                <div className="border-t border-border pt-2 px-1 space-y-1">
+                  <div className="px-2 py-1.5 rounded-[6px] hover:bg-muted flex items-center gap-2 text-xs text-foreground cursor-pointer">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#d97757]" />
                     <span>Frostline (frostline.io)</span>
                   </div>
-                  <div className="px-2 py-1.5 rounded-[6px] hover:bg-[#fafaf9] dark:hover:bg-[#1c1917] flex items-center gap-2 text-xs font-semibold text-[#615fff] cursor-pointer">
+                  <div className="px-2 py-1.5 rounded-[6px] hover:bg-muted flex items-center gap-2 text-xs font-semibold text-[#615fff] cursor-pointer">
                     <Plus className="h-3 w-3" />
                     <span>NEW PROJECT</span>
                   </div>
@@ -931,7 +928,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#615fff]">
               AGENTIC INTEGRATIONS
             </div>
-            <h2 className="text-[28px] md:text-[34px] font-sans font-medium text-[#0c0a09] dark:text-white">
+            <h2 className="text-[28px] md:text-[34px] font-sans font-medium text-foreground">
               Works with your favorite agent.
             </h2>
           </div>
@@ -950,15 +947,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
               <a
                 key={agent.name}
                 href="#agent"
-                className="p-4 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] hover:border-[#292524] dark:hover:border-white/40 transition-colors flex items-center justify-between group"
+                className="p-4 rounded-[12px] border border-border bg-card hover:border-foreground transition-colors flex items-center justify-between group"
               >
                 <div className="flex items-center gap-2.5">
                   <Bot className={`h-4 w-4 ${agent.color}`} />
-                  <span className="font-mono text-xs font-bold uppercase tracking-[0.05em] text-[#292524] dark:text-white">
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.05em] text-foreground">
                     {agent.name}
                   </span>
                 </div>
-                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
               </a>
             ))}
           </div>
@@ -969,59 +966,63 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             ================================================================= */}
         <section className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-6 space-y-4 bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
-              <p className="text-[13px] text-[#292524] dark:text-[#fafaf9] leading-relaxed italic font-serif">
+            <Card className="p-6 space-y-4 bg-card border border-border">
+              <p className="text-[13px] text-foreground leading-relaxed italic font-serif">
                 "AutoSend has transformed First Dollar. Our team is responsive
                 and adding 190k users on our $50 plan was huge saving."
               </p>
-              <div className="pt-2 border-t border-[#f5f5f4] dark:border-[#262321] flex items-center justify-between">
+              <div className="pt-2 border-t border-border/60 flex items-center justify-between">
                 <div>
-                  <div className="text-[12px] font-bold text-[#0c0a09] dark:text-white">
+                  <div className="text-[12px] font-bold text-foreground">
                     PRATYUSH RUNGTA
                   </div>
-                  <div className="text-[11px] text-[#79716b]">First Dollar</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    First Dollar
+                  </div>
                 </div>
-                <div className="font-mono text-xs font-bold text-[#79716b]">
+                <div className="font-mono text-xs font-bold text-muted-foreground">
                   PEERLIST
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 space-y-4 bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
-              <p className="text-[13px] text-[#292524] dark:text-[#fafaf9] leading-relaxed italic font-serif">
+            <Card className="p-6 space-y-4 bg-card border border-border">
+              <p className="text-[13px] text-foreground leading-relaxed italic font-serif">
                 "Switching to AutoSend was smooth. The migration was quick, the
                 team responsive, and the product matches big players in
                 features."
               </p>
-              <div className="pt-2 border-t border-[#f5f5f4] dark:border-[#262321] flex items-center justify-between">
+              <div className="pt-2 border-t border-border/60 flex items-center justify-between">
                 <div>
-                  <div className="text-[12px] font-bold text-[#0c0a09] dark:text-white">
+                  <div className="text-[12px] font-bold text-foreground">
                     ARUN ANTHONY
                   </div>
-                  <div className="text-[11px] text-[#79716b]">
+                  <div className="text-[11px] text-muted-foreground">
                     Founder, Gistr
                   </div>
                 </div>
-                <div className="font-serif italic text-xs font-bold text-[#79716b]">
+                <div className="font-serif italic text-xs font-bold text-muted-foreground">
                   gistr
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 space-y-4 bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
-              <p className="text-[13px] text-[#292524] dark:text-[#fafaf9] leading-relaxed italic font-serif">
+            <Card className="p-6 space-y-4 bg-card border border-border">
+              <p className="text-[13px] text-foreground leading-relaxed italic font-serif">
                 "We chose AutoSend for its first-class email handling for LLMs
                 and AI agents. It fits how agents think and allows LLMs to send
                 reliable emails."
               </p>
-              <div className="pt-2 border-t border-[#f5f5f4] dark:border-[#262321] flex items-center justify-between">
+              <div className="pt-2 border-t border-border/60 flex items-center justify-between">
                 <div>
-                  <div className="text-[12px] font-bold text-[#0c0a09] dark:text-white">
+                  <div className="text-[12px] font-bold text-foreground">
                     C. C. FAN
                   </div>
-                  <div className="text-[11px] text-[#79716b]">CEO Vivgrid</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    CEO Vivgrid
+                  </div>
                 </div>
-                <div className="font-mono text-xs font-bold text-[#79716b]">
+                <div className="font-mono text-xs font-bold text-muted-foreground">
                   vivgrid
                 </div>
               </div>
@@ -1032,13 +1033,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         {/* =================================================================
             11. STILL WONDERING? (scratch/image.png)
             ================================================================= */}
-        <section className="rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-8 md:p-12">
+        <section className="rounded-[16px] border border-border bg-card p-8 md:p-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-5 space-y-2">
-              <h2 className="text-[26px] md:text-[32px] font-sans font-medium text-[#0c0a09] dark:text-white">
+              <h2 className="text-[26px] md:text-[32px] font-sans font-medium text-foreground">
                 Still wondering?
               </h2>
-              <p className="text-[14px] text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
+              <p className="text-[14px] text-muted-foreground leading-relaxed">
                 See what your favorite LLM has to say about us, then make an
                 informed decision.
               </p>
@@ -1049,54 +1050,54 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 href="https://chatgpt.com"
                 target="_blank"
                 rel="noreferrer"
-                className="p-3.5 rounded-[10px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] hover:border-[#292524] transition-colors flex items-center justify-between group"
+                className="p-3.5 rounded-[10px] border border-border bg-muted hover:border-foreground transition-colors flex items-center justify-between group"
               >
-                <span className="text-xs font-mono font-semibold uppercase text-[#292524] dark:text-white">
+                <span className="text-xs font-mono font-semibold uppercase text-foreground">
                   ASK CHATGPT
                 </span>
-                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
               </a>
 
               <a
                 href="https://gemini.google.com"
                 target="_blank"
                 rel="noreferrer"
-                className="p-3.5 rounded-[10px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] hover:border-[#292524] transition-colors flex items-center justify-between group"
+                className="p-3.5 rounded-[10px] border border-border bg-muted hover:border-foreground transition-colors flex items-center justify-between group"
               >
-                <span className="text-xs font-mono font-semibold uppercase text-[#292524] dark:text-white">
+                <span className="text-xs font-mono font-semibold uppercase text-foreground">
                   ASK GEMINI
                 </span>
-                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
               </a>
 
               <a
                 href="https://claude.ai"
                 target="_blank"
                 rel="noreferrer"
-                className="p-3.5 rounded-[10px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] hover:border-[#292524] transition-colors flex items-center justify-between group"
+                className="p-3.5 rounded-[10px] border border-border bg-muted hover:border-foreground transition-colors flex items-center justify-between group"
               >
-                <span className="text-xs font-mono font-semibold uppercase text-[#292524] dark:text-white">
+                <span className="text-xs font-mono font-semibold uppercase text-foreground">
                   ASK CLAUDE
                 </span>
-                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
               </a>
 
               <a
                 href="https://perplexity.ai"
                 target="_blank"
                 rel="noreferrer"
-                className="p-3.5 rounded-[10px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] hover:border-[#292524] transition-colors flex items-center justify-between group"
+                className="p-3.5 rounded-[10px] border border-border bg-muted hover:border-foreground transition-colors flex items-center justify-between group"
               >
-                <span className="text-xs font-mono font-semibold uppercase text-[#292524] dark:text-white">
+                <span className="text-xs font-mono font-semibold uppercase text-foreground">
                   ASK PERPLEXITY
                 </span>
-                <ArrowUpRight className="h-3.5 w-3.5 text-[#79716b] group-hover:text-[#292524] dark:group-hover:text-white transition-colors" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
               </a>
 
               <div className="col-span-2 pt-1 text-center">
                 <a
                   href="#contact"
-                  className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-[#292524] dark:text-white hover:text-[#615fff] transition-colors inline-flex items-center gap-1"
+                  className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-foreground hover:text-[#615fff] transition-colors inline-flex items-center gap-1"
                 >
                   <span>TALK TO A HUMAN</span>
                   <ArrowRight className="h-3 w-3" />
@@ -1109,46 +1110,46 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         {/* =================================================================
             12. FOOTER NAVIGATION (scratch/image.png)
             ================================================================= */}
-        <footer className="space-y-12 border-t border-[#e7e5e4] dark:border-[#292524] pt-12">
+        <footer className="space-y-12 border-t border-border pt-12">
           {/* Columns */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-[12px]">
             <div className="space-y-3">
-              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
                 SOLUTIONS
               </div>
-              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+              <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <a href="#transactional" className="hover:text-[#292524]">
+                  <a href="#transactional" className="hover:text-foreground">
                     Transactional Emails
                   </a>
                 </li>
                 <li>
-                  <a href="#marketing" className="hover:text-[#292524]">
+                  <a href="#marketing" className="hover:text-foreground">
                     Marketing Emails
                   </a>
                 </li>
                 <li>
-                  <a href="#automation" className="hover:text-[#292524]">
+                  <a href="#automation" className="hover:text-foreground">
                     Email Automation
                   </a>
                 </li>
                 <li>
-                  <a href="#agents" className="hover:text-[#292524]">
+                  <a href="#agents" className="hover:text-foreground">
                     Agents & LLMs
                   </a>
                 </li>
                 <li>
-                  <a href="#deliverability" className="hover:text-[#292524]">
+                  <a href="#deliverability" className="hover:text-foreground">
                     Deliverability
                   </a>
                 </li>
                 <li>
-                  <a href="#inbound" className="hover:text-[#292524]">
+                  <a href="#inbound" className="hover:text-foreground">
                     Inbound Email API
                   </a>
                 </li>
                 <li>
-                  <a href="#builder" className="hover:text-[#292524]">
+                  <a href="#builder" className="hover:text-foreground">
                     Email Builder
                   </a>
                 </li>
@@ -1156,32 +1157,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             </div>
 
             <div className="space-y-3">
-              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
                 DOCS
               </div>
-              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+              <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <a href="#getting-started" className="hover:text-[#292524]">
+                  <a href="#getting-started" className="hover:text-foreground">
                     Getting Started
                   </a>
                 </li>
                 <li>
-                  <a href="#api" className="hover:text-[#292524]">
+                  <a href="#api" className="hover:text-foreground">
                     API Reference
                   </a>
                 </li>
                 <li>
-                  <a href="#agents" className="hover:text-[#292524]">
+                  <a href="#agents" className="hover:text-foreground">
                     Agents
                   </a>
                 </li>
                 <li>
-                  <a href="#wiki" className="hover:text-[#292524]">
+                  <a href="#wiki" className="hover:text-foreground">
                     Wiki
                   </a>
                 </li>
                 <li>
-                  <a href="#changelog" className="hover:text-[#292524]">
+                  <a href="#changelog" className="hover:text-foreground">
                     Changelog
                   </a>
                 </li>
@@ -1189,27 +1190,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             </div>
 
             <div className="space-y-3">
-              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
                 RESOURCES
               </div>
-              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+              <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <a href="#faq" className="hover:text-[#292524]">
+                  <a href="#faq" className="hover:text-foreground">
                     FAQ
                   </a>
                 </li>
                 <li>
-                  <a href="#blog" className="hover:text-[#292524]">
+                  <a href="#blog" className="hover:text-foreground">
                     Blog
                   </a>
                 </li>
                 <li>
-                  <a href="#glossary" className="hover:text-[#292524]">
+                  <a href="#glossary" className="hover:text-foreground">
                     Glossary
                   </a>
                 </li>
                 <li>
-                  <a href="#affiliate" className="hover:text-[#292524]">
+                  <a href="#affiliate" className="hover:text-foreground">
                     Be an Affiliate
                   </a>
                 </li>
@@ -1217,27 +1218,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             </div>
 
             <div className="space-y-3">
-              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
                 COMPARE
               </div>
-              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+              <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <a href="#sendgrid" className="hover:text-[#292524]">
+                  <a href="#sendgrid" className="hover:text-foreground">
                     SendGrid
                   </a>
                 </li>
                 <li>
-                  <a href="#loops" className="hover:text-[#292524]">
+                  <a href="#loops" className="hover:text-foreground">
                     Loops
                   </a>
                 </li>
                 <li>
-                  <a href="#resend" className="hover:text-[#292524]">
+                  <a href="#resend" className="hover:text-foreground">
                     Resend
                   </a>
                 </li>
                 <li>
-                  <a href="#postmark" className="hover:text-[#292524]">
+                  <a href="#postmark" className="hover:text-foreground">
                     Postmark
                   </a>
                 </li>
@@ -1245,32 +1246,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             </div>
 
             <div className="space-y-3">
-              <div className="font-mono font-bold uppercase tracking-[0.08em] text-[#0c0a09] dark:text-white">
+              <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
                 LEGAL
               </div>
-              <ul className="space-y-2 text-[#79716b] dark:text-[#a6a09b]">
+              <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <a href="#fair-use" className="hover:text-[#292524]">
+                  <a href="#fair-use" className="hover:text-foreground">
                     Fair Use
                   </a>
                 </li>
                 <li>
-                  <a href="#privacy" className="hover:text-[#292524]">
+                  <a href="#privacy" className="hover:text-foreground">
                     Privacy
                   </a>
                 </li>
                 <li>
-                  <a href="#terms" className="hover:text-[#292524]">
+                  <a href="#terms" className="hover:text-foreground">
                     Terms
                   </a>
                 </li>
                 <li>
-                  <a href="#sub-processors" className="hover:text-[#292524]">
+                  <a href="#sub-processors" className="hover:text-foreground">
                     Sub-Processors
                   </a>
                 </li>
                 <li>
-                  <a href="#dpa" className="hover:text-[#292524]">
+                  <a href="#dpa" className="hover:text-foreground">
                     Data Processing Addendum
                   </a>
                 </li>
@@ -1279,49 +1280,47 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
           </div>
 
           {/* Bottom Bar (scratch/image.png) */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#e7e5e4] dark:border-[#292524] text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b]">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-border text-[11px] font-mono text-muted-foreground">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-[#0c0a09] dark:text-white">
-                AUTOSEND
-              </span>
+              <span className="font-bold text-foreground">AUTOSEND</span>
               <span>© 2026 • PEERLIST INC.</span>
             </div>
 
             {/* Status indicator */}
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514]">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-border bg-card">
               <span className="h-2 w-2 rounded-full bg-[#5ea500] animate-pulse" />
-              <span className="text-[10px] font-semibold text-[#292524] dark:text-white uppercase tracking-wider">
+              <span className="text-[10px] font-semibold text-foreground uppercase tracking-wider">
                 ALL SYSTEMS OPERATIONAL
               </span>
             </div>
 
             {/* Social Links */}
-            <div className="flex items-center gap-4 text-[#79716b] dark:text-[#a6a09b]">
+            <div className="flex items-center gap-4 text-muted-foreground">
               <a
                 href="https://discord.com"
                 aria-label="Discord"
-                className="hover:text-[#292524]"
+                className="hover:text-foreground"
               >
                 Discord
               </a>
               <a
                 href="https://x.com"
                 aria-label="X"
-                className="hover:text-[#292524]"
+                className="hover:text-foreground"
               >
                 X
               </a>
               <a
                 href="https://github.com"
                 aria-label="GitHub"
-                className="hover:text-[#292524]"
+                className="hover:text-foreground"
               >
                 GitHub
               </a>
               <a
                 href="https://linkedin.com"
                 aria-label="LinkedIn"
-                className="hover:text-[#292524]"
+                className="hover:text-foreground"
               >
                 LinkedIn
               </a>
