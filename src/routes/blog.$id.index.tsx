@@ -350,31 +350,16 @@ function BlogReaderPage() {
           <article className="lg:col-span-8 space-y-8">
             {/* Header / Dek */}
             <div className="space-y-4">
-              {/* Topics Pills */}
-              <div className="flex flex-wrap items-center gap-2">
+              {/* Topics Pills — indigo-tinted, compact */}
+              <div className="flex flex-wrap items-center gap-1.5">
                 {article.topics.map((t) => (
-                  <Badge
+                  <span
                     key={t}
-                    variant="secondary"
-                    size="sm"
-                    shape="tag"
-                    className="font-mono text-xs"
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium font-mono bg-[#615fff]/8 text-[#615fff] dark:bg-[#615fff]/15 dark:text-[#9b95ff] border border-[#615fff]/20 select-none"
                   >
                     {t}
-                  </Badge>
+                  </span>
                 ))}
-                <span className="text-[11px] font-mono text-[#79716b] ml-1">
-                  Branch:{' '}
-                  <strong className="text-foreground">
-                    {article.gitBranch}
-                  </strong>
-                </span>
-                <span className="text-[11px] font-mono text-[#79716b]">
-                  Commit:{' '}
-                  <strong className="text-foreground">
-                    {article.commitHash}
-                  </strong>
-                </span>
               </div>
 
               {/* Title (Cooper Display Serif) */}
