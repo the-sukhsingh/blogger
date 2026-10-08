@@ -1,6 +1,12 @@
-import * as React from 'react'
-import { GitBranch, Clock, ArrowRight, AlertTriangle, FileCode2, ExternalLink } from 'lucide-react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card'
+import { GitBranch, Clock, ArrowRight, AlertTriangle } from 'lucide-react'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { cn } from '#/lib/utils'
@@ -40,8 +46,10 @@ export function ArticleCard({
   className,
 }: ArticleCardProps) {
   const getHealthBadge = (score: number) => {
-    if (score >= 85) return { variant: 'success' as const, label: `Health ${score}%` }
-    if (score >= 70) return { variant: 'warning' as const, label: `Health ${score}%` }
+    if (score >= 85)
+      return { variant: 'success' as const, label: `Health ${score}%` }
+    if (score >= 70)
+      return { variant: 'warning' as const, label: `Health ${score}%` }
     return { variant: 'destructive' as const, label: `Health ${score}%` }
   }
 
@@ -52,7 +60,7 @@ export function ArticleCard({
       variant="default"
       className={cn(
         'group transition-[border-color,box-shadow,transform] duration-150 hover:border-foreground/30 hover:shadow-sm',
-        className
+        className,
       )}
     >
       <CardHeader className="space-y-2 pb-2">
@@ -95,7 +103,12 @@ export function ArticleCard({
         {/* Topics / Entities */}
         <div className="flex flex-wrap gap-1.5">
           {topics.map((topic) => (
-            <Badge key={topic} variant="secondary" size="sm" className="font-mono text-[10px]">
+            <Badge
+              key={topic}
+              variant="secondary"
+              size="sm"
+              className="font-mono text-[10px]"
+            >
               {topic}
             </Badge>
           ))}
@@ -106,7 +119,9 @@ export function ArticleCard({
           <div className="flex items-start gap-2 rounded-md border border-warning/30 bg-warning/5 p-2 text-[11px] text-muted-foreground leading-snug">
             <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
             <span className="flex-1">
-              <strong className="text-foreground font-medium">Stale content alert: </strong>
+              <strong className="text-foreground font-medium">
+                Stale content alert:{' '}
+              </strong>
               {staleReason || 'Referenced packages or APIs have changed.'}
             </span>
           </div>
@@ -114,7 +129,9 @@ export function ArticleCard({
       </CardContent>
 
       <CardFooter className="flex items-center justify-between border-t border-border/40 pt-3">
-        <span className="text-[11px] text-muted-foreground font-mono">{readingTime}</span>
+        <span className="text-[11px] text-muted-foreground font-mono">
+          {readingTime}
+        </span>
         <div className="flex items-center gap-1.5">
           {pendingDiffsCount > 0 && (
             <Button

@@ -21,7 +21,8 @@ const initialState: ThemeProviderState = {
   toggleMode: () => null,
 }
 
-const ThemeProviderContext = React.createContext<ThemeProviderState>(initialState)
+const ThemeProviderContext =
+  React.createContext<ThemeProviderState>(initialState)
 
 interface ThemeProviderProps {
   children: React.ReactNode
@@ -54,41 +55,48 @@ export function ThemeProvider({
     return defaultTheme
   })
 
-  const [resolvedMode, setResolvedMode] = React.useState<'light' | 'dark'>('light')
+  const [resolvedMode, setResolvedMode] = React.useState<'light' | 'dark'>(
+    'light',
+  )
 
   // Suppress transition smearing during theme switch (better-ui recipe)
-  const applyThemeClasses = React.useCallback((nextMode: ThemeMode, nextTheme: ThemePreset) => {
-    if (typeof window === 'undefined') return
+  const applyThemeClasses = React.useCallback(
+    (nextMode: ThemeMode, nextTheme: ThemePreset) => {
+      if (typeof window === 'undefined') return
 
-    const root = document.documentElement
+      const root = document.documentElement
 
-    // Add suppression class
-    root.classList.add('theme-transition-disabled')
+      // Add suppression class
+      root.classList.add('theme-transition-disabled')
 
-    // Determine resolved mode
-    let targetMode: 'light' | 'dark' = 'light'
-    if (nextMode === 'system') {
-      targetMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    } else {
-      targetMode = nextMode
-    }
+      // Determine resolved mode
+      let targetMode: 'light' | 'dark' = 'light'
+      if (nextMode === 'system') {
+        targetMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+      } else {
+        targetMode = nextMode
+      }
 
-    setResolvedMode(targetMode)
+      setResolvedMode(targetMode)
 
-    // Update class and attributes
-    root.classList.remove('light', 'dark')
-    root.classList.add(targetMode)
-    root.setAttribute('data-mode', targetMode)
-    root.setAttribute('data-theme', nextTheme)
+      // Update class and attributes
+      root.classList.remove('light', 'dark')
+      root.classList.add(targetMode)
+      root.setAttribute('data-mode', targetMode)
+      root.setAttribute('data-theme', nextTheme)
 
-    // Force style flush
-    window.getComputedStyle(root).opacity
+      // Force style flush
+      window.getComputedStyle(root).opacity
 
-    // Restore transitions after frame
-    requestAnimationFrame(() => {
-      root.classList.remove('theme-transition-disabled')
-    })
-  }, [])
+      // Restore transitions after frame
+      requestAnimationFrame(() => {
+        root.classList.remove('theme-transition-disabled')
+      })
+    },
+    [],
+  )
 
   React.useEffect(() => {
     applyThemeClasses(mode, theme)
@@ -110,7 +118,7 @@ export function ThemeProvider({
       localStorage.setItem(storageKeyMode, newMode)
       setModeState(newMode)
     },
-    [storageKeyMode]
+    [storageKeyMode],
   )
 
   const setTheme = React.useCallback(
@@ -118,7 +126,7 @@ export function ThemeProvider({
       localStorage.setItem(storageKeyTheme, newTheme)
       setThemeState(newTheme)
     },
-    [storageKeyTheme]
+    [storageKeyTheme],
   )
 
   const toggleMode = React.useCallback(() => {
@@ -135,16 +143,16 @@ export function ThemeProvider({
       setTheme,
       toggleMode,
     }),
-    [mode, theme, resolvedMode, setMode, setTheme, toggleMode]
+    [mode, theme, resolvedMode, setMode, setTheme, toggleMode],
   )
 
-  return <ThemeProviderContext.Provider value={value}>{children}</ThemeProviderContext.Provider>
+  return (
+    <ThemeProviderContext.Provider value={value}>
+      {children}
+    </ThemeProviderContext.Provider>
+  )
 }
 
 export function useTheme() {
-  const context = React.useContext(ThemeProviderContext)
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider')
-  }
-  return context
+  return React.useContext(ThemeProviderContext)
 }

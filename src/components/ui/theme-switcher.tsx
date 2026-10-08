@@ -1,6 +1,6 @@
-import * as React from 'react'
 import { Sun, Moon, Laptop, Palette } from 'lucide-react'
-import { useTheme, type ThemePreset, type ThemeMode } from '#/components/theme-provider'
+import { useTheme } from '#/components/theme-provider'
+import type { ThemePreset } from '#/components/theme-provider'
 import { Button } from '#/components/ui/button'
 import {
   DropdownMenu,
@@ -85,7 +85,12 @@ export function ThemeSwitcher({ className }: { className?: string }) {
               onClick={() => setTheme(preset.id)}
               className={cn(theme === preset.id && 'font-bold bg-accent/60')}
             >
-              <span className={cn('h-2 w-2 rounded-full mr-2 shrink-0', preset.color)} />
+              <span
+                className={cn(
+                  'h-2 w-2 rounded-full mr-2 shrink-0',
+                  preset.color,
+                )}
+              />
               {preset.name}
             </DropdownMenuItem>
           ))}

@@ -1,6 +1,7 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { ThemeProvider } from '#/components/theme-provider'
 
 import appCss from '../styles.css?url'
 
@@ -15,7 +16,12 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Agent — AI Publishing System for Technical Blogs',
+      },
+      {
+        name: 'description',
+        content:
+          'Treat a technical blog like a codebase. An AI-native publishing workspace for developers, engineers, and technical writers.',
       },
     ],
     links: [
@@ -30,12 +36,14 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
-        {children}
+      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent selection:text-accent-foreground font-sans">
+        <ThemeProvider defaultMode="system" defaultTheme="zinc">
+          {children}
+        </ThemeProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',

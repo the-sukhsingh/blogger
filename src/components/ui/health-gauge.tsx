@@ -1,6 +1,4 @@
-import * as React from 'react'
-import { AlertTriangle, CheckCircle2, TrendingUp, Sparkles, ExternalLink } from 'lucide-react'
-import { Badge } from '#/components/ui/badge'
+import { AlertTriangle, Sparkles } from 'lucide-react'
 import { cn } from '#/lib/utils'
 
 export interface HealthMetric {
@@ -37,13 +35,20 @@ export function HealthGauge({
   }
 
   return (
-    <div className={cn('rounded-xl border border-border bg-card p-4 shadow-xs text-xs space-y-4', className)}>
+    <div
+      className={cn(
+        'rounded-xl border border-border bg-card p-4 shadow-xs text-xs space-y-4',
+        className,
+      )}
+    >
       {/* Header with Overall Score */}
       <div className="flex items-center justify-between border-b border-border/60 pb-3">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-foreground text-sm tracking-tight">{statusText}</span>
+            <span className="font-semibold text-foreground text-sm tracking-tight">
+              {statusText}
+            </span>
           </div>
           <p className="text-muted-foreground text-[11px]">
             Trained on technical publication intelligence
@@ -54,7 +59,7 @@ export function HealthGauge({
           <div
             className={cn(
               'flex h-10 w-10 items-center justify-center rounded-full border-2 font-mono font-bold text-sm tabular-nums',
-              getScoreColor(overallScore)
+              getScoreColor(overallScore),
             )}
           >
             {overallScore}
@@ -65,9 +70,14 @@ export function HealthGauge({
       {/* Metric Bars (AGENTS.md § 19) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {metrics.map((m) => (
-          <div key={m.name} className="space-y-1.5 rounded-lg border border-border/50 bg-secondary/30 p-2.5">
+          <div
+            key={m.name}
+            className="space-y-1.5 rounded-lg border border-border/50 bg-secondary/30 p-2.5"
+          >
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-muted-foreground">{m.name}</span>
+              <span className="text-[11px] font-medium text-muted-foreground">
+                {m.name}
+              </span>
               <span className="font-mono text-xs font-bold tabular-nums text-foreground">
                 {m.score}
               </span>
@@ -75,11 +85,18 @@ export function HealthGauge({
             {/* Progress Track */}
             <div className="h-1.5 w-full rounded-full bg-border/60 overflow-hidden">
               <div
-                className={cn('h-full transition-all duration-300 ease-out rounded-full', getBarBg(m.score))}
+                className={cn(
+                  'h-full transition-all duration-300 ease-out rounded-full',
+                  getBarBg(m.score),
+                )}
                 style={{ width: `${m.score}%` }}
               />
             </div>
-            {m.note && <p className="text-[10px] text-muted-foreground truncate">{m.note}</p>}
+            {m.note && (
+              <p className="text-[10px] text-muted-foreground truncate">
+                {m.note}
+              </p>
+            )}
           </div>
         ))}
       </div>
