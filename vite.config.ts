@@ -13,3 +13,4 @@ const config = defineConfig({
 })
 
 export default config
+// reload server cache
