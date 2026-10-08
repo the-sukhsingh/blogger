@@ -1,19 +1,48 @@
 import * as React from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Plus, Menu, X, BookOpen, PenTool, Home } from 'lucide-react'
+import { Plus, Menu, X, BookOpen, PenTool, Home, RotateCcw } from 'lucide-react'
 import { ThemeSwitcher } from '#/components/ui/theme-switcher'
 import { Button } from '#/components/ui/button'
+import { BlogStore } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
 
 export function Navbar() {
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+  const [resetConfirmOpen, setResetConfirmOpen] = React.useState(false)
+  const resetRef = React.useRef<HTMLDivElement>(null)
 
   // Close mobile menu on route change
   React.useEffect(() => {
     setMobileMenuOpen(false)
   }, [currentPath])
+
+  // Close reset popover on outside click / Escape
+  React.useEffect(() => {
+    if (!resetConfirmOpen) return
+    const handleClickOutside = (e: MouseEvent) => {
+      if (resetRef.current && !resetRef.current.contains(e.target as Node)) {
+        setResetConfirmOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setResetConfirmOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside, true)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside, true)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [resetConfirmOpen])
+
+  const handleResetSeed = () => {
+    BlogStore.resetToSeedData()
+    setResetConfirmOpen(false)
+    // Force a page reload so the current route re-fetches from store
+    window.location.reload()
+  }
 
   const isArticlesActive =
     currentPath === '/blogs' ||
@@ -85,8 +114,65 @@ export function Navbar() {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <ThemeSwitcher />
+
+          {/* Reset Seed — subtle ghost icon button with inline confirm */}
+          <div ref={resetRef} className="relative hidden sm:block">
+            <button
+              type="button"
+              onClick={() => setResetConfirmOpen((prev) => !prev)}
+              title="Reset to seed data"
+              aria-label="Reset seed data"
+              className="p-1.5 rounded-[6px] text-[#a6a09b] hover:text-[#79716b] dark:hover:text-[#79716b] hover:bg-[#e7e5e4]/50 dark:hover:bg-[#1f1c1a] transition-colors"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+            </button>
+
+            {resetConfirmOpen && (
+              <div
+                className={cn(
+                  'absolute right-0 top-full mt-2 z-50 w-56 rounded-[10px] p-3',
+                  'bg-white dark:bg-[#171514]',
+                  'border border-[#e7e5e4] dark:border-[#292524]',
+                  'shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.06)]',
+                  'animate-in fade-in zoom-in-95 duration-150',
+                )}
+                role="alertdialog"
+                aria-label="Reset seed data confirmation"
+              >
+                {/* Arrow */}
+                <div className="absolute -top-1 right-3 h-2 w-2 rotate-45 bg-white dark:bg-[#171514] border-t border-l border-[#e7e5e4] dark:border-[#292524]" />
+                <div className="relative z-10 space-y-2.5">
+                  <div>
+                    <p className="text-xs font-semibold text-[#292524] dark:text-[#fafaf9]">
+                      Reset sample posts?
+                    </p>
+                    <p className="text-[11px] text-[#79716b] dark:text-[#a6a09b] mt-0.5 leading-snug">
+                      Restores the 5 original seed articles.
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-end gap-2 pt-1 border-t border-[#e7e5e4] dark:border-[#292524]">
+                    <button
+                      type="button"
+                      onClick={() => setResetConfirmOpen(false)}
+                      className="px-2.5 py-1 text-[11px] font-mono rounded-[6px] text-[#79716b] hover:text-[#292524] dark:text-[#a6a09b] dark:hover:text-[#fafaf9] hover:bg-[#fafaf9] dark:hover:bg-[#201d1b] transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResetSeed}
+                      className="px-2.5 py-1 text-[11px] font-mono font-medium rounded-[6px] bg-[#615fff] hover:bg-[#4f39f6] text-white transition-colors inline-flex items-center gap-1"
+                    >
+                      <RotateCcw className="h-2.5 w-2.5" />
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="h-4 w-[1px] bg-[#e7e5e4] dark:border-[#292524] hidden sm:block" />
 
@@ -156,13 +242,21 @@ export function Navbar() {
             <span>Editor</span>
           </Link>
 
-          <div className="pt-2 border-t border-[#e7e5e4] dark:border-[#292524]">
+          <div className="pt-2 border-t border-[#e7e5e4] dark:border-[#292524] space-y-2">
             <Link to="/new" className="block w-full">
               <Button variant="default" size="sm" className="w-full justify-center">
                 <Plus className="h-3.5 w-3.5 mr-1" />
                 <span>New Post</span>
               </Button>
             </Link>
+            <button
+              type="button"
+              onClick={() => setResetConfirmOpen(true)}
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-[8px] text-xs font-mono text-[#79716b] dark:text-[#a6a09b] hover:bg-white dark:hover:bg-[#171514] transition-colors border border-[#e7e5e4] dark:border-[#292524]"
+            >
+              <RotateCcw className="h-3 w-3" />
+              <span>Reset Seed</span>
+            </button>
           </div>
         </div>
       )}

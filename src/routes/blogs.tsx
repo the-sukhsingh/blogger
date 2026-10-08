@@ -6,14 +6,8 @@ import {
   Edit3,
   ExternalLink,
   Trash2,
-  FileText,
-  RotateCcw,
-  Clock,
   Tag,
-  GitBranch,
   ArrowUpDown,
-  BookOpen,
-  CheckCircle2,
   AlertCircle,
   X,
 } from 'lucide-react'
@@ -141,15 +135,6 @@ function BlogsIndexPage() {
     refreshArticles()
   }
 
-  // Reset seed data with confirmation
-  const handleResetData = () => {
-    const seeded = BlogStore.resetToSeedData()
-    setArticles(seeded)
-    setSearchQuery('')
-    setActiveTab('all')
-    setSelectedTopic('all')
-  }
-
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
       <Navbar />
@@ -172,92 +157,27 @@ function BlogsIndexPage() {
               mechanics, and engineering notes. Versioned with Git and stored in
               local Markdown.
             </p>
+            {/* Inline stats */}
+            <div className="flex items-center gap-3 pt-1 text-[11px] font-mono text-[#a6a09b] dark:text-[#79716b]">
+              <span>{stats.total} articles</span>
+              <span>·</span>
+              <span className="text-[#5ea500]">{stats.published} published</span>
+              {stats.drafts > 0 && (
+                <>
+                  <span>·</span>
+                  <span className="text-[#d97757]">{stats.drafts} drafts</span>
+                </>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            <DeleteConfirmPopover
-              onConfirm={handleResetData}
-              title="Reset sample posts?"
-              description="Restore the 5 original seed articles into local storage."
-              align="right"
-            >
-              <button
-                type="button"
-                className="text-xs font-mono text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] flex items-center gap-1.5 px-3 py-2 rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] hover:bg-[#fafaf9] dark:hover:bg-[#1f1c1a] transition-all"
-                title="Restore default demo articles"
-              >
-                <RotateCcw className="h-3 w-3" />
-                <span>Reset Seed</span>
-              </button>
-            </DeleteConfirmPopover>
-
             <Link to="/new">
               <Button variant="default" size="sm">
                 <Plus className="h-3.5 w-3.5" />
                 <span>New Article</span>
               </Button>
             </Link>
-          </div>
-        </div>
-
-        {/* =================================================================
-            2. PUBLICATION VITALS STRIP (QUIET ATELIER STATS)
-            ================================================================= */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 px-4 rounded-[12px] bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
-          <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-[6px] bg-[#fafaf9] dark:bg-[#201d1b] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center text-[#79716b] dark:text-[#a6a09b]">
-              <BookOpen className="h-3.5 w-3.5" />
-            </div>
-            <div>
-              <div className="text-[11px] font-mono uppercase tracking-wider text-[#79716b] dark:text-[#a6a09b]">
-                Articles
-              </div>
-              <div className="text-sm font-semibold font-mono text-[#292524] dark:text-[#fafaf9]">
-                {stats.total} total
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-[6px] bg-[#5ea500]/10 border border-[#5ea500]/20 flex items-center justify-center text-[#5ea500]">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-            </div>
-            <div>
-              <div className="text-[11px] font-mono uppercase tracking-wider text-[#79716b] dark:text-[#a6a09b]">
-                Published
-              </div>
-              <div className="text-sm font-semibold font-mono text-[#5ea500]">
-                {stats.published} active
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-[6px] bg-[#d97757]/10 border border-[#d97757]/20 flex items-center justify-center text-[#d97757]">
-              <Clock className="h-3.5 w-3.5" />
-            </div>
-            <div>
-              <div className="text-[11px] font-mono uppercase tracking-wider text-[#79716b] dark:text-[#a6a09b]">
-                Drafts
-              </div>
-              <div className="text-sm font-semibold font-mono text-[#d97757]">
-                {stats.drafts} in progress
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-[6px] bg-[#615fff]/10 border border-[#615fff]/20 flex items-center justify-center text-[#615fff]">
-              <GitBranch className="h-3.5 w-3.5" />
-            </div>
-            <div>
-              <div className="text-[11px] font-mono uppercase tracking-wider text-[#79716b] dark:text-[#a6a09b]">
-                Git Sync
-              </div>
-              <div className="text-sm font-semibold font-mono text-[#292524] dark:text-[#fafaf9]">
-                main · local
-              </div>
-            </div>
           </div>
         </div>
 
