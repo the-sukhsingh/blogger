@@ -8,15 +8,11 @@ import {
   Plus,
   GitBranch,
   Clock,
-  FileText,
-  Sparkles,
   Check,
 } from 'lucide-react'
 
 import { Button } from '#/components/ui/button'
-import { Badge } from '#/components/ui/badge'
 import { NotionEditor } from '#/components/notion-editor'
-import { HealthGauge } from '#/components/ui/health-gauge'
 import { BlogStore } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
@@ -85,11 +81,6 @@ export function ArticleEditor({
   const readingTimeEstimate = React.useMemo(() => {
     return `${Math.max(1, Math.ceil(wordCount / 200))} min read`
   }, [wordCount])
-
-  // Live health score
-  const liveHealth = React.useMemo(() => {
-    return BlogStore.computeHealth(title || 'Untitled', content, topics, false)
-  }, [title, content, topics])
 
   // Content change handler from Lexical
   const handleContentChange = React.useCallback((markdown: string) => {
@@ -389,22 +380,6 @@ export function ArticleEditor({
                   <Plus className="h-3 w-3" />
                 </Button>
               </div>
-            </div>
-
-            {/* 5. Health Intelligence Vector */}
-            <div className="pt-2 border-t border-[#e7e5e4] dark:border-[#292524] space-y-3">
-              <HealthGauge
-                overallScore={liveHealth.overall}
-                statusText="Draft Health"
-                metrics={[
-                  { name: 'Content', score: liveHealth.metrics.content },
-                  { name: 'SEO', score: liveHealth.metrics.seo },
-                  { name: 'AEO', score: liveHealth.metrics.aeo },
-                  { name: 'Links', score: liveHealth.metrics.links },
-                  { name: 'Freshness', score: liveHealth.metrics.freshness },
-                  { name: 'Technical', score: liveHealth.metrics.technical },
-                ]}
-              />
             </div>
           </aside>
         )}
