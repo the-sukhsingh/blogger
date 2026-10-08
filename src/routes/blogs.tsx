@@ -6,7 +6,6 @@ import {
   Edit3,
   ExternalLink,
   Trash2,
-  Tag,
   ArrowUpDown,
   AlertCircle,
   X,
@@ -15,7 +14,6 @@ import {
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
-import { Badge } from '#/components/ui/badge'
 import { DeleteConfirmPopover } from '#/components/ui/delete-confirm-popover'
 import {
   BlogStore,
@@ -182,106 +180,82 @@ function BlogsIndexPage() {
         </div>
 
         {/* =================================================================
-            3. FILTER TABS, TOPIC CHIPS & SEARCH TOOLBAR
+            3. UNIFIED FILTER + SEARCH TOOLBAR
             ================================================================= */}
-        <div className="space-y-3">
-          {/* Top row: Status Tabs & Search Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            {/* Status Segmented Tabs */}
-            <div className="inline-flex items-center p-1 rounded-[9px] bg-[#fafaf9] dark:bg-[#121110] border border-[#e7e5e4] dark:border-[#292524]">
-              <button
-                type="button"
-                onClick={() => setActiveTab('all')}
-                className={cn(
-                  'px-3 py-1 text-xs font-mono rounded-[6px] transition-all flex items-center gap-1.5',
-                  activeTab === 'all'
-                    ? 'bg-white dark:bg-[#1f1c1a] text-[#292524] dark:text-[#fafaf9] shadow-sm font-medium'
-                    : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
-                )}
-              >
-                <span>All</span>
-                <span className="text-[10px] opacity-60">({stats.total})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('published')}
-                className={cn(
-                  'px-3 py-1 text-xs font-mono rounded-[6px] transition-all flex items-center gap-1.5',
-                  activeTab === 'published'
-                    ? 'bg-white dark:bg-[#1f1c1a] text-[#5ea500] shadow-sm font-medium'
-                    : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
-                )}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-[#5ea500]" />
-                <span>Published</span>
-                <span className="text-[10px] opacity-60">
-                  ({stats.published})
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('draft')}
-                className={cn(
-                  'px-3 py-1 text-xs font-mono rounded-[6px] transition-all flex items-center gap-1.5',
-                  activeTab === 'draft'
-                    ? 'bg-white dark:bg-[#1f1c1a] text-[#d97757] shadow-sm font-medium'
-                    : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
-                )}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-[#d97757]" />
-                <span>Drafts</span>
-                <span className="text-[10px] opacity-60">({stats.drafts})</span>
-              </button>
-
-              {stats.needsReview > 0 && (
+        <div className="rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] overflow-hidden">
+          {/* Top bar: tabs + search + sort */}
+          <div className="flex items-stretch border-b border-[#e7e5e4] dark:border-[#292524]">
+            {/* Status tabs — flush bottom border active indicator */}
+            <div className="flex items-stretch shrink-0 border-r border-[#e7e5e4] dark:border-[#292524]">
+              {[
+                { key: 'all' as const, label: 'All', count: stats.total, dot: null },
+                { key: 'published' as const, label: 'Published', count: stats.published, dot: '#5ea500' },
+                { key: 'draft' as const, label: 'Drafts', count: stats.drafts, dot: '#d97757' },
+                ...(stats.needsReview > 0
+                  ? [{ key: 'review' as const, label: 'Review', count: stats.needsReview, dot: '#ff0000' }]
+                  : []),
+              ].map((tab) => (
                 <button
+                  key={tab.key}
                   type="button"
-                  onClick={() => setActiveTab('review')}
+                  onClick={() => setActiveTab(tab.key)}
                   className={cn(
-                    'px-3 py-1 text-xs font-mono rounded-[6px] transition-all flex items-center gap-1.5',
-                    activeTab === 'review'
-                      ? 'bg-white dark:bg-[#1f1c1a] text-[#ff0000] shadow-sm font-medium'
-                      : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
+                    'relative px-4 h-10 text-[11px] font-mono font-medium flex items-center gap-1.5 transition-colors select-none shrink-0',
+                    activeTab === tab.key
+                      ? 'text-[#292524] dark:text-[#fafaf9]'
+                      : 'text-[#a6a09b] dark:text-[#79716b] hover:text-[#79716b] dark:hover:text-[#a6a09b]',
                   )}
                 >
-                  <AlertCircle className="h-2.5 w-2.5 text-[#ff0000]" />
-                  <span>Review</span>
-                  <span className="text-[10px] opacity-60">
-                    ({stats.needsReview})
+                  {/* Active underline */}
+                  {activeTab === tab.key && (
+                    <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-[#615fff]" />
+                  )}
+                  {tab.dot && (
+                    <span
+                      className="h-1.5 w-1.5 rounded-full shrink-0"
+                      style={{ background: tab.dot }}
+                    />
+                  )}
+                  {tab.label}
+                  <span
+                    className={cn(
+                      'text-[10px] tabular-nums',
+                      activeTab === tab.key ? 'text-[#615fff]' : 'text-[#c6c3c0] dark:text-[#49443f]',
+                    )}
+                  >
+                    {tab.count}
                   </span>
                 </button>
-              )}
+              ))}
             </div>
 
-            {/* Search Input with Keyboard Shortcut Affordance */}
-            <div className="relative flex-1 sm:max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#79716b] dark:text-[#a6a09b]" />
+            {/* Search — flex grow */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#a6a09b]" />
               <input
                 ref={searchInputRef}
                 type="text"
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] rounded-[8px] pl-9 pr-14 py-1.5 text-xs text-[#292524] dark:text-[#fafaf9] placeholder:text-[#a6a09b] focus:outline-none focus:border-[#615fff] focus:ring-1 focus:ring-[#615fff] transition-all font-mono"
+                className="w-full h-10 bg-transparent pl-9 pr-12 text-xs text-[#292524] dark:text-[#fafaf9] placeholder:text-[#c6c3c0] dark:placeholder:text-[#49443f] focus:outline-none font-mono"
               />
               {searchQuery ? (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>
               ) : (
-                <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none px-1.5 py-0.5 text-[10px] font-mono text-[#a6a09b] bg-[#fafaf9] dark:bg-[#201d1b] border border-[#e7e5e4] dark:border-[#292524] rounded">
+                <kbd className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none px-1.5 py-0.5 text-[10px] font-mono text-[#c6c3c0] dark:text-[#49443f] bg-[#fafaf9] dark:bg-[#1a1716] border border-[#e7e5e4] dark:border-[#292524] rounded">
                   /
                 </kbd>
               )}
             </div>
 
-            {/* Sort Toggle Button */}
+            {/* Sort button — icon only with tooltip */}
             <button
               type="button"
               onClick={() =>
@@ -289,36 +263,35 @@ function BlogsIndexPage() {
                   prev === 'newest-update' ? 'oldest-update' : 'newest-update',
                 )
               }
-              className="px-2.5 py-1.5 rounded-[8px] text-[11px] font-mono border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] text-[#292524] dark:text-[#fafaf9] hover:border-[#615fff] transition-colors flex items-center gap-1.5 shrink-0"
-              title="Toggle sort order by updation date"
+              title={
+                sortOrder === 'newest-update'
+                  ? 'Sorted: newest first — click to reverse'
+                  : 'Sorted: oldest first — click to reverse'
+              }
+              className="shrink-0 w-10 h-10 flex items-center justify-center border-l border-[#e7e5e4] dark:border-[#292524] text-[#a6a09b] hover:text-[#615fff] dark:hover:text-[#615fff] transition-colors"
             >
-              <ArrowUpDown className="h-3 w-3 text-[#615fff]" />
-              <span>
-                {sortOrder === 'newest-update'
-                  ? 'Latest Updated'
-                  : sortOrder === 'oldest-update'
-                    ? 'Oldest Updated'
-                    : 'Title (A-Z)'}
-              </span>
+              <ArrowUpDown
+                className={cn(
+                  'h-3.5 w-3.5 transition-colors',
+                  sortOrder !== 'newest-update' ? 'text-[#615fff]' : '',
+                )}
+              />
             </button>
           </div>
 
-          {/* Bottom row: Topic Filter Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-mono scrollbar-none">
-            <span className="text-[#a6a09b] text-[11px] pr-1 uppercase tracking-wider flex items-center gap-1">
-              <Tag className="h-3 w-3" /> Topics:
-            </span>
+          {/* Topic chips — single scrollable row */}
+          <div className="flex items-center gap-1 px-3 py-2 overflow-x-auto scrollbar-none">
             <button
               type="button"
               onClick={() => setSelectedTopic('all')}
               className={cn(
-                'px-2.5 py-0.5 rounded-[6px] border text-[11px] whitespace-nowrap transition-colors',
+                'px-2.5 py-0.5 rounded-full text-[11px] font-mono whitespace-nowrap transition-all shrink-0',
                 selectedTopic === 'all'
-                  ? 'bg-[#292524] text-white dark:bg-[#fafaf9] dark:text-[#0c0a09] border-transparent font-medium'
-                  : 'bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524] text-[#79716b] dark:text-[#a6a09b] hover:border-[#615fff]',
+                  ? 'bg-[#292524] dark:bg-[#fafaf9] text-white dark:text-[#0c0a09] font-medium'
+                  : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] hover:bg-[#f4f3f2] dark:hover:bg-[#201d1b]',
               )}
             >
-              All Topics
+              All
             </button>
             {allTopics.map((topic) => (
               <button
@@ -326,10 +299,10 @@ function BlogsIndexPage() {
                 type="button"
                 onClick={() => setSelectedTopic(topic)}
                 className={cn(
-                  'px-2.5 py-0.5 rounded-[6px] border text-[11px] whitespace-nowrap transition-colors',
+                  'px-2.5 py-0.5 rounded-full text-[11px] font-mono whitespace-nowrap transition-all shrink-0',
                   selectedTopic === topic
-                    ? 'bg-[#615fff] text-white border-[#615fff] font-medium'
-                    : 'bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524] text-[#79716b] dark:text-[#a6a09b] hover:border-[#615fff]',
+                    ? 'bg-[#615fff]/10 text-[#615fff] font-medium border border-[#615fff]/25'
+                    : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] hover:bg-[#f4f3f2] dark:hover:bg-[#201d1b]',
                 )}
               >
                 {topic}
