@@ -302,7 +302,7 @@ function BlogReaderPage() {
               ) : (
                 <Share2 className="h-3 w-3" />
               )}
-              <span>{copiedLink ? 'Link Copied' : 'Share'}</span>
+              <span>{copiedLink ? 'Copied' : 'Share'}</span>
             </button>
 
             <button
@@ -313,13 +313,6 @@ function BlogReaderPage() {
               <Download className="h-3 w-3" />
               <span>Export .md</span>
             </button>
-
-            <Link to="/blog/$id/edit" params={{ id: article.id }}>
-              <Button variant="default" size="sm">
-                <Edit3 className="h-3 w-3 mr-1.5" />
-                Edit in Custom Editor
-              </Button>
-            </Link>
 
             <DeleteConfirmPopover
               onConfirm={() => {
@@ -339,6 +332,13 @@ function BlogReaderPage() {
                 <span className="hidden sm:inline">Delete</span>
               </button>
             </DeleteConfirmPopover>
+
+            <Link to="/blog/$id/edit" params={{ id: article.id }}>
+              <Button variant="default" size="sm">
+                <Edit3 className="h-3 w-3 mr-1.5" />
+                Edit
+              </Button>
+            </Link>
           </div>
         </div>
 
