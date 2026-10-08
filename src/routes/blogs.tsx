@@ -192,11 +192,7 @@ function BlogsIndexPage() {
             </DeleteConfirmPopover>
 
             <Link to="/new">
-              <Button
-                variant="default"
-                size="sm"
-                className="h-9 px-4 text-xs font-semibold uppercase tracking-[0.05em] shadow-none bg-[#615fff] hover:bg-[#4f39f6] text-white rounded-[8px] transition-all flex items-center gap-1.5"
-              >
+              <Button variant="default" size="sm">
                 <Plus className="h-3.5 w-3.5" />
                 <span>New Article</span>
               </Button>
@@ -500,11 +496,7 @@ function BlogsIndexPage() {
                           </button>
                         )}
                         <Link to="/new">
-                          <Button
-                            variant="default"
-                            size="xs"
-                            className="text-xs font-mono bg-[#615fff] text-white"
-                          >
+                          <Button variant="default" size="xs">
                             <Plus className="h-3 w-3 mr-1" />
                             Create Article
                           </Button>

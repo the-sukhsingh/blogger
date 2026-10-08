@@ -124,11 +124,7 @@ function AutoSendLandingPage() {
               </Button>
             </Link>
             <Link to="/new">
-              <Button
-                variant="default"
-                size="default"
-                className="h-8 px-4 text-xs font-semibold uppercase tracking-[0.04em]"
-              >
+              <Button variant="default" size="default">
                 OPEN WORKSPACE
               </Button>
             </Link>
@@ -604,11 +600,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                       <code>github.com/org/blog</code>
                     </p>
                   </div>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="h-7 px-2.5 text-[11px] gap-1 font-semibold"
-                  >
+                  <Button variant="default" size="sm">
                     <Plus className="h-3 w-3" />
                     <span>NEW ARTICLE</span>
                   </Button>

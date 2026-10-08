@@ -223,7 +223,6 @@ export function ArticleEditor({
               variant="default"
               size="sm"
               onClick={() => handleSave(status)}
-              className="h-7 px-3 text-xs font-semibold uppercase tracking-[0.04em] shadow-none hover:bg-[#4f39f6]"
             >
               <Save className="h-3 w-3 mr-1" />
               {status === 'published' ? 'Publish' : 'Save'}

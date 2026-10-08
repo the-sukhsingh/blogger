@@ -315,11 +315,7 @@ function BlogReaderPage() {
             </button>
 
             <Link to="/blog/$id/edit" params={{ id: article.id }}>
-              <Button
-                variant="default"
-                size="sm"
-                className="h-8 px-3.5 text-xs font-semibold uppercase tracking-[0.04em] shadow-none hover:bg-[#4f39f6]"
-              >
+              <Button variant="default" size="sm">
                 <Edit3 className="h-3 w-3 mr-1.5" />
                 Edit in Custom Editor
               </Button>

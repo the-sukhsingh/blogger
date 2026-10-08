@@ -128,7 +128,6 @@ export function DiffViewer({
                 variant="default"
                 size="sm"
                 onClick={handleAccept}
-                className="h-8 px-3.5 text-xs"
               >
                 <Check className="h-3 w-3 mr-1" />
                 Accept
