@@ -63,10 +63,18 @@ export function ThemeProvider({
 
     setResolvedMode(targetMode)
 
-    // Update class and attributes
+    // Update class and attributes on document.documentElement
     root.classList.remove('light', 'dark')
     root.classList.add(targetMode)
     root.setAttribute('data-mode', targetMode)
+    root.style.colorScheme = targetMode
+
+    // Also update document.body
+    if (document.body) {
+      document.body.classList.remove('light', 'dark')
+      document.body.classList.add(targetMode)
+      document.body.setAttribute('data-mode', targetMode)
+    }
 
     // Force style flush
     window.getComputedStyle(root).opacity
@@ -96,12 +104,18 @@ export function ThemeProvider({
     (newMode: ThemeMode) => {
       localStorage.setItem(storageKeyMode, newMode)
       setModeState(newMode)
+      applyThemeClasses(newMode)
     },
-    [storageKeyMode],
+    [storageKeyMode, applyThemeClasses],
   )
 
   const toggleMode = React.useCallback(() => {
-    const next = resolvedMode === 'dark' ? 'light' : 'dark'
+    const isDark =
+      typeof document !== 'undefined'
+        ? document.documentElement.classList.contains('dark') ||
+          document.documentElement.getAttribute('data-mode') === 'dark'
+        : resolvedMode === 'dark'
+    const next: ThemeMode = isDark ? 'light' : 'dark'
     setMode(next)
   }, [resolvedMode, setMode])
 

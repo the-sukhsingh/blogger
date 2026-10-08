@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --font-sans:
     'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -62,7 +64,9 @@
    and electric-indigo CTAs share the same quiet off-white room."
    ===================================================================== */
 
-:root {
+:root,
+.light,
+[data-mode='light'] {
   /* Canvas: Warm Bone (#fafaf9) */
   --background: #fafaf9;
   /* Primary text: Charcoal (#292524) */
