@@ -21,8 +21,7 @@ const badgeVariants = cva(
         lichen:
           'border-[#5ea500] bg-[#5ea500]/5 text-[#5ea500] dark:text-[#7fd410] font-sans font-medium',
         // Tide Teal tag (design.md: teal decorative accent)
-        teal:
-          'border-[#22b8cd] bg-[#22b8cd]/5 text-[#22b8cd] font-sans font-medium',
+        teal: 'border-[#22b8cd] bg-[#22b8cd]/5 text-[#22b8cd] font-sans font-medium',
         // Terracotta tag (design.md: warm orange accent)
         terracotta:
           'border-[#d97757] bg-[#d97757]/5 text-[#d97757] font-sans font-medium',
@@ -71,7 +70,10 @@ export function Badge({
   ...props
 }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant, shape, size, className }))} {...props}>
+    <div
+      className={cn(badgeVariants({ variant, shape, size, className }))}
+      {...props}
+    >
       {dot && (
         <span
           className={cn('h-1.5 w-1.5 rounded-full shrink-0', {

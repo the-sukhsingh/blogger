@@ -40,8 +40,7 @@ const buttonVariants = cva(
         success:
           'bg-[#5ea500] text-white font-semibold uppercase tracking-[0.04em] hover:bg-[#529000]',
         // Standard Text Link
-        link:
-          'text-[#007ebb] hover:underline p-0 h-auto font-normal enabled:active:scale-100',
+        link: 'text-[#007ebb] hover:underline p-0 h-auto font-normal enabled:active:scale-100',
       },
       size: {
         default: 'h-[42px] px-4 py-2.5 text-[14px]',
@@ -63,7 +62,8 @@ const buttonVariants = cva(
 )
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   isLoading?: boolean
   leftIcon?: React.ReactNode
@@ -89,7 +89,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(buttonVariants({ variant, size, static: isStatic, className }))}
+        className={cn(
+          buttonVariants({ variant, size, static: isStatic, className }),
+        )}
         disabled={disabled || isLoading}
         aria-busy={isLoading}
         {...props}

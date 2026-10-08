@@ -4,7 +4,8 @@ import { cn } from '#/lib/utils'
 export const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    variant?: 'default' | 'showcase' | 'feature' | 'subtle' | 'outline' | 'interactive'
+    variant?:
+      'default' | 'showcase' | 'feature' | 'subtle' | 'outline' | 'interactive'
   }
 >(({ className, variant = 'default', ...props }, ref) => (
   <div
@@ -85,7 +86,10 @@ export const CardContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('p-6 pt-0 text-[14px] leading-relaxed text-[#79716b] dark:text-[#a6a09b]', className)}
+    className={cn(
+      'p-6 pt-0 text-[14px] leading-relaxed text-[#79716b] dark:text-[#a6a09b]',
+      className,
+    )}
     {...props}
   />
 ))

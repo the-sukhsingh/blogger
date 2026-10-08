@@ -9,12 +9,7 @@ import {
 import { cn } from '#/lib/utils'
 
 export type CalloutType =
-  | 'info'
-  | 'tip'
-  | 'warning'
-  | 'error'
-  | 'ai'
-  | 'success'
+  'info' | 'tip' | 'warning' | 'error' | 'ai' | 'success'
 
 export interface CalloutProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: CalloutType

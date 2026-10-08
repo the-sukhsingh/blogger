@@ -76,7 +76,9 @@ export function DiffViewer({
             </div>
           </div>
           {description && (
-            <p className="text-[#79716b] dark:text-[#a6a09b] text-xs">{description}</p>
+            <p className="text-[#79716b] dark:text-[#a6a09b] text-xs">
+              {description}
+            </p>
           )}
         </div>
 
@@ -158,7 +160,8 @@ export function DiffViewer({
                       diff.type === 'addition',
                     'bg-[#ff0000]/8 text-[#292524] dark:text-[#fafaf9] border-l-2 border-[#ff0000]':
                       diff.type === 'deletion',
-                    'text-[#79716b] dark:text-[#a6a09b]': diff.type === 'unchanged',
+                    'text-[#79716b] dark:text-[#a6a09b]':
+                      diff.type === 'unchanged',
                   },
                 )}
               >
@@ -198,7 +201,8 @@ export function DiffViewer({
                       {
                         'bg-[#ff0000]/8 text-[#292524] dark:text-[#fafaf9]':
                           diff.type === 'deletion',
-                        'text-[#79716b] dark:text-[#a6a09b]': diff.type === 'unchanged',
+                        'text-[#79716b] dark:text-[#a6a09b]':
+                          diff.type === 'unchanged',
                       },
                     )}
                   >
@@ -230,7 +234,8 @@ export function DiffViewer({
                       {
                         'bg-[#5ea500]/8 text-[#292524] dark:text-[#fafaf9]':
                           diff.type === 'addition',
-                        'text-[#79716b] dark:text-[#a6a09b]': diff.type === 'unchanged',
+                        'text-[#79716b] dark:text-[#a6a09b]':
+                          diff.type === 'unchanged',
                       },
                     )}
                   >

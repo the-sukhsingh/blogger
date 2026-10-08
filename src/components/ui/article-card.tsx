@@ -47,10 +47,22 @@ export function ArticleCard({
 }: ArticleCardProps) {
   const getHealthBadge = (score: number) => {
     if (score >= 85)
-      return { variant: 'lichen' as const, dotColor: 'lichen' as const, label: `Health ${score}%` }
+      return {
+        variant: 'lichen' as const,
+        dotColor: 'lichen' as const,
+        label: `Health ${score}%`,
+      }
     if (score >= 70)
-      return { variant: 'terracotta' as const, dotColor: 'terracotta' as const, label: `Health ${score}%` }
-    return { variant: 'alarm' as const, dotColor: 'alarm' as const, label: `Health ${score}%` }
+      return {
+        variant: 'terracotta' as const,
+        dotColor: 'terracotta' as const,
+        label: `Health ${score}%`,
+      }
+    return {
+      variant: 'alarm' as const,
+      dotColor: 'alarm' as const,
+      label: `Health ${score}%`,
+    }
   }
 
   const health = getHealthBadge(healthScore)
@@ -81,7 +93,13 @@ export function ArticleCard({
 
           {/* Health indicator */}
           <div className="flex items-center gap-1.5">
-            <Badge variant={health.variant} size="sm" shape="pill" dot dotColor={health.dotColor}>
+            <Badge
+              variant={health.variant}
+              size="sm"
+              shape="pill"
+              dot
+              dotColor={health.dotColor}
+            >
               {health.label}
             </Badge>
             {pendingDiffsCount > 0 && (

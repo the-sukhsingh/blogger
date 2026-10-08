@@ -1,9 +1,12 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme inline {
-  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans:
+    'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Lora', 'Playfair Display', 'Cooper LtBT', Georgia, serif;
-  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono:
+    'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
 
   /* AutoSend Specific Color Tokens from design.md */
   --color-warm-bone: #fafaf9;
@@ -107,7 +110,7 @@
 
 /* Dark mode: Warm Stone Atelier Dark */
 .dark,
-[data-mode="dark"] {
+[data-mode='dark'] {
   /* Canvas: Obsidian (#0c0a09) */
   --background: #0c0a09;
   /* Primary text: Warm Bone (#fafaf9) */
@@ -182,7 +185,7 @@ body {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-bark-grey);
 }
@@ -194,7 +197,9 @@ body {
 
 /* The single elevated shadow allowed in design.md */
 .shadow-showcase {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.08),
+    0 8px 10px -6px rgba(0, 0, 0, 0.08);
 }
 
 /* Suppress transition smearing during theme toggle (better-ui) */
@@ -217,6 +222,8 @@ body {
 }
 
 /* Code block typography (design.md) */
-code, pre, kbd {
+code,
+pre,
+kbd {
   font-family: var(--font-mono);
 }
