@@ -20,7 +20,7 @@ export function AgenticIntegrationsSection() {
   React.useEffect(() => {
     const interval = setInterval(() => {
       setHalf((prevHalf) => (prevHalf === 0 ? 1 : 0))
-    }, 2000)
+    }, 4000)
     return () => clearInterval(interval)
   }, [])
 
@@ -44,14 +44,14 @@ export function AgenticIntegrationsSection() {
               href="#agent"
               className="p-4 py-6 bg-card hover:border-foreground transition-colors flex items-center justify-center group"
             >
-              <div className="relative h-7 flex items-center justify-center overflow-hidden">
-                <AnimatePresence mode="wait" initial={false}>
+              <div className="relative h-7 w-full flex items-center justify-center overflow-hidden">
+                <AnimatePresence mode="popLayout" initial={false}>
                   <motion.span
                     key={agent.name}
                     initial={{
                       opacity: 0,
-                      y: 16,
-                      filter: 'blur(6px)',
+                      y: 24,
+                      filter: 'blur(4px)',
                     }}
                     animate={{
                       opacity: 1,
@@ -60,14 +60,15 @@ export function AgenticIntegrationsSection() {
                     }}
                     exit={{
                       opacity: 0,
-                      y: -16,
-                      filter: 'blur(6px)',
+                      y: -24,
+                      filter: 'blur(4px)',
                     }}
                     transition={{
-                      duration: 0.35,
-                      ease: [0.23, 1, 0.32, 1],
+                      duration: 0.8,
+                      ease: [0.23, 0, 0.32, 1],
+                      delay: 0.01 * (slotIndex + half * 4),
                     }}
-                    className="font-mono text-xl font-bold uppercase tracking-[0.05em] text-foreground inline-block"
+                    className="font-mono text-xl font-bold uppercase tracking-wider text-foreground block text-center w-full whitespace-nowrap"
                   >
                     {agent.name}
                   </motion.span>
