@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import {
   ArrowRight,
   ArrowUpRight,
@@ -88,34 +88,37 @@ function AutoSendLandingPage() {
       <header className="sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md transition-colors border-b border-border/40">
         <div className="max-w-[1240px] mx-auto px-6 h-14 flex items-center justify-between">
           {/* Brand Logo */}
-          <a
-            href="/"
-            className="flex items-center gap-2 text-[14px] font-bold tracking-[0.08em] uppercase text-foreground"
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-[14px] font-bold tracking-[0.08em] uppercase text-foreground hover:opacity-90 transition-opacity"
           >
             <div className="h-5 w-5 rounded-[4px] bg-[#615fff] flex items-center justify-center text-white text-xs font-mono font-bold">
               ✦
             </div>
             <span>AUTOSEND</span>
-          </a>
+          </Link>
 
           {/* Center Navigation Links */}
           <nav className="hidden md:flex items-center gap-7 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-            <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors">
-              <span>SOLUTIONS</span>
-              <ChevronDown className="h-3 w-3 opacity-60" />
-            </div>
-            <a
-              href="#agents"
+            <Link
+              to="/blogs"
               className="hover:text-foreground transition-colors"
             >
-              AGENTS
-            </a>
-            <a
-              href="#pricing"
+              ARTICLES
+            </Link>
+            <Link
+              to="/blogs"
+              search={{ view: 'graph' } as any}
               className="hover:text-foreground transition-colors"
             >
-              PRICING
-            </a>
+              GRAPH
+            </Link>
+            <Link
+              to="/new"
+              className="hover:text-foreground transition-colors"
+            >
+              EDITOR
+            </Link>
             <a
               href="#docs"
               className="flex items-center gap-1 hover:text-foreground transition-colors"
@@ -123,27 +126,29 @@ function AutoSendLandingPage() {
               <span>DOCS</span>
               <ArrowUpRight className="h-3 w-3 opacity-60" />
             </a>
-            <a href="#blog" className="hover:text-foreground transition-colors">
-              BLOG
-            </a>
+            <Link to="/blogs" className="hover:text-foreground transition-colors">
+              PUBLICATIONS
+            </Link>
           </nav>
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-3">
             <ThemeSwitcher />
-            <a
-              href="#login"
+            <Link
+              to="/blogs"
               className="text-[12px] font-semibold uppercase tracking-[0.05em] text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
             >
-              LOG IN
-            </a>
-            <Button
-              variant="default"
-              size="default"
-              className="h-8 px-3.5 text-xs font-semibold uppercase tracking-[0.04em]"
-            >
-              SIGN UP
-            </Button>
+              WORKSPACE
+            </Link>
+            <Link to="/new">
+              <Button
+                variant="default"
+                size="default"
+                className="h-8 px-3.5 text-xs font-semibold uppercase tracking-[0.04em]"
+              >
+                WRITE POST
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -177,20 +182,24 @@ function AutoSendLandingPage() {
 
           {/* Hero CTAs */}
           <div className="flex items-center justify-center gap-4 pt-2">
-            <Button
-              variant="ghost"
-              size="default"
-              className="h-8 px-3 text-xs font-semibold uppercase tracking-[0.06em] text-foreground"
-            >
-              BOOK A DEMO
-            </Button>
-            <Button
-              variant="default"
-              size="default"
-              className="h-8 px-4 text-xs font-semibold uppercase tracking-[0.04em]"
-            >
-              SIGN UP
-            </Button>
+            <Link to="/blogs">
+              <Button
+                variant="ghost"
+                size="default"
+                className="h-8 px-3 text-xs font-semibold uppercase tracking-[0.06em] text-foreground"
+              >
+                EXPLORE ARTICLES
+              </Button>
+            </Link>
+            <Link to="/new">
+              <Button
+                variant="default"
+                size="default"
+                className="h-8 px-4 text-xs font-semibold uppercase tracking-[0.04em]"
+              >
+                OPEN WORKSPACE
+              </Button>
+            </Link>
           </div>
         </section>
 
