@@ -36,43 +36,46 @@ export function AgenticIntegrationsSection() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-neutral-200">
-        {agents.slice(half === 0 ? 0 : 4, half === 0 ? 4 : 8).map((agent) => (
-          <a
-            key={agent.name}
-            href="#agent"
-            className="p-4 py-6 bg-card hover:border-foreground transition-colors flex items-center justify-center group"
-          >
+        {[0, 1, 2, 3].map((slotIndex) => {
+          const agent = agents[slotIndex + half * 4]
+          return (
+            <a
+              key={slotIndex}
+              href="#agent"
+              className="p-4 py-6 bg-card hover:border-foreground transition-colors flex items-center justify-center group"
+            >
               <div className="relative h-7 flex items-center justify-center overflow-hidden">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
                     key={agent.name}
                     initial={{
                       opacity: 0,
-                      transform: 'translateY(16px)',
+                      y: 16,
                       filter: 'blur(6px)',
                     }}
                     animate={{
                       opacity: 1,
-                      transform: 'translateY(0px)',
+                      y: 0,
                       filter: 'blur(0px)',
                     }}
                     exit={{
                       opacity: 0,
-                      transform: 'translateY(-16px)',
+                      y: -16,
                       filter: 'blur(6px)',
                     }}
                     transition={{
                       duration: 0.35,
                       ease: [0.23, 1, 0.32, 1],
                     }}
-                    className="font-mono text-xl font-bold uppercase tracking-[0.05em] text-foreground inline-block will-change-transform"
+                    className="font-mono text-xl font-bold uppercase tracking-[0.05em] text-foreground inline-block"
                   >
                     {agent.name}
                   </motion.span>
                 </AnimatePresence>
               </div>
-          </a>
-        ))}
+            </a>
+          )
+        })}
       </div>
     </section>
   )
