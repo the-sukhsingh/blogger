@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Trash2, AlertTriangle, X } from 'lucide-react'
-import { Button } from '#/components/ui/button'
+import { createPortal } from 'react-dom'
+import { Trash2, X } from 'lucide-react'
 import { cn } from '#/lib/utils'
 
 export interface DeleteConfirmPopoverProps {
@@ -23,17 +23,64 @@ export function DeleteConfirmPopover({
   disabled = false,
 }: DeleteConfirmPopoverProps) {
   const [isOpen, setIsOpen] = React.useState(false)
-  const containerRef = React.useRef<HTMLDivElement>(null)
+  const triggerRef = React.useRef<HTMLDivElement>(null)
+  const popoverRef = React.useRef<HTMLDivElement>(null)
   const cancelButtonRef = React.useRef<HTMLButtonElement>(null)
+  const [position, setPosition] = React.useState<{
+    top: number
+    left: number
+    side: 'top' | 'bottom'
+  } | null>(null)
+
+  const updatePosition = React.useCallback(() => {
+    const trigger = triggerRef.current
+    if (!trigger) return
+
+    const rect = trigger.getBoundingClientRect()
+    const width = 320
+    const gap = 12
+    const viewportPadding = 16
+    const estimatedHeight = 174
+    const canFitBelow =
+      rect.bottom + gap + estimatedHeight <=
+      window.innerHeight - viewportPadding
+    const nextSide =
+      side === 'bottom' && !canFitBelow
+        ? 'top'
+        : side === 'top' && rect.top - gap - estimatedHeight < viewportPadding
+          ? 'bottom'
+          : side
+
+    let left =
+      align === 'left'
+        ? rect.left
+        : align === 'center'
+          ? rect.left + rect.width / 2 - width / 2
+          : rect.right - width
+
+    left = Math.max(
+      viewportPadding,
+      Math.min(left, window.innerWidth - width - viewportPadding),
+    )
+
+    const top =
+      nextSide === 'bottom'
+        ? rect.bottom + gap
+        : Math.max(viewportPadding, rect.top - gap - estimatedHeight)
+
+    setPosition({ top, left, side: nextSide })
+  }, [align, side])
 
   // Close on outside click
   React.useEffect(() => {
     if (!isOpen) return
 
     const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node
       if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
+        triggerRef.current &&
+        !triggerRef.current.contains(target) &&
+        !popoverRef.current?.contains(target)
       ) {
         setIsOpen(false)
       }
@@ -45,15 +92,19 @@ export function DeleteConfirmPopover({
       }
     }
 
-    // Capture click outside
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    window.addEventListener('scroll', updatePosition, true)
     document.addEventListener('mousedown', handleClickOutside, true)
     document.addEventListener('keydown', handleKeyDown)
 
     return () => {
+      window.removeEventListener('resize', updatePosition)
+      window.removeEventListener('scroll', updatePosition, true)
       document.removeEventListener('mousedown', handleClickOutside, true)
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen])
+  }, [isOpen, updatePosition])
 
   // Focus cancel button on open for safe keyboard navigation
   React.useEffect(() => {
@@ -69,7 +120,11 @@ export function DeleteConfirmPopover({
     e.preventDefault()
     e.stopPropagation()
     if (disabled) return
-    setIsOpen((prev) => !prev)
+    setIsOpen((prev) => {
+      const next = !prev
+      if (next) requestAnimationFrame(updatePosition)
+      return next
+    })
   }
 
   const handleCancel = (e: React.MouseEvent) => {
@@ -85,101 +140,97 @@ export function DeleteConfirmPopover({
     onConfirm()
   }
 
-  // Position classes
-  const alignmentClass =
-    align === 'right'
-      ? 'right-0'
-      : align === 'left'
-        ? 'left-0'
-        : 'left-1/2 -translate-x-1/2'
-
-  const sideClass = side === 'bottom' ? 'top-full mt-2' : 'bottom-full mb-2'
-
   return (
     <div
-      ref={containerRef}
+      ref={triggerRef}
       className="relative inline-flex items-center"
       onClick={(e) => e.stopPropagation()}
     >
-      <div onClick={handleTriggerClick} className="inline-flex items-center">
+      <div
+        onClick={handleTriggerClick}
+        className="inline-flex items-center"
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
+      >
         {children}
       </div>
 
-      {isOpen && (
-        <div
-          role="alertdialog"
-          aria-modal="true"
-          aria-label={title}
-          className={cn(
-            'absolute z-50 w-64 rounded-[10px] p-3.5',
-            'bg-white dark:bg-[#171514]',
-            'border border-[#e7e5e4] dark:border-[#292524]',
-            'shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.06)]',
-            'animate-in fade-in zoom-in-95 duration-150',
-            alignmentClass,
-            sideClass,
-          )}
-        >
-          {/* Subtle arrow pointer */}
+      {isOpen &&
+        position &&
+        createPortal(
           <div
+            ref={popoverRef}
+            role="alertdialog"
+            aria-modal="false"
+            aria-label={title}
+            style={{ top: position.top, left: position.left }}
             className={cn(
-              'absolute h-2 w-2 rotate-45 bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524]',
-              side === 'bottom'
-                ? '-top-1 border-t border-l'
-                : '-bottom-1 border-b border-r',
-              align === 'right'
-                ? 'right-3'
-                : align === 'left'
-                  ? 'left-3'
-                  : 'left-1/2 -translate-x-1/2',
+              'fixed z-[100] w-[min(320px,calc(100vw-32px))] rounded-[14px] p-4',
+              'bg-white/95 dark:bg-[#171514]/95 backdrop-blur-md',
+              'border border-[#e7e5e4] dark:border-[#292524]',
+              'shadow-[0_18px_45px_-16px_rgba(41,37,36,0.35)]',
+              'animate-in fade-in zoom-in-95 duration-150',
             )}
-          />
+          >
+            <div
+              className={cn(
+                'absolute h-2.5 w-2.5 rotate-45 bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524]',
+                position.side === 'bottom'
+                  ? '-top-1.5 border-t border-l'
+                  : '-bottom-1.5 border-b border-r',
+                align === 'right'
+                  ? 'right-4'
+                  : align === 'left'
+                    ? 'left-4'
+                    : 'left-1/2 -translate-x-1/2',
+              )}
+            />
 
-          <div className="relative z-10 space-y-2.5">
-            {/* Header with Alert icon */}
-            <div className="flex items-start gap-2.5">
-              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#ff0000]/10 text-[#ff0000] dark:bg-[#ff3333]/15 dark:text-[#ff3333]">
-                <Trash2 className="h-3 w-3" />
+            <div className="relative space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#ff0000]/10 text-[#ff0000] dark:bg-[#ff3333]/15 dark:text-[#ff3333]">
+                  <Trash2 className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="text-sm font-semibold leading-tight text-[#292524] dark:text-[#fafaf9]">
+                    {title}
+                  </p>
+                  <p className="text-xs leading-relaxed text-[#79716b] dark:text-[#a6a09b]">
+                    {description}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  aria-label="Close delete confirmation"
+                  className="rounded-[6px] p-1 text-[#a6a09b] transition-colors hover:bg-[#fafaf9] hover:text-[#292524] dark:hover:bg-[#201d1b] dark:hover:text-[#fafaf9]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
               </div>
-              <div className="space-y-0.5 flex-1 min-w-0">
-                <p className="text-xs font-semibold text-[#292524] dark:text-[#fafaf9] leading-tight">
-                  {title}
-                </p>
-                <p className="text-[11px] text-[#79716b] dark:text-[#a6a09b] leading-tight">
-                  {description}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleCancel}
-                aria-label="Close"
-                className="text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors p-0.5"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
 
-            {/* Action buttons */}
-            <div className="flex items-center justify-end gap-2 pt-1 border-t border-[#e7e5e4] dark:border-[#292524]">
-              <button
-                ref={cancelButtonRef}
-                type="button"
-                onClick={handleCancel}
-                className="px-2.5 py-1 text-[11px] font-mono rounded-[6px] text-[#79716b] hover:text-[#292524] dark:text-[#a6a09b] dark:hover:text-[#fafaf9] hover:bg-[#fafaf9] dark:hover:bg-[#201d1b] transition-colors border border-transparent"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirm}
-                className="px-2.5 py-1 text-[11px] font-mono font-medium rounded-[6px] bg-[#ff0000] hover:bg-[#d90000] text-white shadow-sm transition-colors inline-flex items-center gap-1"
-              >
-                <span>Delete</span>
-              </button>
+              <div className="flex items-center justify-end gap-2 border-t border-[#e7e5e4] pt-3 dark:border-[#292524]">
+                <button
+                  ref={cancelButtonRef}
+                  type="button"
+                  onClick={handleCancel}
+                  className="rounded-[7px] border border-transparent px-3 py-1.5 text-xs font-medium text-[#79716b] transition-colors hover:bg-[#fafaf9] hover:text-[#292524] dark:text-[#a6a09b] dark:hover:bg-[#201d1b] dark:hover:text-[#fafaf9]"
+                >
+                  Keep article
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirm}
+                  className="inline-flex items-center gap-1.5 rounded-[7px] bg-[#ff0000] px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-[background-color,transform] hover:bg-[#d90000] enabled:active:scale-[0.97]"
+                >
+                  <Trash2 className="h-3 w-3" />
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }
