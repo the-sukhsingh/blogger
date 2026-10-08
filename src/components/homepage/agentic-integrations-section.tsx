@@ -20,7 +20,7 @@ export function AgenticIntegrationsSection() {
   React.useEffect(() => {
     const interval = setInterval(() => {
       setHalf((prevHalf) => (prevHalf === 0 ? 1 : 0))
-    }, 4000)
+    }, 2000)
     return () => clearInterval(interval)
   }, [])
 
@@ -45,7 +45,7 @@ export function AgenticIntegrationsSection() {
               className="p-4 py-6 bg-card hover:border-foreground transition-colors flex items-center justify-center group"
             >
               <div className="relative h-7 w-full flex items-center justify-center">
-                <AnimatePresence initial={false}>
+                <AnimatePresence initial={false} mode='popLayout'>
                   <motion.span
                     key={agent.name}
                     initial={{
@@ -64,9 +64,9 @@ export function AgenticIntegrationsSection() {
                       filter: 'blur(4px)',
                     }}
                     transition={{
-                      duration: 0.8,
+                      duration: 0.6,
                       ease: [0.23, 0, 0.32, 1],
-                      delay: 0.01 * (slotIndex + half * 4),
+                      delay: 0.075 * slotIndex,
                     }}
                     className="absolute inset-0 flex items-center justify-center font-mono text-xl font-bold uppercase tracking-wider text-foreground whitespace-nowrap text-center"
                   >
