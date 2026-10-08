@@ -47,10 +47,10 @@ export function ArticleCard({
 }: ArticleCardProps) {
   const getHealthBadge = (score: number) => {
     if (score >= 85)
-      return { variant: 'success' as const, label: `Health ${score}%` }
+      return { variant: 'lichen' as const, dotColor: 'lichen' as const, label: `Health ${score}%` }
     if (score >= 70)
-      return { variant: 'warning' as const, label: `Health ${score}%` }
-    return { variant: 'destructive' as const, label: `Health ${score}%` }
+      return { variant: 'terracotta' as const, dotColor: 'terracotta' as const, label: `Health ${score}%` }
+    return { variant: 'alarm' as const, dotColor: 'alarm' as const, label: `Health ${score}%` }
   }
 
   const health = getHealthBadge(healthScore)
@@ -59,14 +59,15 @@ export function ArticleCard({
     <Card
       variant="default"
       className={cn(
-        'group transition-[border-color,box-shadow,transform] duration-150 hover:border-foreground/30 hover:shadow-sm',
+        // design.md: rounded 16px, 1px stone mist border #e7e5e4, flat and weightless
+        'group transition-[border-color,transform] duration-150 hover:border-[#292524] dark:hover:border-[#fafaf9]',
         className,
       )}
     >
       <CardHeader className="space-y-2 pb-2">
         <div className="flex items-center justify-between gap-2">
           {/* Metadata & Git */}
-          <div className="flex items-center gap-2 text-muted-foreground text-[11px] font-mono">
+          <div className="flex items-center gap-2 text-[#79716b] dark:text-[#a6a09b] text-[11px] font-mono">
             <span className="flex items-center gap-1">
               <GitBranch className="h-3 w-3" />
               {gitBranch}
@@ -80,21 +81,21 @@ export function ArticleCard({
 
           {/* Health indicator */}
           <div className="flex items-center gap-1.5">
-            <Badge variant={health.variant} size="sm" dot>
+            <Badge variant={health.variant} size="sm" shape="pill" dot dotColor={health.dotColor}>
               {health.label}
             </Badge>
             {pendingDiffsCount > 0 && (
-              <Badge variant="accent" size="sm">
+              <Badge variant="teal" size="sm" shape="pill">
                 {pendingDiffsCount} AI Diffs
               </Badge>
             )}
           </div>
         </div>
 
-        <CardTitle className="group-hover:text-primary transition-colors text-base font-semibold leading-snug">
+        <CardTitle className="group-hover:text-[#615fff] transition-colors text-[18px] font-semibold leading-snug">
           {title}
         </CardTitle>
-        <CardDescription className="line-clamp-2 text-xs text-muted-foreground leading-relaxed">
+        <CardDescription className="line-clamp-2 text-[14px] leading-[1.43]">
           {excerpt}
         </CardDescription>
       </CardHeader>
@@ -107,19 +108,20 @@ export function ArticleCard({
               key={topic}
               variant="secondary"
               size="sm"
-              className="font-mono text-[10px]"
+              shape="tag"
+              className="font-mono text-[11px]"
             >
               {topic}
             </Badge>
           ))}
         </div>
 
-        {/* Stale Alert if applicable (AGENTS.md § 20) */}
+        {/* Stale Alert if applicable (design.md: Terracotta accent) */}
         {isStale && (
-          <div className="flex items-start gap-2 rounded-md border border-warning/30 bg-warning/5 p-2 text-[11px] text-muted-foreground leading-snug">
-            <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2.5 rounded-[8px] border border-[#d97757]/40 bg-[#d97757]/5 p-3 text-[12px] text-[#79716b] dark:text-[#a6a09b] leading-snug">
+            <AlertTriangle className="h-4 w-4 text-[#d97757] shrink-0 mt-0.5" />
             <span className="flex-1">
-              <strong className="text-foreground font-medium">
+              <strong className="text-[#292524] dark:text-[#fafaf9] font-medium">
                 Stale content alert:{' '}
               </strong>
               {staleReason || 'Referenced packages or APIs have changed.'}
@@ -128,17 +130,17 @@ export function ArticleCard({
         )}
       </CardContent>
 
-      <CardFooter className="flex items-center justify-between border-t border-border/40 pt-3">
-        <span className="text-[11px] text-muted-foreground font-mono">
+      <CardFooter className="flex items-center justify-between border-t border-[#e7e5e4] dark:border-[#292524] pt-3">
+        <span className="text-[12px] text-[#79716b] dark:text-[#a6a09b] font-mono">
           {readingTime}
         </span>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {pendingDiffsCount > 0 && (
             <Button
               variant="outline"
               size="xs"
               onClick={() => onReviewDiffs?.(id)}
-              className="text-xs text-primary hover:bg-primary/10"
+              className="text-xs text-[#615fff] hover:border-[#615fff]"
             >
               Review Diffs
             </Button>

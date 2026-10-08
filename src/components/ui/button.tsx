@@ -6,39 +6,48 @@ import { cn } from '#/lib/utils'
 
 const buttonVariants = cva(
   [
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium select-none',
-    'rounded-md cursor-pointer',
-    'transition-[transform,background-color,border-color,color,box-shadow,opacity] duration-150 ease-out',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
-    // Emil & Better-UI press physics: scale(0.96) only when not disabled
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap select-none',
+    'rounded-[8px] cursor-pointer font-sans',
+    'transition-[transform,background-color,border-color,color,opacity] duration-150 ease-out',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+    // Emil Kowalski press physics: scale(0.96) only when not disabled
     'enabled:active:scale-[0.96]',
     // Disabled state
-    'disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed',
+    'disabled:pointer-events-none disabled:opacity-40 disabled:cursor-not-allowed',
   ],
   {
     variants: {
       variant: {
+        // Primary CTA (Electric Indigo #615fff, hover Deep Violet #4f39f6 per design.md)
         default:
-          'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 active:bg-primary/95',
-        secondary:
-          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 border border-border/40',
+          'bg-[#615fff] text-white font-semibold uppercase tracking-[0.04em] hover:bg-[#4f39f6] active:bg-[#4f39f6]',
+        // Ghost Outline (Stone Mist border #e7e5e4, Charcoal text #292524 per design.md)
         outline:
-          'border border-border bg-background text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground',
+          'bg-transparent border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-semibold uppercase tracking-[0.04em] hover:border-[#292524] dark:hover:border-[#fafaf9]',
+        // Ghost Text Only
         ghost:
-          'text-foreground hover:bg-accent hover:text-accent-foreground active:bg-accent/80',
-        link: 'text-primary underline-offset-4 hover:underline p-0 h-auto font-normal enabled:active:scale-100',
+          'bg-transparent text-[#292524] dark:text-[#fafaf9] font-semibold uppercase tracking-[0.04em] hover:bg-stone-200/50 dark:hover:bg-stone-800/50',
+        // Secondary Flat Surface
+        secondary:
+          'bg-[#ffffff] dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-medium text-xs hover:border-[#292524]/60',
+        // Arrow Link (Geist Mono 12px uppercase tracked 0.04em per design.md)
+        arrow:
+          'font-mono text-xs font-medium uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] p-0 h-auto hover:opacity-60 enabled:active:scale-100',
+        // Destructive / Alarm Red (#ff0000)
         destructive:
-          'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90',
-        subtle:
-          'bg-accent/60 text-accent-foreground hover:bg-accent active:bg-accent/90',
+          'bg-[#ff0000] text-white font-semibold uppercase tracking-[0.04em] hover:bg-[#d90000]',
+        // Lichen Green Accent
         success:
-          'bg-success text-success-foreground shadow-xs hover:bg-success/90',
+          'bg-[#5ea500] text-white font-semibold uppercase tracking-[0.04em] hover:bg-[#529000]',
+        // Standard Text Link
+        link:
+          'text-[#007ebb] hover:underline p-0 h-auto font-normal enabled:active:scale-100',
       },
       size: {
-        default: 'h-9 px-4 py-2 text-sm',
-        xs: 'h-7 px-2.5 text-xs rounded-sm',
+        default: 'h-[42px] px-4 py-2.5 text-[14px]',
         sm: 'h-8 px-3 text-xs',
-        lg: 'h-10 px-6 text-base',
+        xs: 'h-7 px-2.5 text-[11px]',
+        lg: 'h-12 px-6 text-[15px]',
         icon: 'h-9 w-9 p-0',
         'icon-sm': 'h-7 w-7 p-0',
       },
@@ -54,8 +63,7 @@ const buttonVariants = cva(
 )
 
 export interface ButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   isLoading?: boolean
   leftIcon?: React.ReactNode
@@ -81,9 +89,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(
-          buttonVariants({ variant, size, static: isStatic, className }),
-        )}
+        className={cn(buttonVariants({ variant, size, static: isStatic, className }))}
         disabled={disabled || isLoading}
         aria-busy={isLoading}
         {...props}

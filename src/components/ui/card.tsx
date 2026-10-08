@@ -4,19 +4,28 @@ import { cn } from '#/lib/utils'
 export const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    variant?: 'default' | 'subtle' | 'outline' | 'interactive'
+    variant?: 'default' | 'showcase' | 'feature' | 'subtle' | 'outline' | 'interactive'
   }
 >(({ className, variant = 'default', ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      'rounded-lg border text-card-foreground transition-[border-color,box-shadow,transform] duration-150 ease-out',
-      // Better-ui: clean surface, forced-colors mode border compatibility
+      'border text-card-foreground transition-[border-color,box-shadow,transform] duration-150 ease-out',
+      // AutoSend design.md: cards are flat and weightless, with soft shadow ONLY on showcase
       {
-        'bg-card border-border/80 shadow-xs': variant === 'default',
-        'bg-secondary/40 border-border/50': variant === 'subtle',
-        'bg-transparent border-border': variant === 'outline',
-        'bg-card border-border/80 shadow-xs hover:border-foreground/30 hover:shadow-sm cursor-pointer enabled:active:scale-[0.99]':
+        'rounded-[16px] bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524]':
+          variant === 'default',
+        // Product Showcase Card (design.md § Surfaces & Elevation)
+        'rounded-[16px] bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524] shadow-showcase':
+          variant === 'showcase',
+        // Feature Card in 3-column grid (design.md: 8px radius, 24px padding)
+        'rounded-[8px] bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524] p-6':
+          variant === 'feature',
+        'rounded-[12px] bg-[#fafaf9] dark:bg-[#1f1c1a] border-[#e7e5e4] dark:border-[#292524]':
+          variant === 'subtle',
+        'rounded-[12px] bg-transparent border-[#e7e5e4] dark:border-[#292524]':
+          variant === 'outline',
+        'rounded-[16px] bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524] hover:border-[#292524]/60 cursor-pointer enabled:active:scale-[0.99]':
           variant === 'interactive',
       },
       className,
@@ -32,7 +41,7 @@ export const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex flex-col space-y-1.5 p-5 pb-3', className)}
+    className={cn('flex flex-col space-y-1.5 p-6 pb-3', className)}
     {...props}
   />
 ))
@@ -45,8 +54,8 @@ export const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      // Better-typography: headings at normal font-style (no italic headers per hallmark), tracking -0.01em
-      'text-base font-semibold leading-snug tracking-tight text-foreground',
+      // design.md: Geist 18px weight 600 Charcoal (#292524)
+      'text-[18px] font-semibold leading-snug tracking-tight text-[#292524] dark:text-[#fafaf9]',
       className,
     )}
     {...props}
@@ -60,7 +69,11 @@ export const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-xs text-muted-foreground leading-relaxed', className)}
+    className={cn(
+      // design.md: Geist 14px weight 400 Bark Grey (#79716b), 1.43 line-height
+      'text-[14px] text-[#79716b] dark:text-[#a6a09b] leading-[1.43]',
+      className,
+    )}
     {...props}
   />
 ))
@@ -72,7 +85,7 @@ export const CardContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('p-5 pt-0 text-sm leading-relaxed', className)}
+    className={cn('p-6 pt-0 text-[14px] leading-relaxed text-[#79716b] dark:text-[#a6a09b]', className)}
     {...props}
   />
 ))
@@ -85,7 +98,7 @@ export const CardFooter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex items-center justify-between p-5 pt-0 text-xs text-muted-foreground',
+      'flex items-center justify-between p-6 pt-0 text-xs text-[#79716b] dark:text-[#a6a09b]',
       className,
     )}
     {...props}

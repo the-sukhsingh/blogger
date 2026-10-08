@@ -1,374 +1,156 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme inline {
-  --font-sans:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: 'Lora', 'Playfair Display', 'Cooper LtBT', Georgia, serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
+  /* AutoSend Specific Color Tokens from design.md */
+  --color-warm-bone: #fafaf9;
+  --color-paper-white: #ffffff;
+  --color-stone-mist: #e7e5e4;
+  --color-bark-grey: #79716b;
+  --color-charcoal: #292524;
+  --color-obsidian: #0c0a09;
+  --color-pebble: #a6a09b;
+  --color-electric-indigo: #615fff;
+  --color-deep-violet: #4f39f6;
+  --color-terracotta: #d97757;
+  --color-lichen-green: #5ea500;
+  --color-tide-teal: #22b8cd;
+  --color-alarm-red: #ff0000;
+  --color-sapphire-link: #007ebb;
+
+  /* Semantic UI Tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
-
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
-
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  /* Precise Border Radii from design.md */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
 }
 
 /* =====================================================================
-   Base CSS & Theme Tokens (Light / Dark Mode + Swappable Themes)
-   Inspired by AGENTS.md: Clean, minimal, technical publishing system
+   AutoSend Style Reference (design.md)
+   "Warm stone atelier with a single violet spark — where serif headlines
+   and electric-indigo CTAs share the same quiet off-white room."
    ===================================================================== */
 
 :root {
-  /* Default Theme: Zinc (Minimalist Technical Editorial) */
-  --background: oklch(0.99 0 0);
-  --foreground: oklch(0.18 0.005 260);
+  /* Canvas: Warm Bone (#fafaf9) */
+  --background: #fafaf9;
+  /* Primary text: Charcoal (#292524) */
+  --foreground: #292524;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.005 260);
+  /* Card surface: Paper White (#ffffff) layered above Warm Bone */
+  --card: #ffffff;
+  --card-foreground: #292524;
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.005 260);
+  --popover: #ffffff;
+  --popover-foreground: #292524;
 
-  --primary: oklch(0.18 0.005 260);
-  --primary-foreground: oklch(0.99 0 0);
+  /* The singular chromatic spark: Electric Indigo (#615fff) */
+  --primary: #615fff;
+  --primary-foreground: #ffffff;
 
-  --secondary: oklch(0.96 0.004 260);
-  --secondary-foreground: oklch(0.24 0.01 260);
+  /* Secondary: Warm Bone with hairline Stone Mist */
+  --secondary: #fafaf9;
+  --secondary-foreground: #292524;
 
-  --muted: oklch(0.96 0.004 260);
-  --muted-foreground: oklch(0.48 0.01 260);
+  /* Muted text: Bark Grey (#79716b) */
+  --muted: #fafaf9;
+  --muted-foreground: #79716b;
 
-  --accent: oklch(0.95 0.005 260);
-  --accent-foreground: oklch(0.18 0.005 260);
+  --accent: #f5f5f4;
+  --accent-foreground: #292524;
 
-  --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(0.99 0 0);
+  /* Supporting accents from design.md */
+  --destructive: #ff0000; /* Alarm Red */
+  --destructive-foreground: #ffffff;
 
-  --success: oklch(0.56 0.16 145);
-  --success-foreground: oklch(0.99 0 0);
+  --success: #5ea500; /* Lichen Green */
+  --success-foreground: #ffffff;
 
-  --warning: oklch(0.68 0.16 75);
-  --warning-foreground: oklch(0.18 0 0);
+  --warning: #d97757; /* Terracotta */
+  --warning-foreground: #ffffff;
 
-  --border: oklch(0.91 0.005 260);
-  --input: oklch(0.91 0.005 260);
-  --ring: oklch(0.35 0.01 260);
+  /* Hairline stone border: Stone Mist (#e7e5e4) */
+  --border: #e7e5e4;
+  --input: #e7e5e4;
+  --ring: #615fff;
 
-  --radius: 0.5rem;
+  --radius: 8px;
 }
 
-/* Dark mode default (Zinc) */
+/* Dark mode: Warm Stone Atelier Dark */
 .dark,
-[data-mode='dark'] {
-  --background: oklch(0.14 0.005 260);
-  --foreground: oklch(0.96 0.003 260);
+[data-mode="dark"] {
+  /* Canvas: Obsidian (#0c0a09) */
+  --background: #0c0a09;
+  /* Primary text: Warm Bone (#fafaf9) */
+  --foreground: #fafaf9;
 
-  --card: oklch(0.17 0.005 260);
-  --card-foreground: oklch(0.96 0.003 260);
+  /* Elevated stone panel */
+  --card: #171514;
+  --card-foreground: #fafaf9;
 
-  --popover: oklch(0.17 0.005 260);
-  --popover-foreground: oklch(0.96 0.003 260);
+  --popover: #171514;
+  --popover-foreground: #fafaf9;
 
-  --primary: oklch(0.96 0.003 260);
-  --primary-foreground: oklch(0.14 0.005 260);
+  /* Electric Indigo maintains high contrast */
+  --primary: #615fff;
+  --primary-foreground: #ffffff;
 
-  --secondary: oklch(0.22 0.006 260);
-  --secondary-foreground: oklch(0.96 0.003 260);
+  --secondary: #1f1c1a;
+  --secondary-foreground: #fafaf9;
 
-  --muted: oklch(0.22 0.006 260);
-  --muted-foreground: oklch(0.64 0.008 260);
+  /* Muted text: Pebble (#a6a09b) */
+  --muted: #1f1c1a;
+  --muted-foreground: #a6a09b;
 
-  --accent: oklch(0.24 0.006 260);
-  --accent-foreground: oklch(0.96 0.003 260);
+  --accent: #262321;
+  --accent-foreground: #fafaf9;
 
-  --destructive: oklch(0.62 0.22 25);
-  --destructive-foreground: oklch(0.99 0 0);
+  --destructive: #ff3333;
+  --destructive-foreground: #ffffff;
 
-  --success: oklch(0.64 0.16 145);
-  --success-foreground: oklch(0.14 0 0);
+  --success: #65b804;
+  --success-foreground: #ffffff;
 
-  --warning: oklch(0.72 0.16 75);
-  --warning-foreground: oklch(0.14 0 0);
+  --warning: #e08265;
+  --warning-foreground: #ffffff;
 
-  --border: oklch(0.26 0.006 260);
-  --input: oklch(0.26 0.006 260);
-  --ring: oklch(0.75 0.005 260);
-}
-
-/* ---------------------------------------------------------------------
-   Theme 2: Warm Paper (Tactile Bookish Editorial)
-   --------------------------------------------------------------------- */
-[data-theme='paper'] {
-  --background: oklch(0.975 0.015 80);
-  --foreground: oklch(0.22 0.02 50);
-
-  --card: oklch(0.99 0.01 80);
-  --card-foreground: oklch(0.22 0.02 50);
-
-  --popover: oklch(0.99 0.01 80);
-  --popover-foreground: oklch(0.22 0.02 50);
-
-  --primary: oklch(0.35 0.06 45);
-  --primary-foreground: oklch(0.98 0.01 80);
-
-  --secondary: oklch(0.94 0.02 80);
-  --secondary-foreground: oklch(0.25 0.03 50);
-
-  --muted: oklch(0.94 0.02 80);
-  --muted-foreground: oklch(0.5 0.025 60);
-
-  --accent: oklch(0.92 0.03 75);
-  --accent-foreground: oklch(0.25 0.04 45);
-
-  --border: oklch(0.88 0.02 80);
-  --input: oklch(0.88 0.02 80);
-  --ring: oklch(0.45 0.06 45);
-  --radius: 0.375rem;
-}
-
-[data-theme='paper'].dark,
-[data-theme='paper'][data-mode='dark'] {
-  --background: oklch(0.16 0.015 55);
-  --foreground: oklch(0.94 0.012 75);
-
-  --card: oklch(0.19 0.015 55);
-  --card-foreground: oklch(0.94 0.012 75);
-
-  --popover: oklch(0.19 0.015 55);
-  --popover-foreground: oklch(0.94 0.012 75);
-
-  --primary: oklch(0.92 0.02 75);
-  --primary-foreground: oklch(0.16 0.015 55);
-
-  --secondary: oklch(0.24 0.015 55);
-  --secondary-foreground: oklch(0.92 0.012 75);
-
-  --muted: oklch(0.24 0.015 55);
-  --muted-foreground: oklch(0.66 0.02 70);
-
-  --accent: oklch(0.26 0.018 55);
-  --accent-foreground: oklch(0.94 0.012 75);
-
-  --border: oklch(0.28 0.015 55);
-  --input: oklch(0.28 0.015 55);
-  --ring: oklch(0.7 0.03 65);
-}
-
-/* ---------------------------------------------------------------------
-   Theme 3: Terminal / Codebase ("Treat a blog like a codebase")
-   --------------------------------------------------------------------- */
-[data-theme='terminal'] {
-  --background: oklch(0.985 0 0);
-  --foreground: oklch(0.15 0 0);
-
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0 0);
-
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
-
-  --primary: oklch(0.15 0 0);
-  --primary-foreground: oklch(1 0 0);
-
-  --secondary: oklch(0.95 0 0);
-  --secondary-foreground: oklch(0.2 0 0);
-
-  --muted: oklch(0.95 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-
-  --accent: oklch(0.94 0.02 145);
-  --accent-foreground: oklch(0.2 0.03 145);
-
-  --border: oklch(0.88 0 0);
-  --input: oklch(0.88 0 0);
-  --ring: oklch(0.3 0 0);
-  --radius: 0.125rem;
-}
-
-[data-theme='terminal'].dark,
-[data-theme='terminal'][data-mode='dark'] {
-  --background: oklch(0.1 0 0);
-  --foreground: oklch(0.95 0 0);
-
-  --card: oklch(0.13 0 0);
-  --card-foreground: oklch(0.95 0 0);
-
-  --popover: oklch(0.13 0 0);
-  --popover-foreground: oklch(0.95 0 0);
-
-  --primary: oklch(0.92 0.02 145);
-  --primary-foreground: oklch(0.1 0 0);
-
-  --secondary: oklch(0.18 0 0);
-  --secondary-foreground: oklch(0.92 0 0);
-
-  --muted: oklch(0.18 0 0);
-  --muted-foreground: oklch(0.6 0 0);
-
-  --accent: oklch(0.2 0.03 145);
-  --accent-foreground: oklch(0.95 0.03 145);
-
-  --border: oklch(0.22 0 0);
-  --input: oklch(0.22 0 0);
-  --ring: oklch(0.8 0.05 145);
-}
-
-/* ---------------------------------------------------------------------
-   Theme 4: Cobalt (Engineering & Technical Systems)
-   --------------------------------------------------------------------- */
-[data-theme='cobalt'] {
-  --background: oklch(0.99 0.005 250);
-  --foreground: oklch(0.18 0.02 260);
-
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 260);
-
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 260);
-
-  --primary: oklch(0.48 0.18 255);
-  --primary-foreground: oklch(0.99 0 0);
-
-  --secondary: oklch(0.95 0.01 250);
-  --secondary-foreground: oklch(0.22 0.04 260);
-
-  --muted: oklch(0.95 0.01 250);
-  --muted-foreground: oklch(0.5 0.03 250);
-
-  --accent: oklch(0.93 0.025 250);
-  --accent-foreground: oklch(0.3 0.1 255);
-
-  --border: oklch(0.9 0.015 250);
-  --input: oklch(0.9 0.015 250);
-  --ring: oklch(0.55 0.18 255);
-  --radius: 0.5rem;
-}
-
-[data-theme='cobalt'].dark,
-[data-theme='cobalt'][data-mode='dark'] {
-  --background: oklch(0.14 0.015 260);
-  --foreground: oklch(0.96 0.008 250);
-
-  --card: oklch(0.17 0.018 260);
-  --card-foreground: oklch(0.96 0.008 250);
-
-  --popover: oklch(0.17 0.018 260);
-  --popover-foreground: oklch(0.96 0.008 250);
-
-  --primary: oklch(0.65 0.18 255);
-  --primary-foreground: oklch(0.12 0.01 260);
-
-  --secondary: oklch(0.22 0.02 260);
-  --secondary-foreground: oklch(0.95 0.01 250);
-
-  --muted: oklch(0.22 0.02 260);
-  --muted-foreground: oklch(0.66 0.02 250);
-
-  --accent: oklch(0.25 0.03 260);
-  --accent-foreground: oklch(0.9 0.05 250);
-
-  --border: oklch(0.26 0.02 260);
-  --input: oklch(0.26 0.02 260);
-  --ring: oklch(0.65 0.18 255);
-}
-
-/* ---------------------------------------------------------------------
-   Theme 5: Sage / Forest (Calm Focused Technical Writing)
-   --------------------------------------------------------------------- */
-[data-theme='forest'] {
-  --background: oklch(0.985 0.008 150);
-  --foreground: oklch(0.18 0.02 150);
-
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 150);
-
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 150);
-
-  --primary: oklch(0.42 0.1 150);
-  --primary-foreground: oklch(0.99 0 0);
-
-  --secondary: oklch(0.95 0.012 150);
-  --secondary-foreground: oklch(0.22 0.03 150);
-
-  --muted: oklch(0.95 0.012 150);
-  --muted-foreground: oklch(0.5 0.025 150);
-
-  --accent: oklch(0.92 0.03 150);
-  --accent-foreground: oklch(0.25 0.05 150);
-
-  --border: oklch(0.9 0.015 150);
-  --input: oklch(0.9 0.015 150);
-  --ring: oklch(0.45 0.1 150);
-  --radius: 0.5rem;
-}
-
-[data-theme='forest'].dark,
-[data-theme='forest'][data-mode='dark'] {
-  --background: oklch(0.14 0.012 150);
-  --foreground: oklch(0.96 0.008 150);
-
-  --card: oklch(0.17 0.014 150);
-  --card-foreground: oklch(0.96 0.008 150);
-
-  --popover: oklch(0.17 0.014 150);
-  --popover-foreground: oklch(0.96 0.008 150);
-
-  --primary: oklch(0.68 0.12 150);
-  --primary-foreground: oklch(0.12 0.01 150);
-
-  --secondary: oklch(0.22 0.016 150);
-  --secondary-foreground: oklch(0.95 0.01 150);
-
-  --muted: oklch(0.22 0.016 150);
-  --muted-foreground: oklch(0.65 0.02 150);
-
-  --accent: oklch(0.25 0.025 150);
-  --accent-foreground: oklch(0.92 0.04 150);
-
-  --border: oklch(0.26 0.018 150);
-  --input: oklch(0.26 0.018 150);
-  --ring: oklch(0.65 0.12 150);
+  /* Hairline stone border: Charcoal (#292524) */
+  --border: #292524;
+  --input: #292524;
+  --ring: #615fff;
 }
 
 /* =====================================================================
-   Global Resets & Typography Foundations
+   Global Resets, Surfaces & Micro-typography
    ===================================================================== */
 * {
   box-sizing: border-box;
@@ -388,10 +170,34 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   line-height: 1.5;
-  letter-spacing: -0.01em;
 }
 
-/* Suppress color transition smearing during theme switch (better-ui) */
+/* Cooper / Lora Display Headline styling */
+.font-display {
+  font-family: var(--font-serif);
+}
+
+/* Section Eyebrow Tag: Geist Mono 12px weight 600 tracked 0.10em (design.md) */
+.eyebrow-tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-bark-grey);
+}
+
+/* Button & tag micro-label tracking (0.04em per design.md) */
+.tracking-micro {
+  letter-spacing: 0.04em;
+}
+
+/* The single elevated shadow allowed in design.md */
+.shadow-showcase {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+}
+
+/* Suppress transition smearing during theme toggle (better-ui) */
 .theme-transition-disabled,
 .theme-transition-disabled *,
 .theme-transition-disabled *::before,
@@ -399,20 +205,18 @@ body {
   transition: none !important;
 }
 
-/* Selection style */
+/* Selection style with electric indigo spark */
 ::selection {
-  background-color: var(--accent);
-  color: var(--accent-foreground);
+  background-color: #615fff;
+  color: #ffffff;
 }
 
-/* Tabular numerals for stats and numbers */
+/* Tabular numerals for stats bar */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Code typography */
-code,
-pre,
-kbd {
+/* Code block typography (design.md) */
+code, pre, kbd {
   font-family: var(--font-mono);
 }

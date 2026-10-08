@@ -159,7 +159,7 @@ export function SlashCommandMenu({
   return (
     <div
       className={cn(
-        'w-80 rounded-xl border border-border bg-popover p-2 text-popover-foreground shadow-lg overflow-hidden',
+        'w-80 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-2 text-[#292524] dark:text-[#fafaf9] shadow-lg overflow-hidden',
         // Emil Kowalski principle: Origin aware scale
         'animate-in fade-in zoom-in-95 duration-125 ease-out',
         className,
@@ -167,21 +167,21 @@ export function SlashCommandMenu({
       onKeyDown={handleKeyDown}
     >
       <div className="relative mb-2 px-1">
-        <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+        <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#a6a09b]" />
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Filter commands..."
-          className="w-full rounded-md bg-secondary/50 py-1.5 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          className="w-full rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] py-1.5 pl-8 pr-3 text-xs text-[#292524] dark:text-[#fafaf9] placeholder:text-[#a6a09b] focus:outline-none focus:border-[#615fff]"
           autoFocus
         />
       </div>
 
       <div className="max-h-64 overflow-y-auto space-y-1 pr-1 overscroll-contain">
         {filteredItems.length === 0 ? (
-          <div className="p-4 text-center text-xs text-muted-foreground">
+          <div className="p-4 text-center text-xs text-[#79716b] dark:text-[#a6a09b]">
             No matching command
           </div>
         ) : (
@@ -194,14 +194,14 @@ export function SlashCommandMenu({
                 onClick={() => onSelect?.(item)}
                 onMouseEnter={() => setSelectedIndex(idx)}
                 className={cn(
-                  'flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left cursor-pointer transition-colors',
+                  'flex w-full items-center justify-between rounded-[8px] px-2.5 py-2 text-left cursor-pointer transition-colors',
                   isSelected
-                    ? 'bg-accent text-accent-foreground'
-                    : 'text-foreground hover:bg-accent/50',
+                    ? 'bg-[#fafaf9] dark:bg-[#211f1e] text-[#292524] dark:text-[#fafaf9]'
+                    : 'text-[#292524] dark:text-[#fafaf9] hover:bg-[#fafaf9]/80 dark:hover:bg-[#211f1e]/80',
                 )}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border/60 bg-background text-muted-foreground">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] text-[#79716b] dark:text-[#a6a09b]">
                     {item.icon}
                   </div>
                   <div className="min-w-0">
@@ -209,17 +209,17 @@ export function SlashCommandMenu({
                       <span className="font-mono text-xs font-semibold">
                         {item.label}
                       </span>
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      <span className="text-[10px] text-[#79716b] dark:text-[#a6a09b] uppercase tracking-wider">
                         {item.category}
                       </span>
                     </div>
-                    <p className="truncate text-[11px] text-muted-foreground">
+                    <p className="truncate text-[11px] text-[#79716b] dark:text-[#a6a09b]">
                       {item.description}
                     </p>
                   </div>
                 </div>
                 {item.shortcut && (
-                  <kbd className="ml-2 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+                  <kbd className="ml-2 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] px-1.5 py-0.5 text-[10px] font-mono text-[#79716b] dark:text-[#a6a09b]">
                     {item.shortcut}
                   </kbd>
                 )}

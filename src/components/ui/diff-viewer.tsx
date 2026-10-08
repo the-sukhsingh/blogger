@@ -53,51 +53,44 @@ export function DiffViewer({
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-card overflow-hidden shadow-xs text-xs',
+        // design.md: rounded 16px, 1px stone mist border #e7e5e4, white panel
+        'rounded-[16px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] overflow-hidden text-xs',
         className,
       )}
     >
       {/* Diff Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 bg-secondary/30 px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] px-5 py-3.5">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <GitCommit className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold text-foreground text-sm tracking-tight">
+            <GitCommit className="h-4 w-4 text-[#79716b] dark:text-[#a6a09b]" />
+            <span className="font-semibold text-[#292524] dark:text-[#fafaf9] text-sm tracking-tight">
               {title}
             </span>
-            <div className="flex items-center gap-1.5 ml-1">
-              <Badge
-                variant="outline"
-                size="sm"
-                className="text-success border-success/30 bg-success/5 font-mono"
-              >
+            <div className="flex items-center gap-1.5 ml-2">
+              <Badge variant="lichen" size="sm">
                 +{additionsCount}
               </Badge>
-              <Badge
-                variant="outline"
-                size="sm"
-                className="text-destructive border-destructive/30 bg-destructive/5 font-mono"
-              >
+              <Badge variant="alarm" size="sm">
                 -{deletionsCount}
               </Badge>
             </div>
           </div>
           {description && (
-            <p className="text-muted-foreground">{description}</p>
+            <p className="text-[#79716b] dark:text-[#a6a09b] text-xs">{description}</p>
           )}
         </div>
 
         {/* View mode toggle & Actions */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-md border border-border bg-background p-0.5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-0.5">
             <button
               type="button"
               onClick={() => setViewMode('unified')}
               className={cn(
-                'px-2 py-1 rounded-sm text-xs font-medium cursor-pointer transition-colors',
+                'px-2 py-1 rounded-[6px] text-xs font-medium cursor-pointer transition-colors',
                 viewMode === 'unified'
-                  ? 'bg-secondary text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-[#fafaf9] dark:bg-[#292524] text-[#292524] dark:text-[#fafaf9] font-semibold'
+                  : 'text-[#79716b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
               )}
               title="Unified diff view"
             >
@@ -107,10 +100,10 @@ export function DiffViewer({
               type="button"
               onClick={() => setViewMode('split')}
               className={cn(
-                'px-2 py-1 rounded-sm text-xs font-medium cursor-pointer transition-colors',
+                'px-2 py-1 rounded-[6px] text-xs font-medium cursor-pointer transition-colors',
                 viewMode === 'split'
-                  ? 'bg-secondary text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-[#fafaf9] dark:bg-[#292524] text-[#292524] dark:text-[#fafaf9] font-semibold'
+                  : 'text-[#79716b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
               )}
               title="Split diff view"
             >
@@ -119,12 +112,12 @@ export function DiffViewer({
           </div>
 
           {status === 'pending' ? (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleReject}
-                className="text-xs h-7 px-2.5 hover:text-destructive hover:border-destructive/30"
+                className="h-8 px-3 text-xs"
               >
                 <X className="h-3 w-3 mr-1" />
                 Reject
@@ -133,7 +126,7 @@ export function DiffViewer({
                 variant="default"
                 size="sm"
                 onClick={handleAccept}
-                className="text-xs h-7 px-2.5"
+                className="h-8 px-3.5 text-xs"
               >
                 <Check className="h-3 w-3 mr-1" />
                 Accept
@@ -141,7 +134,7 @@ export function DiffViewer({
             </div>
           ) : (
             <Badge
-              variant={status === 'accepted' ? 'success' : 'muted'}
+              variant={status === 'accepted' ? 'lichen' : 'secondary'}
               size="sm"
               className="capitalize"
             >
@@ -154,25 +147,25 @@ export function DiffViewer({
       {/* Diff Content */}
       <div className="font-mono text-xs overflow-x-auto">
         {viewMode === 'unified' ? (
-          <div className="divide-y divide-border/20">
+          <div className="divide-y divide-[#e7e5e4]/50 dark:divide-[#292524]/50">
             {diffs.map((diff, idx) => (
               <div
                 key={idx}
                 className={cn(
-                  'flex items-start px-3 py-1 font-mono leading-relaxed select-text',
+                  'flex items-start px-4 py-1.5 font-mono leading-relaxed select-text',
                   {
-                    'bg-success/10 text-success-foreground border-l-2 border-success':
+                    'bg-[#5ea500]/8 text-[#292524] dark:text-[#fafaf9] border-l-2 border-[#5ea500]':
                       diff.type === 'addition',
-                    'bg-destructive/10 text-destructive border-l-2 border-destructive':
+                    'bg-[#ff0000]/8 text-[#292524] dark:text-[#fafaf9] border-l-2 border-[#ff0000]':
                       diff.type === 'deletion',
-                    'text-muted-foreground': diff.type === 'unchanged',
+                    'text-[#79716b] dark:text-[#a6a09b]': diff.type === 'unchanged',
                   },
                 )}
               >
-                <span className="w-10 shrink-0 text-right pr-3 select-none text-muted-foreground/50 tabular-nums">
+                <span className="w-10 shrink-0 text-right pr-3 select-none text-[#a6a09b] dark:text-[#79716b] tabular-nums">
                   {diff.oldLineNumber || ''}
                 </span>
-                <span className="w-10 shrink-0 text-right pr-3 select-none text-muted-foreground/50 tabular-nums">
+                <span className="w-10 shrink-0 text-right pr-3 select-none text-[#a6a09b] dark:text-[#79716b] tabular-nums">
                   {diff.newLineNumber || ''}
                 </span>
                 <span className="w-5 shrink-0 select-none font-bold">
@@ -182,17 +175,17 @@ export function DiffViewer({
                       ? '-'
                       : ' '}
                 </span>
-                <span className="flex-1 whitespace-pre-wrap break-all text-foreground">
+                <span className="flex-1 whitespace-pre-wrap break-all text-[#292524] dark:text-[#fafaf9]">
                   {diff.content}
                 </span>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 divide-x divide-border">
+          <div className="grid grid-cols-2 divide-x divide-[#e7e5e4] dark:divide-[#292524]">
             {/* Split View: Left (Original) */}
-            <div className="divide-y divide-border/20">
-              <div className="bg-muted/40 px-3 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider select-none border-b border-border/40">
+            <div className="divide-y divide-[#e7e5e4]/50 dark:divide-[#292524]/50">
+              <div className="bg-[#fafaf9] dark:bg-[#121110] px-4 py-1.5 text-[11px] font-semibold text-[#79716b] uppercase tracking-wider select-none border-b border-[#e7e5e4] dark:border-[#292524]">
                 Original
               </div>
               {diffs
@@ -201,21 +194,21 @@ export function DiffViewer({
                   <div
                     key={idx}
                     className={cn(
-                      'flex items-start px-3 py-1 leading-relaxed select-text',
+                      'flex items-start px-4 py-1.5 leading-relaxed select-text',
                       {
-                        'bg-destructive/10 text-destructive':
+                        'bg-[#ff0000]/8 text-[#292524] dark:text-[#fafaf9]':
                           diff.type === 'deletion',
-                        'text-muted-foreground': diff.type === 'unchanged',
+                        'text-[#79716b] dark:text-[#a6a09b]': diff.type === 'unchanged',
                       },
                     )}
                   >
-                    <span className="w-8 shrink-0 text-right pr-2 select-none text-muted-foreground/50 tabular-nums">
+                    <span className="w-8 shrink-0 text-right pr-2 select-none text-[#a6a09b] dark:text-[#79716b] tabular-nums">
                       {diff.oldLineNumber || ''}
                     </span>
                     <span className="w-4 shrink-0 select-none">
                       {diff.type === 'deletion' ? '-' : ' '}
                     </span>
-                    <span className="flex-1 whitespace-pre-wrap break-all text-foreground">
+                    <span className="flex-1 whitespace-pre-wrap break-all text-[#292524] dark:text-[#fafaf9]">
                       {diff.content}
                     </span>
                   </div>
@@ -223,8 +216,8 @@ export function DiffViewer({
             </div>
 
             {/* Split View: Right (Proposed) */}
-            <div className="divide-y divide-border/20">
-              <div className="bg-muted/40 px-3 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider select-none border-b border-border/40">
+            <div className="divide-y divide-[#e7e5e4]/50 dark:divide-[#292524]/50">
+              <div className="bg-[#fafaf9] dark:bg-[#121110] px-4 py-1.5 text-[11px] font-semibold text-[#79716b] uppercase tracking-wider select-none border-b border-[#e7e5e4] dark:border-[#292524]">
                 Proposed
               </div>
               {diffs
@@ -233,21 +226,21 @@ export function DiffViewer({
                   <div
                     key={idx}
                     className={cn(
-                      'flex items-start px-3 py-1 leading-relaxed select-text',
+                      'flex items-start px-4 py-1.5 leading-relaxed select-text',
                       {
-                        'bg-success/10 text-success-foreground':
+                        'bg-[#5ea500]/8 text-[#292524] dark:text-[#fafaf9]':
                           diff.type === 'addition',
-                        'text-muted-foreground': diff.type === 'unchanged',
+                        'text-[#79716b] dark:text-[#a6a09b]': diff.type === 'unchanged',
                       },
                     )}
                   >
-                    <span className="w-8 shrink-0 text-right pr-2 select-none text-muted-foreground/50 tabular-nums">
+                    <span className="w-8 shrink-0 text-right pr-2 select-none text-[#a6a09b] dark:text-[#79716b] tabular-nums">
                       {diff.newLineNumber || ''}
                     </span>
                     <span className="w-4 shrink-0 select-none">
                       {diff.type === 'addition' ? '+' : ' '}
                     </span>
-                    <span className="flex-1 whitespace-pre-wrap break-all text-foreground">
+                    <span className="flex-1 whitespace-pre-wrap break-all text-[#292524] dark:text-[#fafaf9]">
                       {diff.content}
                     </span>
                   </div>
