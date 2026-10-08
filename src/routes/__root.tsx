@@ -54,9 +54,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent selection:text-accent-foreground font-sans">
-        <ThemeProvider defaultMode="system" defaultTheme="zinc">
-          {children}
-        </ThemeProvider>
+        <ThemeProvider defaultMode="light">{children}</ThemeProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
