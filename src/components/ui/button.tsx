@@ -6,8 +6,8 @@ import { cn } from '#/lib/utils'
 
 const buttonVariants = cva(
   [
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap select-none',
-    'rounded-[8px] cursor-pointer font-sans',
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap select-none ',
+    'rounded-[8px] cursor-pointer font-sans ',
     'transition-[transform,background-color,border-color,color,opacity] duration-150 ease-out',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     // Emil Kowalski press physics: scale(0.96) only when not disabled
@@ -18,18 +18,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary CTA (Electric Indigo #615fff, hover Deep Violet #4f39f6 per design.md & image.png)
+        // Primary CTA — gradient pill with inset gloss shadow
         default:
-          'bg-[#615fff] text-white font-semibold text-xs tracking-[0.03em] hover:bg-[#4f39f6] active:bg-[#4f39f6] shadow-none',
+          'bg-linear-to-b from-[#817fff] to-[#514eff] hover:from-[#6e6dff] hover:to-[#4f39f6] active:from-[#4f39f6] active:to-[#4f39f6] text-white font-semibold text-xs uppercase tracking-[0.04em] rounded-[9px] shadow-[0_1px_0_0_rgba(255,255,255,0.2)_inset,0_-1px_2px_0_rgba(255,255,255,0.15)_inset] [text-shadow:0_1px_1px_rgba(0,0,0,0.25)]',
         // Ghost Outline (Stone Mist border #e7e5e4, Charcoal text #292524 per design.md)
         outline:
-          'bg-transparent border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-medium text-xs tracking-[0.02em] hover:border-[#292524] dark:hover:border-[#fafaf9] shadow-none',
+          'bg-transparent border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-medium text-xs tracking-[0.02em] hover:border-[#292524] dark:hover:border-[#fafaf9] ',
         // Ghost Text Only
         ghost:
           'bg-transparent text-[#292524] dark:text-[#fafaf9] font-medium text-xs tracking-[0.02em] hover:bg-stone-200/50 dark:hover:bg-stone-800/50',
         // Secondary Flat Surface
         secondary:
-          'bg-[#ffffff] dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-medium text-xs hover:border-[#292524]/60 shadow-none',
+          'bg-[#ffffff] dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] font-medium text-xs hover:border-[#292524]/60 ',
         // Arrow Link (Geist Mono 12px uppercase tracked 0.04em per design.md)
         arrow:
           'font-mono text-xs font-medium uppercase tracking-[0.04em] text-[#292524] dark:text-[#fafaf9] p-0 h-auto hover:opacity-60 enabled:active:scale-100',

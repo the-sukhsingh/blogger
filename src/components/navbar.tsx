@@ -92,11 +92,7 @@ export function Navbar() {
 
           {/* Primary CTA */}
           <Link to="/new" className="hidden sm:inline-flex">
-            <Button
-              variant="default"
-              size="sm"
-              className="h-8 px-3 text-xs font-semibold uppercase tracking-[0.04em] shadow-none bg-[#615fff] hover:bg-[#4f39f6] text-white rounded-[7px] transition-all flex items-center gap-1.5"
-            >
+            <Button variant="default" size="sm">
               <Plus className="h-3.5 w-3.5" />
               <span>New Post</span>
             </Button>
@@ -162,11 +158,7 @@ export function Navbar() {
 
           <div className="pt-2 border-t border-[#e7e5e4] dark:border-[#292524]">
             <Link to="/new" className="block w-full">
-              <Button
-                variant="default"
-                size="sm"
-                className="w-full h-8 text-xs font-semibold uppercase tracking-[0.04em] bg-[#615fff] hover:bg-[#4f39f6] text-white rounded-[7px] justify-center"
-              >
+              <Button variant="default" size="sm" className="w-full justify-center">
                 <Plus className="h-3.5 w-3.5 mr-1" />
                 <span>New Post</span>
               </Button>
