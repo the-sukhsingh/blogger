@@ -20,10 +20,24 @@ import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '#/components/ui/dialog'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '#/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '#/components/ui/dialog'
 import { DiffViewer } from '#/components/ui/diff-viewer'
-import { BlogStore, type Article } from '#/lib/blog-store'
+import { BlogStore } from '#/lib/blog-store'
+import type { Article } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/blogs')({
@@ -35,9 +49,14 @@ function BlogsIndexPage() {
   const [articles, setArticles] = React.useState<Article[]>([])
   const [searchQuery, setSearchQuery] = React.useState('')
   const [selectedTopic, setSelectedTopic] = React.useState<string>('All')
-  const [selectedStatus, setSelectedStatus] = React.useState<'all' | 'high' | 'stale' | 'draft'>('all')
-  const [activeTab, setActiveTab] = React.useState<'grid' | 'graph' | 'gaps'>('grid')
-  const [diffModalArticle, setDiffModalArticle] = React.useState<Article | null>(null)
+  const [selectedStatus, setSelectedStatus] = React.useState<
+    'all' | 'high' | 'stale' | 'draft'
+  >('all')
+  const [activeTab, setActiveTab] = React.useState<'grid' | 'graph' | 'gaps'>(
+    'grid',
+  )
+  const [diffModalArticle, setDiffModalArticle] =
+    React.useState<Article | null>(null)
 
   // Load articles from localStorage on mount
   React.useEffect(() => {
@@ -58,9 +77,12 @@ function BlogsIndexPage() {
         searchQuery === '' ||
         art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         art.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        art.topics.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
+        art.topics.some((t) =>
+          t.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
 
-      const matchesTopic = selectedTopic === 'All' || art.topics.includes(selectedTopic)
+      const matchesTopic =
+        selectedTopic === 'All' || art.topics.includes(selectedTopic)
 
       let matchesStatus = true
       if (selectedStatus === 'high') matchesStatus = art.healthScore >= 85
@@ -74,7 +96,12 @@ function BlogsIndexPage() {
   // Aggregate stats
   const stats = React.useMemo(() => {
     const total = articles.length
-    const avgHealth = total > 0 ? Math.round(articles.reduce((acc, a) => acc + a.healthScore, 0) / total) : 0
+    const avgHealth =
+      total > 0
+        ? Math.round(
+            articles.reduce((acc, a) => acc + a.healthScore, 0) / total,
+          )
+        : 0
     const staleCount = articles.filter((a) => a.isStale).length
     const entityCount = new Set(articles.flatMap((a) => a.entities)).size
     return { total, avgHealth, staleCount, entityCount }
@@ -82,7 +109,11 @@ function BlogsIndexPage() {
 
   const handleDeleteArticle = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    if (window.confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+    if (
+      window.confirm(
+        'Are you sure you want to delete this article? This action cannot be undone.',
+      )
+    ) {
       BlogStore.deleteArticle(id)
       setArticles(BlogStore.getArticles())
     }
@@ -119,10 +150,13 @@ function BlogsIndexPage() {
             AGENT PUBLISHING WORKSPACE · PUBLICATION INTELLIGENCE
           </div>
           <h1 className="font-display text-4xl sm:text-5xl lg:text-[54px] font-normal tracking-tight text-[#292524] dark:text-[#fafaf9] leading-[1.12]">
-            Your technical publication, <span className="italic">understood</span>.
+            Your technical publication,{' '}
+            <span className="italic">understood</span>.
           </h1>
           <p className="text-[#79716b] dark:text-[#a6a09b] text-base sm:text-lg leading-relaxed">
-            Treat your technical blog like a living codebase. Maintain internal links, evaluate AEO readiness, detect stale dependencies, and optimize search discoverability across every post.
+            Treat your technical blog like a living codebase. Maintain internal
+            links, evaluate AEO readiness, detect stale dependencies, and
+            optimize search discoverability across every post.
           </p>
         </div>
 
@@ -338,7 +372,9 @@ function BlogsIndexPage() {
                     <Card
                       key={art.id}
                       className="group flex flex-col justify-between border-[#e7e5e4] dark:border-[#292524] hover:border-[#292524] dark:hover:border-[#fafaf9] transition-all duration-200 cursor-pointer bg-white dark:bg-[#171514]"
-                      onClick={() => navigate({ to: '/blog/$id', params: { id: art.id } })}
+                      onClick={() =>
+                        navigate({ to: '/blog/$id', params: { id: art.id } })
+                      }
                     >
                       <CardHeader className="space-y-3 pb-3">
                         {/* Top row: Git info & Health gauge */}
@@ -361,7 +397,9 @@ function BlogsIndexPage() {
                             >
                               Health {art.healthScore}%
                             </span>
-                            {art.proposedDiffs.some((d) => d.status === 'pending') && (
+                            {art.proposedDiffs.some(
+                              (d) => d.status === 'pending',
+                            ) && (
                               <span className="px-2 py-0.5 rounded-full font-mono text-[11px] font-bold bg-[#615fff]/10 text-[#615fff] border border-[#615fff]/30">
                                 AI Diff
                               </span>
@@ -405,7 +443,9 @@ function BlogsIndexPage() {
                                 Stale Content:
                               </span>{' '}
                               {art.staleReason}
-                              {art.proposedDiffs.some((d) => d.status === 'pending') && (
+                              {art.proposedDiffs.some(
+                                (d) => d.status === 'pending',
+                              ) && (
                                 <button
                                   onClick={() => setDiffModalArticle(art)}
                                   className="block text-[#615fff] font-medium hover:underline mt-1"
@@ -470,7 +510,8 @@ function BlogsIndexPage() {
                   Publication Knowledge Graph
                 </h3>
                 <p className="text-sm text-[#79716b] dark:text-[#a6a09b]">
-                  Visualizing conceptual dependencies, internal links, and topic clusters across your blog repository.
+                  Visualizing conceptual dependencies, internal links, and topic
+                  clusters across your blog repository.
                 </p>
               </div>
 
@@ -488,7 +529,9 @@ function BlogsIndexPage() {
                       <span className="font-mono text-xs font-bold text-[#615fff] uppercase">
                         Cluster: AI Agents & MCP
                       </span>
-                      <span className="text-[10px] font-mono text-[#79716b]">Hub Node</span>
+                      <span className="text-[10px] font-mono text-[#79716b]">
+                        Hub Node
+                      </span>
                     </div>
                     <div className="space-y-1.5 text-xs">
                       <Link
@@ -510,7 +553,9 @@ function BlogsIndexPage() {
                       <span className="font-mono text-xs font-bold text-[#d97757] uppercase">
                         Cluster: Vector Databases & RAG
                       </span>
-                      <span className="text-[10px] font-mono text-[#d97757]">Needs Refresh</span>
+                      <span className="text-[10px] font-mono text-[#d97757]">
+                        Needs Refresh
+                      </span>
                     </div>
                     <div className="space-y-1.5 text-xs">
                       <Link
@@ -532,7 +577,9 @@ function BlogsIndexPage() {
                       <span className="font-mono text-xs font-bold text-[#5ea500] uppercase">
                         Cluster: RAG Pipeline Security
                       </span>
-                      <span className="text-[10px] font-mono text-[#5ea500]">Fresh (92%)</span>
+                      <span className="text-[10px] font-mono text-[#5ea500]">
+                        Fresh (92%)
+                      </span>
                     </div>
                     <div className="space-y-1.5 text-xs">
                       <Link
@@ -554,7 +601,9 @@ function BlogsIndexPage() {
                       <span className="font-mono text-xs font-bold text-[#22b8cd] uppercase">
                         Cluster: Content Architecture & Git
                       </span>
-                      <span className="text-[10px] font-mono text-[#79716b]">Foundational</span>
+                      <span className="text-[10px] font-mono text-[#79716b]">
+                        Foundational
+                      </span>
                     </div>
                     <div className="space-y-1.5 text-xs">
                       <Link
@@ -577,7 +626,8 @@ function BlogsIndexPage() {
 
                 <div className="pt-6 border-t border-[#e7e5e4] dark:border-[#292524] flex items-center justify-between text-xs text-[#79716b]">
                   <span className="font-mono">
-                    ✦ Connected knowledge graphs prevent duplicate posts and guide strategic linking.
+                    ✦ Connected knowledge graphs prevent duplicate posts and
+                    guide strategic linking.
                   </span>
                   <Link
                     to="/new"
@@ -603,7 +653,8 @@ function BlogsIndexPage() {
                   Content Gap Analysis & Next Post Recommendations
                 </h3>
                 <p className="text-sm text-[#79716b] dark:text-[#a6a09b]">
-                  The Publication Analyst examined your {articles.length} posts and discovered high-leverage missing concepts.
+                  The Publication Analyst examined your {articles.length} posts
+                  and discovered high-leverage missing concepts.
                 </p>
               </div>
 
@@ -614,27 +665,46 @@ function BlogsIndexPage() {
                     <Badge variant="indigo" size="sm" shape="pill">
                       High Impact Gap
                     </Badge>
-                    <span className="text-[11px] font-mono text-[#79716b]">Estimated 8 min read</span>
+                    <span className="text-[11px] font-mono text-[#79716b]">
+                      Estimated 8 min read
+                    </span>
                   </div>
 
                   <h4 className="text-base font-semibold text-[#292524] dark:text-[#fafaf9]">
-                    Evaluating Persistent Agent Memory: Short-Term vs Long-Term Reflection
+                    Evaluating Persistent Agent Memory: Short-Term vs Long-Term
+                    Reflection
                   </h4>
 
                   <div className="text-xs text-[#79716b] dark:text-[#a6a09b] space-y-1.5 leading-relaxed">
-                    <p>• You have 3 articles on MCP and RAG, but agent state and episodic memory are never defined.</p>
-                    <p>• Connects directly to: <em>Building an MCP Server</em> and <em>Understanding Vector Databases</em>.</p>
-                    <p>• Zero overlap with existing posts; establishes authority in autonomous workflow patterns.</p>
+                    <p>
+                      • You have 3 articles on MCP and RAG, but agent state and
+                      episodic memory are never defined.
+                    </p>
+                    <p>
+                      • Connects directly to: <em>Building an MCP Server</em>{' '}
+                      and <em>Understanding Vector Databases</em>.
+                    </p>
+                    <p>
+                      • Zero overlap with existing posts; establishes authority
+                      in autonomous workflow patterns.
+                    </p>
                   </div>
 
                   <Link
                     to="/new"
-                    search={{
-                      topic: 'Agent Memory',
-                      title: 'Evaluating Persistent Agent Memory: Short-Term vs Long-Term Reflection',
-                    } as any}
+                    search={
+                      {
+                        topic: 'Agent Memory',
+                        title:
+                          'Evaluating Persistent Agent Memory: Short-Term vs Long-Term Reflection',
+                      } as any
+                    }
                   >
-                    <Button variant="default" size="sm" className="w-full text-xs font-mono uppercase mt-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="w-full text-xs font-mono uppercase mt-2"
+                    >
                       Start Drafting This Post →
                     </Button>
                   </Link>
@@ -646,7 +716,9 @@ function BlogsIndexPage() {
                     <Badge variant="terracotta" size="sm" shape="pill">
                       Maintenance Priority
                     </Badge>
-                    <span className="text-[11px] font-mono text-[#79716b]">Update Candidate</span>
+                    <span className="text-[11px] font-mono text-[#79716b]">
+                      Update Candidate
+                    </span>
                   </div>
 
                   <h4 className="text-base font-semibold text-[#292524] dark:text-[#fafaf9]">
@@ -654,9 +726,18 @@ function BlogsIndexPage() {
                   </h4>
 
                   <div className="text-xs text-[#79716b] dark:text-[#a6a09b] space-y-1.5 leading-relaxed">
-                    <p>• Your existing post on Vector Databases references deprecated synchronous methods.</p>
-                    <p>• Proposed diff is ready for review in the Refresh Sentinel.</p>
-                    <p>• Accepting the update will elevate article health from 68% to 92%.</p>
+                    <p>
+                      • Your existing post on Vector Databases references
+                      deprecated synchronous methods.
+                    </p>
+                    <p>
+                      • Proposed diff is ready for review in the Refresh
+                      Sentinel.
+                    </p>
+                    <p>
+                      • Accepting the update will elevate article health from
+                      68% to 92%.
+                    </p>
                   </div>
 
                   <Button
@@ -664,7 +745,9 @@ function BlogsIndexPage() {
                     size="sm"
                     className="w-full text-xs font-mono uppercase mt-2"
                     onClick={() => {
-                      const stale = articles.find((a) => a.id === 'vector-databases-rag')
+                      const stale = articles.find(
+                        (a) => a.id === 'vector-databases-rag',
+                      )
                       if (stale) setDiffModalArticle(stale)
                     }}
                   >
@@ -681,7 +764,10 @@ function BlogsIndexPage() {
           DIFF REVIEW MODAL (DiffViewer Component)
           ================================================================= */}
       {diffModalArticle && diffModalArticle.proposedDiffs.length > 0 && (
-        <Dialog open={!!diffModalArticle} onOpenChange={(open) => !open && setDiffModalArticle(null)}>
+        <Dialog
+          open={!!diffModalArticle}
+          onOpenChange={(open) => !open && setDiffModalArticle(null)}
+        >
           <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-lg font-semibold flex items-center gap-2">
@@ -689,7 +775,9 @@ function BlogsIndexPage() {
                 Content Refresh Agent: Proposed Update
               </DialogTitle>
               <DialogDescription className="text-xs text-[#79716b]">
-                Review the proposed code and API update for "{diffModalArticle.title}". Accept or reject to preserve your voice and technical accuracy.
+                Review the proposed code and API update for "
+                {diffModalArticle.title}". Accept or reject to preserve your
+                voice and technical accuracy.
               </DialogDescription>
             </DialogHeader>
 
@@ -706,7 +794,11 @@ function BlogsIndexPage() {
               ))}
 
               <div className="flex justify-end pt-2">
-                <Button variant="ghost" size="sm" onClick={() => setDiffModalArticle(null)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDiffModalArticle(null)}
+                >
                   Close
                 </Button>
               </div>

@@ -70,11 +70,9 @@ export function ThemeProvider({
     root.style.colorScheme = targetMode
 
     // Also update document.body
-    if (document.body) {
-      document.body.classList.remove('light', 'dark')
-      document.body.classList.add(targetMode)
-      document.body.setAttribute('data-mode', targetMode)
-    }
+    document.body.classList.remove('light', 'dark')
+    document.body.classList.add(targetMode)
+    document.body.setAttribute('data-mode', targetMode)
 
     // Force style flush
     window.getComputedStyle(root).opacity

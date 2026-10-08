@@ -18,7 +18,11 @@ export function Navbar() {
   const currentPath = routerState.location.pathname
 
   const handleResetData = () => {
-    if (window.confirm('Reset articles and health intelligence to seed demo data?')) {
+    if (
+      window.confirm(
+        'Reset articles and health intelligence to seed demo data?',
+      )
+    ) {
       BlogStore.resetToSeedData()
       window.location.reload()
     }

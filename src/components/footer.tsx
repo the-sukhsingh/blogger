@@ -14,17 +14,27 @@ export function Footer() {
             </h4>
             <ul className="space-y-2.5 text-[#79716b] dark:text-[#a6a09b]">
               <li>
-                <Link to="/blogs" className="hover:text-foreground transition-colors">
+                <Link
+                  to="/blogs"
+                  className="hover:text-foreground transition-colors"
+                >
                   Publication Index
                 </Link>
               </li>
               <li>
-                <Link to="/blogs" search={{ view: 'graph' } as any} className="hover:text-foreground transition-colors">
+                <Link
+                  to="/blogs"
+                  search={{ view: 'graph' } as any}
+                  className="hover:text-foreground transition-colors"
+                >
                   Content Knowledge Graph
                 </Link>
               </li>
               <li>
-                <Link to="/new" className="hover:text-foreground transition-colors">
+                <Link
+                  to="/new"
+                  className="hover:text-foreground transition-colors"
+                >
                   Custom Editor
                 </Link>
               </li>
@@ -135,7 +145,8 @@ export function Footer() {
               Philosophy
             </h4>
             <p className="text-[12px] leading-relaxed text-[#79716b] dark:text-[#a6a09b]">
-              Treat your technical blog like a codebase. Preserving author voice and plain-text sovereignty with AI intelligence.
+              Treat your technical blog like a codebase. Preserving author voice
+              and plain-text sovereignty with AI intelligence.
             </p>
           </div>
         </div>
@@ -156,16 +167,40 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-4 text-[#79716b] dark:text-[#a6a09b]">
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-foreground" title="Terminal">
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground"
+              title="Terminal"
+            >
               <Terminal className="h-4 w-4" />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-foreground" title="Community">
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground"
+              title="Community"
+            >
               <MessageSquare className="h-4 w-4" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-foreground" title="Network">
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground"
+              title="Network"
+            >
               <Globe className="h-4 w-4" />
             </a>
-            <a href="https://autosend.dev" target="_blank" rel="noreferrer" className="hover:text-foreground" title="Share">
+            <a
+              href="https://autosend.dev"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground"
+              title="Share"
+            >
               <Share2 className="h-4 w-4" />
             </a>
           </div>

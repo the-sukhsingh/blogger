@@ -31,8 +31,12 @@ import { Badge } from '#/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { HealthGauge } from '#/components/ui/health-gauge'
 import { DiffViewer } from '#/components/ui/diff-viewer'
-import { SlashCommandMenu, DEFAULT_SLASH_COMMANDS } from '#/components/ui/slash-command'
-import { BlogStore, type Article, type ProposedDiff } from '#/lib/blog-store'
+import {
+  SlashCommandMenu,
+  DEFAULT_SLASH_COMMANDS,
+} from '#/components/ui/slash-command'
+import { BlogStore } from '#/lib/blog-store'
+import type { Article, ProposedDiff } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
 
 export interface ArticleEditorProps {
@@ -52,7 +56,9 @@ export function ArticleEditor({
 
   // Core Editor State
   const [title, setTitle] = React.useState(
-    initialArticle?.title || initialTitle || (isNew ? 'New Technical Article' : ''),
+    initialArticle?.title ||
+      initialTitle ||
+      (isNew ? 'New Technical Article' : ''),
   )
   const [slug, setSlug] = React.useState(initialArticle?.slug || '')
   const [content, setContent] = React.useState(
@@ -62,19 +68,30 @@ export function ArticleEditor({
         : ''),
   )
   const [topics, setTopics] = React.useState<string[]>(
-    initialArticle?.topics || (initialTopic ? [initialTopic, 'Engineering'] : ['TypeScript', 'Architecture']),
+    initialArticle?.topics ||
+      (initialTopic
+        ? [initialTopic, 'Engineering']
+        : ['TypeScript', 'Architecture']),
   )
   const [newTopicInput, setNewTopicInput] = React.useState('')
-  const [gitBranch, setGitBranch] = React.useState(initialArticle?.gitBranch || 'main')
+  const [gitBranch, setGitBranch] = React.useState(
+    initialArticle?.gitBranch || 'main',
+  )
   const [status, setStatus] = React.useState<'published' | 'draft'>(
     initialArticle?.status === 'draft' ? 'draft' : 'published',
   )
 
   // Layout & UI State
-  const [viewMode, setViewMode] = React.useState<'write' | 'preview' | 'split' | 'serp' | 'aeo'>('split')
+  const [viewMode, setViewMode] = React.useState<
+    'write' | 'preview' | 'split' | 'serp' | 'aeo'
+  >('split')
   const [sidebarOpen, setSidebarOpen] = React.useState(true)
-  const [activeSidebarTab, setActiveSidebarTab] = React.useState<'ai' | 'seo' | 'links' | 'health'>('ai')
-  const [saveStatus, setSaveStatus] = React.useState<'saved' | 'saving' | 'unsaved'>('saved')
+  const [activeSidebarTab, setActiveSidebarTab] = React.useState<
+    'ai' | 'seo' | 'links' | 'health'
+  >('ai')
+  const [saveStatus, setSaveStatus] = React.useState<
+    'saved' | 'saving' | 'unsaved'
+  >('saved')
   const [activeDiffs, setActiveDiffs] = React.useState<ProposedDiff[]>(
     initialArticle?.proposedDiffs || [],
   )
@@ -102,7 +119,11 @@ export function ArticleEditor({
   }, [title, content])
 
   const internalLinkSuggestions = React.useMemo(() => {
-    return BlogStore.computeInternalLinks(initialArticle?.id || 'new', content, allArticles)
+    return BlogStore.computeInternalLinks(
+      initialArticle?.id || 'new',
+      content,
+      allArticles,
+    )
   }, [content, allArticles, initialArticle])
 
   // Word count & reading time
@@ -201,13 +222,17 @@ export function ArticleEditor({
     const selectedText = content.substring(start, end)
     const replacement = `${prefix}${selectedText || 'text'}${suffix}`
 
-    const newContent = content.substring(0, start) + replacement + content.substring(end)
+    const newContent =
+      content.substring(0, start) + replacement + content.substring(end)
     setContent(newContent)
     setSaveStatus('unsaved')
 
     setTimeout(() => {
       textarea.focus()
-      textarea.setSelectionRange(start + prefix.length, start + prefix.length + (selectedText.length || 4))
+      textarea.setSelectionRange(
+        start + prefix.length,
+        start + prefix.length + (selectedText.length || 4),
+      )
     }, 10)
   }
 
@@ -223,14 +248,17 @@ export function ArticleEditor({
   }
 
   // AI Assistant trigger mock
-  const handleGenerateAiDiff = (action: 'improve' | 'stale-check' | 'explain') => {
+  const handleGenerateAiDiff = (
+    action: 'improve' | 'stale-check' | 'explain',
+  ) => {
     let diff: ProposedDiff
 
     if (action === 'improve') {
       diff = {
         id: `diff-${Date.now()}`,
         title: 'Writing Agent: Optimize Introduction Clarity',
-        description: 'Placed the core architectural definition in paragraph 1 to optimize reader retention and AEO extraction.',
+        description:
+          'Placed the core architectural definition in paragraph 1 to optimize reader retention and AEO extraction.',
         status: 'pending',
         lines: [
           {
@@ -242,7 +270,8 @@ export function ArticleEditor({
           {
             type: 'deletion',
             oldLineNumber: 2,
-            content: 'In this blog post, we are going to look into various features and how they work in production environments.',
+            content:
+              'In this blog post, we are going to look into various features and how they work in production environments.',
           },
           {
             type: 'addition',
@@ -255,7 +284,8 @@ export function ArticleEditor({
       diff = {
         id: `diff-${Date.now()}`,
         title: 'Freshness Sentinel: Version & Parameter Audit',
-        description: 'Verified package imports against latest repository declarations.',
+        description:
+          'Verified package imports against latest repository declarations.',
         status: 'pending',
         lines: [
           {
@@ -280,7 +310,8 @@ export function ArticleEditor({
       diff = {
         id: `diff-${Date.now()}`,
         title: 'Technical Review: Add Comprehensive Type Signature',
-        description: 'Supplied explicit return types and Zod runtime schema validation.',
+        description:
+          'Supplied explicit return types and Zod runtime schema validation.',
         status: 'pending',
         lines: [
           {
@@ -291,7 +322,8 @@ export function ArticleEditor({
           {
             type: 'addition',
             newLineNumber: 24,
-            content: 'export function process<T extends BaseContext>(data: T): Result<T> {',
+            content:
+              'export function process<T extends BaseContext>(data: T): Result<T> {',
           },
         ],
       }
@@ -344,7 +376,11 @@ export function ArticleEditor({
                     : 'text-[#d97757] border-[#d97757]/30 bg-[#d97757]/5',
                 )}
               >
-                {saveStatus === 'saved' ? 'Saved' : saveStatus === 'saving' ? 'Saving...' : 'Unsaved'}
+                {saveStatus === 'saved'
+                  ? 'Saved'
+                  : saveStatus === 'saving'
+                    ? 'Saving...'
+                    : 'Unsaved'}
               </span>
             </div>
           </div>
@@ -415,9 +451,15 @@ export function ArticleEditor({
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className={cn(
                 'p-1.5 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] text-[#79716b] hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors',
-                sidebarOpen ? 'bg-[#fafaf9] dark:bg-[#171514] text-[#615fff]' : '',
+                sidebarOpen
+                  ? 'bg-[#fafaf9] dark:bg-[#171514] text-[#615fff]'
+                  : '',
               )}
-              title={sidebarOpen ? 'Hide Intelligence Panel' : 'Show Intelligence Panel'}
+              title={
+                sidebarOpen
+                  ? 'Hide Intelligence Panel'
+                  : 'Show Intelligence Panel'
+              }
             >
               {sidebarOpen ? (
                 <PanelRightClose className="h-4 w-4" />
@@ -470,7 +512,9 @@ export function ArticleEditor({
 
               <div className="flex items-center gap-2 text-xs font-mono text-[#79716b]">
                 <Clock className="h-3 w-3" />
-                <span>{wordCount} words ({readingTimeEstimate})</span>
+                <span>
+                  {wordCount} words ({readingTimeEstimate})
+                </span>
               </div>
             </div>
 
@@ -501,7 +545,9 @@ export function ArticleEditor({
                   className="bg-[#fafaf9] dark:bg-[#121110] px-2 py-1 rounded border border-[#e7e5e4] dark:border-[#292524] text-xs font-mono focus:outline-none"
                 >
                   <option value="main">main</option>
-                  <option value="feat/article-update">feat/article-update</option>
+                  <option value="feat/article-update">
+                    feat/article-update
+                  </option>
                   <option value="draft/research">draft/research</option>
                 </select>
               </div>
@@ -524,7 +570,9 @@ export function ArticleEditor({
 
             {/* Topics Bar */}
             <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#e7e5e4] dark:border-[#292524]">
-              <span className="text-[11px] font-mono text-[#79716b] uppercase mr-1">Topics:</span>
+              <span className="text-[11px] font-mono text-[#79716b] uppercase mr-1">
+                Topics:
+              </span>
               {topics.map((t) => (
                 <span
                   key={t}
@@ -607,10 +655,19 @@ export function ArticleEditor({
           {/* VIEWPORT CONTROLS */}
           {/* Write or Split Mode */}
           {(viewMode === 'write' || viewMode === 'split') && (
-            <div className={cn('grid gap-6 flex-1', viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1')}>
+            <div
+              className={cn(
+                'grid gap-6 flex-1',
+                viewMode === 'split'
+                  ? 'grid-cols-1 lg:grid-cols-2'
+                  : 'grid-cols-1',
+              )}
+            >
               {/* Editor Textarea */}
               <div className="flex flex-col space-y-2">
-                <span className="text-[11px] font-mono text-[#79716b] uppercase">Markdown Source Editor</span>
+                <span className="text-[11px] font-mono text-[#79716b] uppercase">
+                  Markdown Source Editor
+                </span>
                 <textarea
                   ref={textareaRef}
                   value={content}
@@ -623,10 +680,16 @@ export function ArticleEditor({
               {/* Split Live Preview */}
               {viewMode === 'split' && (
                 <div className="flex flex-col space-y-2">
-                  <span className="text-[11px] font-mono text-[#79716b] uppercase">Live Article Preview</span>
+                  <span className="text-[11px] font-mono text-[#79716b] uppercase">
+                    Live Article Preview
+                  </span>
                   <div className="w-full flex-1 min-h-[500px] p-6 rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] overflow-y-auto prose prose-stone dark:prose-invert max-w-none text-sm leading-relaxed">
-                    <h1 className="font-display text-2xl font-normal text-[#292524] dark:text-[#fafaf9]">{title}</h1>
-                    <div className="whitespace-pre-wrap font-sans text-[#292524] dark:text-[#d6d3d1]">{content}</div>
+                    <h1 className="font-display text-2xl font-normal text-[#292524] dark:text-[#fafaf9]">
+                      {title}
+                    </h1>
+                    <div className="whitespace-pre-wrap font-sans text-[#292524] dark:text-[#d6d3d1]">
+                      {content}
+                    </div>
                   </div>
                 </div>
               )}
@@ -644,9 +707,12 @@ export function ArticleEditor({
                     </Badge>
                   ))}
                 </div>
-                <h1 className="font-display text-3xl sm:text-4xl text-[#292524] dark:text-[#fafaf9]">{title}</h1>
+                <h1 className="font-display text-3xl sm:text-4xl text-[#292524] dark:text-[#fafaf9]">
+                  {title}
+                </h1>
                 <div className="text-xs font-mono text-[#79716b]">
-                  {readingTimeEstimate} · {wordCount} words · Git branch: {gitBranch}
+                  {readingTimeEstimate} · {wordCount} words · Git branch:{' '}
+                  {gitBranch}
                 </div>
               </div>
               <div className="whitespace-pre-wrap font-sans leading-relaxed text-[#292524] dark:text-[#d6d3d1]">
@@ -663,7 +729,8 @@ export function ArticleEditor({
                   Search Engine Result Preview (SERP)
                 </h3>
                 <p className="text-xs text-[#79716b]">
-                  How this article metadata will appear across Google search results.
+                  How this article metadata will appear across Google search
+                  results.
                 </p>
               </div>
 
@@ -681,7 +748,9 @@ export function ArticleEditor({
               </div>
 
               <div className="rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] p-4 text-xs space-y-2">
-                <span className="font-mono font-semibold uppercase text-[#292524] dark:text-[#fafaf9]">SEO Checklist</span>
+                <span className="font-mono font-semibold uppercase text-[#292524] dark:text-[#fafaf9]">
+                  SEO Checklist
+                </span>
                 <ul className="space-y-1 text-[#79716b]">
                   {liveSeo.insights.map((ins, i) => (
                     <li key={i} className="flex items-start gap-1.5">
@@ -702,14 +771,19 @@ export function ArticleEditor({
                   Answer Engine Optimization (AEO) Preview
                 </h3>
                 <p className="text-xs text-[#79716b]">
-                  How AI assistants (Perplexity, ChatGPT, Claude) synthesize your answers.
+                  How AI assistants (Perplexity, ChatGPT, Claude) synthesize
+                  your answers.
                 </p>
               </div>
 
               <div className="rounded-[12px] border border-[#615fff]/30 bg-white dark:bg-[#171514] p-6 space-y-3">
                 <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="font-bold text-[#615fff] uppercase">Synthesized Query</span>
-                  <Badge variant="indigo" size="sm">{liveAeo.readinessScore}% Readiness</Badge>
+                  <span className="font-bold text-[#615fff] uppercase">
+                    Synthesized Query
+                  </span>
+                  <Badge variant="indigo" size="sm">
+                    {liveAeo.readinessScore}% Readiness
+                  </Badge>
                 </div>
                 <p className="text-sm font-semibold text-[#292524] dark:text-[#fafaf9]">
                   "{liveAeo.primaryQuestion}"
@@ -720,7 +794,9 @@ export function ArticleEditor({
               </div>
 
               <div className="rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] p-4 text-xs space-y-2">
-                <span className="font-mono font-semibold uppercase text-[#292524] dark:text-[#fafaf9]">AEO Agent Audit</span>
+                <span className="font-mono font-semibold uppercase text-[#292524] dark:text-[#fafaf9]">
+                  AEO Agent Audit
+                </span>
                 <ul className="space-y-1 text-[#79716b]">
                   {liveAeo.recommendations.map((rec, i) => (
                     <li key={i} className="flex items-start gap-1.5">
@@ -745,7 +821,9 @@ export function ArticleEditor({
                 onClick={() => setActiveSidebarTab('ai')}
                 className={cn(
                   'py-1 rounded-[6px] transition-colors',
-                  activeSidebarTab === 'ai' ? 'bg-[#615fff] text-white font-bold' : 'text-[#79716b] hover:text-foreground',
+                  activeSidebarTab === 'ai'
+                    ? 'bg-[#615fff] text-white font-bold'
+                    : 'text-[#79716b] hover:text-foreground',
                 )}
               >
                 AI Diffs
@@ -754,7 +832,9 @@ export function ArticleEditor({
                 onClick={() => setActiveSidebarTab('seo')}
                 className={cn(
                   'py-1 rounded-[6px] transition-colors',
-                  activeSidebarTab === 'seo' ? 'bg-[#615fff] text-white font-bold' : 'text-[#79716b] hover:text-foreground',
+                  activeSidebarTab === 'seo'
+                    ? 'bg-[#615fff] text-white font-bold'
+                    : 'text-[#79716b] hover:text-foreground',
                 )}
               >
                 SEO/AEO
@@ -763,7 +843,9 @@ export function ArticleEditor({
                 onClick={() => setActiveSidebarTab('links')}
                 className={cn(
                   'py-1 rounded-[6px] transition-colors',
-                  activeSidebarTab === 'links' ? 'bg-[#615fff] text-white font-bold' : 'text-[#79716b] hover:text-foreground',
+                  activeSidebarTab === 'links'
+                    ? 'bg-[#615fff] text-white font-bold'
+                    : 'text-[#79716b] hover:text-foreground',
                 )}
               >
                 Links
@@ -772,7 +854,9 @@ export function ArticleEditor({
                 onClick={() => setActiveSidebarTab('health')}
                 className={cn(
                   'py-1 rounded-[6px] transition-colors',
-                  activeSidebarTab === 'health' ? 'bg-[#615fff] text-white font-bold' : 'text-[#79716b] hover:text-foreground',
+                  activeSidebarTab === 'health'
+                    ? 'bg-[#615fff] text-white font-bold'
+                    : 'text-[#79716b] hover:text-foreground',
                 )}
               >
                 Health
@@ -787,7 +871,8 @@ export function ArticleEditor({
                     Contextual AI Collaborator
                   </span>
                   <p className="text-[11px] text-[#79716b]">
-                    AI proposes code and text modifications. You decide via structured diff reviews.
+                    AI proposes code and text modifications. You decide via
+                    structured diff reviews.
                   </p>
                 </div>
 
@@ -825,12 +910,14 @@ export function ArticleEditor({
                 {/* Diff Viewer List */}
                 <div className="space-y-3 pt-2">
                   <span className="font-mono text-[11px] uppercase tracking-wider text-[#79716b] block">
-                    Pending Diffs ({activeDiffs.filter((d) => d.status === 'pending').length})
+                    Pending Diffs (
+                    {activeDiffs.filter((d) => d.status === 'pending').length})
                   </span>
 
                   {activeDiffs.length === 0 ? (
                     <div className="rounded-[8px] border border-dashed border-[#e7e5e4] dark:border-[#292524] p-4 text-center text-[#79716b]">
-                      No active diffs. Trigger an action above to review proposed changes.
+                      No active diffs. Trigger an action above to review
+                      proposed changes.
                     </div>
                   ) : (
                     activeDiffs.map((diff) => (
@@ -853,23 +940,51 @@ export function ArticleEditor({
               <div className="space-y-4 text-xs">
                 <div className="rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono uppercase font-semibold">SEO Readiness</span>
-                    <Badge variant="lichen" size="sm">{liveSeo.readabilityScore}%</Badge>
+                    <span className="font-mono uppercase font-semibold">
+                      SEO Readiness
+                    </span>
+                    <Badge variant="lichen" size="sm">
+                      {liveSeo.readabilityScore}%
+                    </Badge>
                   </div>
                   <div className="text-[11px] text-[#79716b] space-y-1">
-                    <p>• Intent: <strong className="text-foreground">{liveSeo.searchIntent}</strong></p>
-                    <p>• Headings found: <strong className="text-foreground">{liveSeo.headingCount}</strong></p>
+                    <p>
+                      • Intent:{' '}
+                      <strong className="text-foreground">
+                        {liveSeo.searchIntent}
+                      </strong>
+                    </p>
+                    <p>
+                      • Headings found:{' '}
+                      <strong className="text-foreground">
+                        {liveSeo.headingCount}
+                      </strong>
+                    </p>
                   </div>
                 </div>
 
                 <div className="rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono uppercase font-semibold text-[#615fff]">AEO Answerability</span>
-                    <Badge variant="indigo" size="sm">{liveAeo.readinessScore}%</Badge>
+                    <span className="font-mono uppercase font-semibold text-[#615fff]">
+                      AEO Answerability
+                    </span>
+                    <Badge variant="indigo" size="sm">
+                      {liveAeo.readinessScore}%
+                    </Badge>
                   </div>
                   <div className="text-[11px] text-[#79716b] space-y-1">
-                    <p>• Extracted Definition: <strong className="text-foreground">{liveAeo.definitionPosition}</strong></p>
-                    <p>• Structured Evidence: <strong className="text-foreground">{liveAeo.structuredEvidence ? 'Yes' : 'Missing'}</strong></p>
+                    <p>
+                      • Extracted Definition:{' '}
+                      <strong className="text-foreground">
+                        {liveAeo.definitionPosition}
+                      </strong>
+                    </p>
+                    <p>
+                      • Structured Evidence:{' '}
+                      <strong className="text-foreground">
+                        {liveAeo.structuredEvidence ? 'Yes' : 'Missing'}
+                      </strong>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -882,7 +997,8 @@ export function ArticleEditor({
                   Internal Link Sentinel
                 </span>
                 <p className="text-[11px] text-[#79716b]">
-                  Automatically discovers mentions of existing publications to eliminate orphan content.
+                  Automatically discovers mentions of existing publications to
+                  eliminate orphan content.
                 </p>
 
                 <div className="space-y-2.5">
@@ -897,7 +1013,9 @@ export function ArticleEditor({
                         className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] p-3 space-y-2"
                       >
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="font-mono text-[#615fff]">Mention: "{sug.phrase}"</span>
+                          <span className="font-mono text-[#615fff]">
+                            Mention: "{sug.phrase}"
+                          </span>
                         </div>
                         <p className="text-[11px] text-[#79716b] leading-tight">
                           {sug.reason}
@@ -905,7 +1023,9 @@ export function ArticleEditor({
                         <Button
                           variant="outline"
                           size="xs"
-                          onClick={() => handleInsertLink(sug.phrase, sug.targetSlug)}
+                          onClick={() =>
+                            handleInsertLink(sug.phrase, sug.targetSlug)
+                          }
                           className="w-full text-[11px] font-mono mt-1"
                         >
                           + Insert Link to Article

@@ -21,10 +21,6 @@ function NewBlogPage() {
   const { topic, title } = Route.useSearch()
 
   return (
-    <ArticleEditor
-      isNew={true}
-      initialTopic={topic}
-      initialTitle={title}
-    />
+    <ArticleEditor isNew={true} initialTopic={topic} initialTitle={title} />
   )
 }

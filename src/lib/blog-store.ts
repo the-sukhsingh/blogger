@@ -93,7 +93,8 @@ export const SEED_ARTICLES: Article[] = [
   {
     id: 'mcp-server-typescript',
     slug: 'building-an-mcp-server-with-typescript',
-    title: 'Building an MCP Server with TypeScript: Architecture & Protocol Deep-Dive',
+    title:
+      'Building an MCP Server with TypeScript: Architecture & Protocol Deep-Dive',
     excerpt:
       'A production-grade guide to implementing the Model Context Protocol (MCP) using TypeScript, structured JSON-RPC, and secure local tool execution.',
     publishedAt: '2 days ago',
@@ -102,7 +103,12 @@ export const SEED_ARTICLES: Article[] = [
     commitHash: '7f91a2e',
     status: 'published',
     topics: ['MCP', 'TypeScript', 'AI Agents', 'JSON-RPC'],
-    entities: ['@modelcontextprotocol/sdk', 'StdioServerTransport', 'Zod', 'Claude Desktop'],
+    entities: [
+      '@modelcontextprotocol/sdk',
+      'StdioServerTransport',
+      'Zod',
+      'Claude Desktop',
+    ],
     healthScore: 94,
     healthMetrics: {
       content: 95,
@@ -115,7 +121,8 @@ export const SEED_ARTICLES: Article[] = [
     isStale: false,
     proposedDiffs: [],
     seo: {
-      title: 'Building an MCP Server with TypeScript: Complete Protocol Architecture',
+      title:
+        'Building an MCP Server with TypeScript: Complete Protocol Architecture',
       description:
         'Step-by-step engineering guide to creating an MCP server with TypeScript, type-safe tool schemas, and local transport handlers.',
       primaryKeyword: 'mcp server typescript',
@@ -156,7 +163,8 @@ export const SEED_ARTICLES: Article[] = [
           targetTitle: 'Production Security for RAG Applications',
           targetSlug: 'production-security-for-rag-applications',
           phrase: 'secure execution contexts',
-          reason: 'Connects tool invocation security to your dedicated RAG security architecture guide.',
+          reason:
+            'Connects tool invocation security to your dedicated RAG security architecture guide.',
         },
       ],
     },
@@ -164,7 +172,8 @@ export const SEED_ARTICLES: Article[] = [
       {
         id: 'rev-1',
         timestamp: '2026-10-06 14:22',
-        summary: 'Initial publication with @modelcontextprotocol/sdk v1.0.0 examples',
+        summary:
+          'Initial publication with @modelcontextprotocol/sdk v1.0.0 examples',
         author: 'Staff Engineer',
         gitCommit: '7f91a2e',
       },
@@ -347,7 +356,8 @@ main().catch((err) => {
       technical: 74,
     },
     isStale: true,
-    staleReason: 'ChromaDB client API updated from v0.3 to v0.5 with breaking async changes; pgvector syntax requires HNSW index updates.',
+    staleReason:
+      'ChromaDB client API updated from v0.3 to v0.5 with breaking async changes; pgvector syntax requires HNSW index updates.',
     proposedDiffs: [
       {
         id: 'diff-chroma-update',
@@ -370,17 +380,20 @@ main().catch((err) => {
           {
             type: 'deletion',
             oldLineNumber: 44,
-            content: 'const collection = client.getOrCreateCollection({ name: "articles" });',
+            content:
+              'const collection = client.getOrCreateCollection({ name: "articles" });',
           },
           {
             type: 'addition',
             newLineNumber: 43,
-            content: 'const client = new ChromaClient({ path: process.env.CHROMA_URL });',
+            content:
+              'const client = new ChromaClient({ path: process.env.CHROMA_URL });',
           },
           {
             type: 'addition',
             newLineNumber: 44,
-            content: 'const collection = await client.getOrCreateCollection({ name: "articles", metadata: { "hnsw:space": "cosine" } });',
+            content:
+              'const collection = await client.getOrCreateCollection({ name: "articles", metadata: { "hnsw:space": "cosine" } });',
           },
           {
             type: 'unchanged',
@@ -525,7 +538,12 @@ const results = await collection.query({
     commitHash: '9e2c4f1',
     status: 'published',
     topics: ['RAG', 'Security', 'LLMs', 'Prompt Injection'],
-    entities: ['LlamaGuard', 'OWASP Top 10 for LLM', 'Vector ACL', 'Dual LLM Architecture'],
+    entities: [
+      'LlamaGuard',
+      'OWASP Top 10 for LLM',
+      'Vector ACL',
+      'Dual LLM Architecture',
+    ],
     healthScore: 92,
     healthMetrics: {
       content: 93,
@@ -577,7 +595,8 @@ const results = await collection.query({
           targetTitle: 'Building an MCP Server with TypeScript',
           targetSlug: 'building-an-mcp-server-with-typescript',
           phrase: 'protocol client execution',
-          reason: 'Tool execution safety applies directly to MCP server boundaries.',
+          reason:
+            'Tool execution safety applies directly to MCP server boundaries.',
         },
       ],
     },
@@ -730,7 +749,8 @@ An internal link architecture should mirror a software package dependency graph:
     isStale: false,
     proposedDiffs: [],
     seo: {
-      title: 'Migrating from Traditional CMS to Git-backed Markdown: A Developer Guide',
+      title:
+        'Migrating from Traditional CMS to Git-backed Markdown: A Developer Guide',
       description:
         'Why engineering teams are replacing monolithic CMS platforms with Git repositories, MDX files, and CI/CD publishing pipelines.',
       primaryKeyword: 'git backed markdown cms migration',
@@ -757,8 +777,10 @@ An internal link architecture should mirror a software package dependency graph:
       outbound: [
         {
           targetId: 'clean-internal-link-structures',
-          targetTitle: 'Designing Clean Internal Link Structures for Technical Blogs',
-          targetSlug: 'designing-clean-internal-link-structures-for-technical-blogs',
+          targetTitle:
+            'Designing Clean Internal Link Structures for Technical Blogs',
+          targetSlug:
+            'designing-clean-internal-link-structures-for-technical-blogs',
           phrase: 'maintaining internal links across static files',
         },
       ],
@@ -822,7 +844,9 @@ export const BlogStore = {
     const existingIndex = articles.findIndex((a) => a.id === id)
     const existing = existingIndex >= 0 ? articles[existingIndex] : null
 
-    const words = (articleData.content || existing?.content || '').split(/\s+/).filter(Boolean).length
+    const words = (articleData.content || existing?.content || '')
+      .split(/\s+/)
+      .filter(Boolean).length
     const readingTime = `${Math.max(1, Math.ceil(words / 200))} min read`
 
     // Recalculate health metrics dynamically
@@ -850,7 +874,8 @@ export const BlogStore = {
           ? articleData.content.slice(0, 150).replace(/[#*`_]/g, '') + '...'
           : 'A technical blog post analyzing software architecture and development.'),
       content: articleData.content || existing?.content || '',
-      publishedAt: articleData.publishedAt || existing?.publishedAt || 'Just now',
+      publishedAt:
+        articleData.publishedAt || existing?.publishedAt || 'Just now',
       readingTime: readingTime,
       gitBranch: articleData.gitBranch || existing?.gitBranch || 'main',
       commitHash:
@@ -883,8 +908,13 @@ export const BlogStore = {
       revisionHistory: [
         {
           id: `rev-${Date.now()}`,
-          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
-          summary: existing ? 'Updated article content & metadata' : 'Created new article',
+          timestamp: new Date()
+            .toISOString()
+            .replace('T', ' ')
+            .substring(0, 16),
+          summary: existing
+            ? 'Updated article content & metadata'
+            : 'Created new article',
           author: 'Author (Local)',
           gitCommit: Math.random().toString(16).substring(2, 9),
         },
@@ -935,7 +965,12 @@ export const BlogStore = {
     article.isStale = article.proposedDiffs.some((d) => d.status === 'pending')
 
     // Recalculate health
-    const health = BlogStore.computeHealth(article.title, article.content, article.topics, article.isStale)
+    const health = BlogStore.computeHealth(
+      article.title,
+      article.content,
+      article.topics,
+      article.isStale,
+    )
     article.healthScore = health.overall
     article.healthMetrics = health.metrics
 
@@ -978,10 +1013,40 @@ export const BlogStore = {
     const hasCodeBlock = content.includes('```')
     const hasTopics = topics.length > 0
 
-    const contentScore = Math.min(100, Math.max(50, Math.round((wordCount / 500) * 40 + (hasHeadings ? 40 : 15) + (hasCodeBlock ? 20 : 0))))
-    const seoScore = Math.min(100, Math.max(45, (title.length > 20 && title.length < 90 ? 40 : 20) + (hasHeadings ? 35 : 15) + (hasTopics ? 25 : 10)))
-    const aeoScore = Math.min(100, Math.max(40, (content.toLowerCase().includes('is ') || content.toLowerCase().includes('defined as') ? 45 : 20) + (hasHeadings ? 35 : 20) + (wordCount > 300 ? 20 : 10)))
-    const linksScore = content.includes('http') || content.includes('](') ? 90 : 70
+    const contentScore = Math.min(
+      100,
+      Math.max(
+        50,
+        Math.round(
+          (wordCount / 500) * 40 +
+            (hasHeadings ? 40 : 15) +
+            (hasCodeBlock ? 20 : 0),
+        ),
+      ),
+    )
+    const seoScore = Math.min(
+      100,
+      Math.max(
+        45,
+        (title.length > 20 && title.length < 90 ? 40 : 20) +
+          (hasHeadings ? 35 : 15) +
+          (hasTopics ? 25 : 10),
+      ),
+    )
+    const aeoScore = Math.min(
+      100,
+      Math.max(
+        40,
+        (content.toLowerCase().includes('is ') ||
+        content.toLowerCase().includes('defined as')
+          ? 45
+          : 20) +
+          (hasHeadings ? 35 : 20) +
+          (wordCount > 300 ? 20 : 10),
+      ),
+    )
+    const linksScore =
+      content.includes('http') || content.includes('](') ? 90 : 70
     const freshnessScore = isStale ? 48 : 95
     const technicalScore = hasCodeBlock ? 92 : 75
 
@@ -1012,11 +1077,18 @@ export const BlogStore = {
     const words = content.split(/\s+/).filter(Boolean).length
     return {
       title,
-      description: content.slice(0, 140).replace(/[#*`_]/g, '').trim() + '...',
+      description:
+        content
+          .slice(0, 140)
+          .replace(/[#*`_]/g, '')
+          .trim() + '...',
       primaryKeyword: title.toLowerCase().split(' ').slice(0, 3).join(' '),
       searchIntent: 'Technical architecture & implementation',
       headingCount: headings,
-      readabilityScore: Math.min(95, Math.max(65, Math.round(85 - (words > 2000 ? 10 : 0)))),
+      readabilityScore: Math.min(
+        95,
+        Math.max(65, Math.round(85 - (words > 2000 ? 10 : 0))),
+      ),
       insights: [
         headings >= 3
           ? 'Logical heading structure found (H2/H3 tiers).'
@@ -1034,14 +1106,20 @@ export const BlogStore = {
       content.toLowerCase().includes('are ') ||
       content.toLowerCase().includes('defined as')
 
-    const firstParagraph = content.split('\n\n').find((p) => p.trim() && !p.startsWith('#')) || ''
-    const isEarly = firstParagraph.toLowerCase().includes(' is ') || firstParagraph.toLowerCase().includes('are ')
+    const firstParagraph =
+      content.split('\n\n').find((p) => p.trim() && !p.startsWith('#')) || ''
+    const isEarly =
+      firstParagraph.toLowerCase().includes(' is ') ||
+      firstParagraph.toLowerCase().includes('are ')
 
     return {
       readinessScore: isEarly ? 94 : hasDef ? 75 : 55,
       primaryQuestion: `What is ${title.split(':')[0].trim()}?`,
       directAnswerSnippet:
-        firstParagraph.slice(0, 180).replace(/[#*`_]/g, '').trim() + '...',
+        firstParagraph
+          .slice(0, 180)
+          .replace(/[#*`_]/g, '')
+          .trim() + '...',
       definitionFound: hasDef,
       definitionPosition: isEarly ? 'early' : hasDef ? 'middle' : 'missing',
       structuredEvidence: content.includes('```') || content.includes('|'),

@@ -113,10 +113,7 @@ function AutoSendLandingPage() {
             >
               GRAPH
             </Link>
-            <Link
-              to="/new"
-              className="hover:text-foreground transition-colors"
-            >
+            <Link to="/new" className="hover:text-foreground transition-colors">
               EDITOR
             </Link>
             <a
@@ -126,7 +123,10 @@ function AutoSendLandingPage() {
               <span>DOCS</span>
               <ArrowUpRight className="h-3 w-3 opacity-60" />
             </a>
-            <Link to="/blogs" className="hover:text-foreground transition-colors">
+            <Link
+              to="/blogs"
+              className="hover:text-foreground transition-colors"
+            >
               PUBLICATIONS
             </Link>
           </nav>

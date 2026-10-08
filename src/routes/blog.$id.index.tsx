@@ -27,7 +27,8 @@ import { Badge } from '#/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { HealthGauge } from '#/components/ui/health-gauge'
 import { DiffViewer } from '#/components/ui/diff-viewer'
-import { BlogStore, type Article } from '#/lib/blog-store'
+import { BlogStore } from '#/lib/blog-store'
+import type { Article } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/blog/$id/')({
@@ -40,7 +41,9 @@ function BlogReaderPage() {
   const [article, setArticle] = React.useState<Article | null>(null)
   const [allArticles, setAllArticles] = React.useState<Article[]>([])
   const [copiedLink, setCopiedLink] = React.useState(false)
-  const [copiedCodeIndex, setCopiedCodeIndex] = React.useState<number | null>(null)
+  const [copiedCodeIndex, setCopiedCodeIndex] = React.useState<number | null>(
+    null,
+  )
 
   React.useEffect(() => {
     const arts = BlogStore.getArticles()
@@ -48,10 +51,8 @@ function BlogReaderPage() {
     const current = BlogStore.getArticleById(id)
     if (current) {
       setArticle(current)
-    } else {
-      // If not found, try fallback or first article
-      const first = arts[0]
-      if (first) setArticle(first)
+    } else if (arts.length > 0) {
+      setArticle(arts[0])
     }
   }, [id])
 
@@ -79,7 +80,9 @@ function BlogReaderPage() {
   }
 
   const handleExportMarkdown = () => {
-    const blob = new Blob([article.content], { type: 'text/markdown;charset=utf-8' })
+    const blob = new Blob([article.content], {
+      type: 'text/markdown;charset=utf-8',
+    })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
@@ -125,7 +128,9 @@ function BlogReaderPage() {
               className="my-6 rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] overflow-hidden text-xs"
             >
               <div className="flex items-center justify-between px-4 py-2 border-b border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] font-mono text-[11px] text-[#79716b]">
-                <span className="uppercase font-semibold tracking-wider">{codeLanguage}</span>
+                <span className="uppercase font-semibold tracking-wider">
+                  {codeLanguage}
+                </span>
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(currentCode)
@@ -195,7 +200,9 @@ function BlogReaderPage() {
       // Blockquotes / Callouts
       if (line.startsWith('> ')) {
         const quoteText = line.replace('> ', '')
-        const isWarning = quoteText.includes('⚠️') || quoteText.toLowerCase().includes('warning')
+        const isWarning =
+          quoteText.includes('⚠️') ||
+          quoteText.toLowerCase().includes('warning')
         elements.push(
           <blockquote
             key={`quote-${index}`}
@@ -214,14 +221,22 @@ function BlogReaderPage() {
 
       // Divider
       if (line.trim() === '---') {
-        elements.push(<hr key={`hr-${index}`} className="my-8 border-[#e7e5e4] dark:border-[#292524]" />)
+        elements.push(
+          <hr
+            key={`hr-${index}`}
+            className="my-8 border-[#e7e5e4] dark:border-[#292524]"
+          />,
+        )
         return
       }
 
       // Bullet lists
       if (line.startsWith('- ') || line.startsWith('* ')) {
         elements.push(
-          <li key={`li-${index}`} className="ml-5 list-disc text-sm sm:text-base text-[#292524] dark:text-[#e7e5e4] leading-relaxed my-1">
+          <li
+            key={`li-${index}`}
+            className="ml-5 list-disc text-sm sm:text-base text-[#292524] dark:text-[#e7e5e4] leading-relaxed my-1"
+          >
             {line.substring(2)}
           </li>,
         )
@@ -231,7 +246,10 @@ function BlogReaderPage() {
       // Numbered lists
       if (/^\d+\.\s/.test(line)) {
         elements.push(
-          <li key={`oli-${index}`} className="ml-5 list-decimal text-sm sm:text-base text-[#292524] dark:text-[#e7e5e4] leading-relaxed my-1">
+          <li
+            key={`oli-${index}`}
+            className="ml-5 list-decimal text-sm sm:text-base text-[#292524] dark:text-[#e7e5e4] leading-relaxed my-1"
+          >
             {line.replace(/^\d+\.\s/, '')}
           </li>,
         )
@@ -277,7 +295,11 @@ function BlogReaderPage() {
               className="text-xs px-2.5 py-1.5 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] text-[#79716b] hover:text-foreground flex items-center gap-1.5 font-mono transition-colors"
               title="Copy shareable link"
             >
-              {copiedLink ? <Check className="h-3 w-3 text-[#5ea500]" /> : <Share2 className="h-3 w-3" />}
+              {copiedLink ? (
+                <Check className="h-3 w-3 text-[#5ea500]" />
+              ) : (
+                <Share2 className="h-3 w-3" />
+              )}
               <span>{copiedLink ? 'Link Copied' : 'Share'}</span>
             </button>
 
@@ -314,15 +336,27 @@ function BlogReaderPage() {
               {/* Topics Pills */}
               <div className="flex flex-wrap items-center gap-2">
                 {article.topics.map((t) => (
-                  <Badge key={t} variant="secondary" size="sm" shape="tag" className="font-mono text-xs">
+                  <Badge
+                    key={t}
+                    variant="secondary"
+                    size="sm"
+                    shape="tag"
+                    className="font-mono text-xs"
+                  >
                     {t}
                   </Badge>
                 ))}
                 <span className="text-[11px] font-mono text-[#79716b] ml-1">
-                  Branch: <strong className="text-foreground">{article.gitBranch}</strong>
+                  Branch:{' '}
+                  <strong className="text-foreground">
+                    {article.gitBranch}
+                  </strong>
                 </span>
                 <span className="text-[11px] font-mono text-[#79716b]">
-                  Commit: <strong className="text-foreground">{article.commitHash}</strong>
+                  Commit:{' '}
+                  <strong className="text-foreground">
+                    {article.commitHash}
+                  </strong>
                 </span>
               </div>
 
@@ -361,7 +395,8 @@ function BlogReaderPage() {
                       Content Refresh Sentinel: Stale Information Detected
                     </h3>
                     <p className="text-xs text-[#79716b] dark:text-[#a6a09b] leading-relaxed">
-                      {article.staleReason || 'External dependencies or API versions have changed.'}
+                      {article.staleReason ||
+                        'External dependencies or API versions have changed.'}
                     </p>
                   </div>
                 </div>
@@ -404,7 +439,9 @@ function BlogReaderPage() {
                     >
                       <div className="flex items-center justify-between text-[10px] font-mono text-[#79716b]">
                         <span>RELATED IN CLUSTER</span>
-                        <span className="text-[#5ea500]">Health {rel.healthScore}%</span>
+                        <span className="text-[#5ea500]">
+                          Health {rel.healthScore}%
+                        </span>
                       </div>
                       <h5 className="text-xs font-semibold group-hover:text-[#615fff] transition-colors line-clamp-1">
                         {rel.title}
@@ -450,12 +487,36 @@ function BlogReaderPage() {
               overallScore={article.healthScore}
               statusText="Article Health Vector"
               metrics={[
-                { name: 'Content', score: article.healthMetrics.content, note: 'Word depth & structure' },
-                { name: 'SEO', score: article.healthMetrics.seo, note: 'Search intent match' },
-                { name: 'AEO', score: article.healthMetrics.aeo, note: 'Direct answer clarity' },
-                { name: 'Links', score: article.healthMetrics.links, note: 'Topic graph connectivity' },
-                { name: 'Freshness', score: article.healthMetrics.freshness, note: 'Current APIs & packages' },
-                { name: 'Technical', score: article.healthMetrics.technical, note: 'Executable code examples' },
+                {
+                  name: 'Content',
+                  score: article.healthMetrics.content,
+                  note: 'Word depth & structure',
+                },
+                {
+                  name: 'SEO',
+                  score: article.healthMetrics.seo,
+                  note: 'Search intent match',
+                },
+                {
+                  name: 'AEO',
+                  score: article.healthMetrics.aeo,
+                  note: 'Direct answer clarity',
+                },
+                {
+                  name: 'Links',
+                  score: article.healthMetrics.links,
+                  note: 'Topic graph connectivity',
+                },
+                {
+                  name: 'Freshness',
+                  score: article.healthMetrics.freshness,
+                  note: 'Current APIs & packages',
+                },
+                {
+                  name: 'Technical',
+                  score: article.healthMetrics.technical,
+                  note: 'Executable code examples',
+                },
               ]}
             />
 
@@ -465,7 +526,9 @@ function BlogReaderPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-[#615fff]" />
-                    <CardTitle className="text-sm font-semibold">AEO Answer Readiness</CardTitle>
+                    <CardTitle className="text-sm font-semibold">
+                      AEO Answer Readiness
+                    </CardTitle>
                   </div>
                   <Badge variant="indigo" size="sm" shape="pill">
                     {article.aeo.readinessScore}% Ready
@@ -514,7 +577,9 @@ function BlogReaderPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Search className="h-4 w-4 text-[#292524] dark:text-[#fafaf9]" />
-                    <CardTitle className="text-sm font-semibold">SEO Architecture</CardTitle>
+                    <CardTitle className="text-sm font-semibold">
+                      SEO Architecture
+                    </CardTitle>
                   </div>
                   <Badge variant="lichen" size="sm" shape="pill">
                     Score {article.seo.readabilityScore}
@@ -543,7 +608,9 @@ function BlogReaderPage() {
 
                 {/* Google SERP Snippet Preview */}
                 <div className="rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110] p-3 space-y-1">
-                  <span className="text-[10px] font-mono text-[#79716b] block">SERP Preview</span>
+                  <span className="text-[10px] font-mono text-[#79716b] block">
+                    SERP Preview
+                  </span>
                   <div className="text-[11px] text-[#007ebb] hover:underline font-medium truncate">
                     {article.seo.title}
                   </div>
@@ -559,8 +626,16 @@ function BlogReaderPage() {
 
             {/* Quick Action Button */}
             <div className="pt-2">
-              <Link to="/blog/$id/edit" params={{ id: article.id }} className="w-full">
-                <Button variant="outline" size="sm" className="w-full text-xs font-mono uppercase">
+              <Link
+                to="/blog/$id/edit"
+                params={{ id: article.id }}
+                className="w-full"
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-mono uppercase"
+                >
                   Open in Custom Editor →
                 </Button>
               </Link>

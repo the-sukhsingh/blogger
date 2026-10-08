@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArticleEditor } from '#/components/article-editor'
-import { BlogStore, type Article } from '#/lib/blog-store'
+import { BlogStore } from '#/lib/blog-store'
+import type { Article } from '#/lib/blog-store'
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
@@ -12,7 +13,9 @@ export const Route = createFileRoute('/blog/$id/edit')({
 
 function EditBlogPage() {
   const { id } = Route.useParams()
-  const [article, setArticle] = React.useState<Article | null | undefined>(undefined)
+  const [article, setArticle] = React.useState<Article | null | undefined>(
+    undefined,
+  )
 
   React.useEffect(() => {
     const found = BlogStore.getArticleById(id)
