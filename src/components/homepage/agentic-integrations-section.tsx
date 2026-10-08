@@ -1,13 +1,28 @@
+
 import * as React from 'react'
-import { motion } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 
 export function AgenticIntegrationsSection() {
   const agents = [
-    { name: 'CHATGPT', color: 'text-emerald-600' },
-    { name: 'CODEX', color: 'text-indigo-600' },
-    { name: 'CLAUDE', color: 'text-amber-600' },
-    { name: 'ANTIGRAVITY', color: 'text-blue-600' },
+    { name: 'CHATGPT' },
+    { name: 'CODEX' },
+    { name: 'CLAUDE' },
+    { name: 'ANTIGRAVITY' },
+    { name: 'OPENCODE' },
+    { name: 'PERPLEXITY' },
+    { name: 'VIVGRID' },
+    { name: 'ZEPHYR' }
   ]
+  // state for first half or second half 
+  const [half, setHalf] = React.useState(0)
+
+  // Change the half after every 2 seconds 
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setHalf((prevHalf) => (prevHalf === 0 ? 1 : 0))
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <section className="space-y-8">
@@ -21,17 +36,41 @@ export function AgenticIntegrationsSection() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-neutral-200">
-        {agents.map((agent) => (
+        {agents.slice(half === 0 ? 0 : 4, half === 0 ? 4 : 8).map((agent) => (
           <a
             key={agent.name}
             href="#agent"
             className="p-4 py-6 bg-card hover:border-foreground transition-colors flex items-center justify-center group"
           >
-            <div className="flex items-center gap-2.5">
-              <motion.span className="font-mono text-xl font-bold uppercase tracking-[0.05em] text-foreground">
-                {agent.name}
-              </motion.span>
-            </div>
+              <div className="relative h-7 flex items-center justify-center overflow-hidden">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={agent.name}
+                    initial={{
+                      opacity: 0,
+                      transform: 'translateY(16px)',
+                      filter: 'blur(6px)',
+                    }}
+                    animate={{
+                      opacity: 1,
+                      transform: 'translateY(0px)',
+                      filter: 'blur(0px)',
+                    }}
+                    exit={{
+                      opacity: 0,
+                      transform: 'translateY(-16px)',
+                      filter: 'blur(6px)',
+                    }}
+                    transition={{
+                      duration: 0.35,
+                      ease: [0.23, 1, 0.32, 1],
+                    }}
+                    className="font-mono text-xl font-bold uppercase tracking-[0.05em] text-foreground inline-block will-change-transform"
+                  >
+                    {agent.name}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
           </a>
         ))}
       </div>
