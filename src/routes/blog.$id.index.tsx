@@ -18,6 +18,7 @@ import {
   Search,
   Cpu,
   Layers,
+  Trash2,
 } from 'lucide-react'
 
 import { Navbar } from '#/components/navbar'
@@ -27,6 +28,7 @@ import { Badge } from '#/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { HealthGauge } from '#/components/ui/health-gauge'
 import { DiffViewer } from '#/components/ui/diff-viewer'
+import { DeleteConfirmPopover } from '#/components/ui/delete-confirm-popover'
 import { BlogStore } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
@@ -322,6 +324,25 @@ function BlogReaderPage() {
                 Edit in Custom Editor
               </Button>
             </Link>
+
+            <DeleteConfirmPopover
+              onConfirm={() => {
+                BlogStore.deleteArticle(article.id)
+                navigate({ to: '/blogs' })
+              }}
+              title="Delete this article?"
+              description="This will permanently delete this post from local storage."
+              align="right"
+            >
+              <button
+                type="button"
+                className="text-xs px-2.5 py-1.5 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] text-[#79716b] hover:text-[#ff0000] dark:text-[#a6a09b] dark:hover:text-[#ff3333] hover:border-[#ff0000]/40 flex items-center gap-1.5 font-mono transition-colors"
+                title="Delete Article"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Delete</span>
+              </button>
+            </DeleteConfirmPopover>
           </div>
         </div>
 

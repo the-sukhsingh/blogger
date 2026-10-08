@@ -8,12 +8,21 @@ import {
   Trash2,
   FileText,
   RotateCcw,
+  Clock,
+  Tag,
+  GitBranch,
+  ArrowUpDown,
+  BookOpen,
+  CheckCircle2,
+  AlertCircle,
+  X,
 } from 'lucide-react'
 
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
+import { DeleteConfirmPopover } from '#/components/ui/delete-confirm-popover'
 import { BlogStore } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
 import { cn } from '#/lib/utils'
@@ -22,111 +31,371 @@ export const Route = createFileRoute('/blogs')({
   component: BlogsIndexPage,
 })
 
+type FilterTab = 'all' | 'published' | 'draft' | 'review'
+type SortOrder = 'newest' | 'oldest' | 'title'
+
 function BlogsIndexPage() {
   const navigate = useNavigate()
+  const searchInputRef = React.useRef<HTMLInputElement>(null)
+
   const [articles, setArticles] = React.useState<Article[]>([])
   const [searchQuery, setSearchQuery] = React.useState('')
+  const [activeTab, setActiveTab] = React.useState<FilterTab>('all')
+  const [selectedTopic, setSelectedTopic] = React.useState<string>('all')
+  const [sortOrder, setSortOrder] = React.useState<SortOrder>('newest')
 
   // Load articles from localStorage on mount
-  React.useEffect(() => {
+  const refreshArticles = React.useCallback(() => {
     setArticles(BlogStore.getArticles())
   }, [])
 
-  // Filter articles by title
-  const filteredArticles = React.useMemo(() => {
-    if (!searchQuery.trim()) return articles
-    const q = searchQuery.toLowerCase().trim()
-    return articles.filter(
-      (art) =>
-        art.title.toLowerCase().includes(q) ||
-        art.slug.toLowerCase().includes(q) ||
-        art.topics.some((t) => t.toLowerCase().includes(q)),
-    )
-  }, [articles, searchQuery])
+  React.useEffect(() => {
+    refreshArticles()
+  }, [refreshArticles])
 
-  const handleDeleteArticle = (
-    id: string,
-    title: string,
-    e: React.MouseEvent,
-  ) => {
-    e.stopPropagation()
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      BlogStore.deleteArticle(id)
-      setArticles(BlogStore.getArticles())
+  // Global keyboard shortcut: press '/' to focus search
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === '/' &&
+        document.activeElement?.tagName !== 'INPUT' &&
+        document.activeElement?.tagName !== 'TEXTAREA'
+      ) {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+      }
     }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  // Collect unique topics across articles
+  const allTopics = React.useMemo(() => {
+    const set = new Set<string>()
+    articles.forEach((a) => a.topics.forEach((t) => set.add(t)))
+    return Array.from(set).sort()
+  }, [articles])
+
+  // Stats calculation
+  const stats = React.useMemo(() => {
+    const published = articles.filter((a) => a.status === 'published').length
+    const drafts = articles.filter((a) => a.status === 'draft').length
+    const needsReview = articles.filter(
+      (a) => a.isStale || a.proposedDiffs.some((d) => d.status === 'pending'),
+    ).length
+    return { total: articles.length, published, drafts, needsReview }
+  }, [articles])
+
+  // Filter and sort articles
+  const filteredArticles = React.useMemo(() => {
+    let result = [...articles]
+
+    // 1. Status tab filter
+    if (activeTab === 'published') {
+      result = result.filter((a) => a.status === 'published')
+    } else if (activeTab === 'draft') {
+      result = result.filter((a) => a.status === 'draft')
+    } else if (activeTab === 'review') {
+      result = result.filter(
+        (a) => a.isStale || a.proposedDiffs.some((d) => d.status === 'pending'),
+      )
+    }
+
+    // 2. Topic filter
+    if (selectedTopic !== 'all') {
+      result = result.filter((a) => a.topics.includes(selectedTopic))
+    }
+
+    // 3. Search query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim()
+      result = result.filter(
+        (art) =>
+          art.title.toLowerCase().includes(q) ||
+          art.slug.toLowerCase().includes(q) ||
+          art.excerpt.toLowerCase().includes(q) ||
+          art.topics.some((t) => t.toLowerCase().includes(q)),
+      )
+    }
+
+    // 4. Sorting
+    if (sortOrder === 'title') {
+      result.sort((a, b) => a.title.localeCompare(b.title))
+    } else if (sortOrder === 'oldest') {
+      result.reverse()
+    }
+
+    return result
+  }, [articles, activeTab, selectedTopic, searchQuery, sortOrder])
+
+  // Deletion handler using the inline tooltip popover
+  const handleDeleteArticle = (id: string) => {
+    BlogStore.deleteArticle(id)
+    refreshArticles()
   }
 
+  // Reset seed data with confirmation
   const handleResetData = () => {
-    if (window.confirm('Reset articles to default demo data?')) {
-      const seeded = BlogStore.resetToSeedData()
-      setArticles(seeded)
-    }
+    const seeded = BlogStore.resetToSeedData()
+    setArticles(seeded)
+    setSearchQuery('')
+    setActiveTab('all')
+    setSelectedTopic('all')
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
       <Navbar />
 
-      <main className="flex-1 max-w-[1040px] w-full mx-auto px-6 py-12 space-y-8">
+      <main className="flex-1 max-w-[1120px] w-full mx-auto px-6 py-12 space-y-8">
         {/* =================================================================
-            1. MINIMAL CMS HEADER
+            1. REFINED EDITORIAL HEADER WITH COOPER / LORA SERIF
             ================================================================= */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#e7e5e4] dark:border-[#292524] pb-6">
-          <div className="space-y-1.5">
-            <h1 className="font-display text-3xl sm:text-4xl font-normal tracking-tight text-[#292524] dark:text-[#fafaf9]">
-              Articles
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#e7e5e4] dark:border-[#292524] pb-8">
+          <div className="space-y-2 max-w-2xl">
+            <span className="eyebrow-tag block text-[#79716b] dark:text-[#a6a09b]">
+              PUBLICATION ARCHIVE
+            </span>
+            <h1 className="font-display text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-tight text-[#292524] dark:text-[#fafaf9] leading-[1.15]">
+              Curated essays &{' '}
+              <span className="italic font-normal">dispatches</span>.
             </h1>
-            <p className="text-xs text-[#79716b] dark:text-[#a6a09b]">
-              Manage and publish your blog posts. Stored in localStorage.
+            <p className="text-xs sm:text-sm text-[#79716b] dark:text-[#a6a09b] leading-relaxed pt-1">
+              A living knowledge base of technical architecture, agent
+              mechanics, and engineering notes. Versioned with Git and stored in
+              local Markdown.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleResetData}
-              title="Reset seed posts"
-              className="text-xs font-mono text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] flex items-center gap-1.5 px-2.5 py-1.5 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] transition-colors"
+          <div className="flex items-center gap-3 shrink-0">
+            <DeleteConfirmPopover
+              onConfirm={handleResetData}
+              title="Reset sample posts?"
+              description="Restore the 5 original seed articles into local storage."
+              align="right"
             >
-              <RotateCcw className="h-3 w-3" />
-              <span>Reset Seed</span>
-            </button>
+              <button
+                type="button"
+                className="text-xs font-mono text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] flex items-center gap-1.5 px-3 py-2 rounded-[8px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] hover:bg-[#fafaf9] dark:hover:bg-[#1f1c1a] transition-all"
+                title="Restore default demo articles"
+              >
+                <RotateCcw className="h-3 w-3" />
+                <span>Reset Seed</span>
+              </button>
+            </DeleteConfirmPopover>
 
             <Link to="/new">
               <Button
                 variant="default"
                 size="sm"
-                className="h-8 px-3.5 text-xs font-semibold uppercase tracking-[0.04em] shadow-none hover:bg-[#4f39f6]"
+                className="h-9 px-4 text-xs font-semibold uppercase tracking-[0.05em] shadow-none bg-[#615fff] hover:bg-[#4f39f6] text-white rounded-[8px] transition-all flex items-center gap-1.5"
               >
-                <Plus className="h-3.5 w-3.5 mr-1" />
-                New Post
+                <Plus className="h-3.5 w-3.5" />
+                <span>New Article</span>
               </Button>
             </Link>
           </div>
         </div>
 
         {/* =================================================================
-            2. MINIMAL SEARCH & COUNTER TOOLBAR
+            2. PUBLICATION VITALS STRIP (QUIET ATELIER STATS)
             ================================================================= */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#79716b] dark:text-[#a6a09b]" />
-            <input
-              type="text"
-              placeholder="Search by title or topic..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] rounded-[8px] pl-9 pr-3 py-1.5 text-xs text-[#292524] dark:text-[#fafaf9] placeholder:text-[#a6a09b] focus:outline-none focus:border-[#615fff] focus:ring-1 focus:ring-[#615fff] transition-all font-mono"
-            />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 px-4 rounded-[12px] bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
+          <div className="flex items-center gap-2.5">
+            <div className="h-7 w-7 rounded-[6px] bg-[#fafaf9] dark:bg-[#201d1b] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center text-[#79716b] dark:text-[#a6a09b]">
+              <BookOpen className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-wider text-[#79716b] dark:text-[#a6a09b]">
+                Articles
+              </div>
+              <div className="text-sm font-semibold font-mono text-[#292524] dark:text-[#fafaf9]">
+                {stats.total} total
+              </div>
+            </div>
           </div>
 
-          <div className="text-xs font-mono text-[#79716b] dark:text-[#a6a09b]">
-            {filteredArticles.length}{' '}
-            {filteredArticles.length === 1 ? 'post' : 'posts'}
+          <div className="flex items-center gap-2.5">
+            <div className="h-7 w-7 rounded-[6px] bg-[#5ea500]/10 border border-[#5ea500]/20 flex items-center justify-center text-[#5ea500]">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-wider text-[#79716b] dark:text-[#a6a09b]">
+                Published
+              </div>
+              <div className="text-sm font-semibold font-mono text-[#5ea500]">
+                {stats.published} active
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <div className="h-7 w-7 rounded-[6px] bg-[#d97757]/10 border border-[#d97757]/20 flex items-center justify-center text-[#d97757]">
+              <Clock className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-wider text-[#79716b] dark:text-[#a6a09b]">
+                Drafts
+              </div>
+              <div className="text-sm font-semibold font-mono text-[#d97757]">
+                {stats.drafts} in progress
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <div className="h-7 w-7 rounded-[6px] bg-[#615fff]/10 border border-[#615fff]/20 flex items-center justify-center text-[#615fff]">
+              <GitBranch className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-wider text-[#79716b] dark:text-[#a6a09b]">
+                Git Sync
+              </div>
+              <div className="text-sm font-semibold font-mono text-[#292524] dark:text-[#fafaf9]">
+                main · local
+              </div>
+            </div>
           </div>
         </div>
 
         {/* =================================================================
-            3. CLEAN CMS TABLE (TITLE, DATE, ACTIONS)
+            3. FILTER TABS, TOPIC CHIPS & SEARCH TOOLBAR
+            ================================================================= */}
+        <div className="space-y-3">
+          {/* Top row: Status Tabs & Search Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Status Segmented Tabs */}
+            <div className="inline-flex items-center p-1 rounded-[9px] bg-[#fafaf9] dark:bg-[#121110] border border-[#e7e5e4] dark:border-[#292524]">
+              <button
+                type="button"
+                onClick={() => setActiveTab('all')}
+                className={cn(
+                  'px-3 py-1 text-xs font-mono rounded-[6px] transition-all flex items-center gap-1.5',
+                  activeTab === 'all'
+                    ? 'bg-white dark:bg-[#1f1c1a] text-[#292524] dark:text-[#fafaf9] shadow-sm font-medium'
+                    : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
+                )}
+              >
+                <span>All</span>
+                <span className="text-[10px] opacity-60">({stats.total})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('published')}
+                className={cn(
+                  'px-3 py-1 text-xs font-mono rounded-[6px] transition-all flex items-center gap-1.5',
+                  activeTab === 'published'
+                    ? 'bg-white dark:bg-[#1f1c1a] text-[#5ea500] shadow-sm font-medium'
+                    : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
+                )}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-[#5ea500]" />
+                <span>Published</span>
+                <span className="text-[10px] opacity-60">
+                  ({stats.published})
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('draft')}
+                className={cn(
+                  'px-3 py-1 text-xs font-mono rounded-[6px] transition-all flex items-center gap-1.5',
+                  activeTab === 'draft'
+                    ? 'bg-white dark:bg-[#1f1c1a] text-[#d97757] shadow-sm font-medium'
+                    : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
+                )}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-[#d97757]" />
+                <span>Drafts</span>
+                <span className="text-[10px] opacity-60">({stats.drafts})</span>
+              </button>
+
+              {stats.needsReview > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('review')}
+                  className={cn(
+                    'px-3 py-1 text-xs font-mono rounded-[6px] transition-all flex items-center gap-1.5',
+                    activeTab === 'review'
+                      ? 'bg-white dark:bg-[#1f1c1a] text-[#ff0000] shadow-sm font-medium'
+                      : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]',
+                  )}
+                >
+                  <AlertCircle className="h-2.5 w-2.5 text-[#ff0000]" />
+                  <span>Review</span>
+                  <span className="text-[10px] opacity-60">
+                    ({stats.needsReview})
+                  </span>
+                </button>
+              )}
+            </div>
+
+            {/* Search Input with Keyboard Shortcut Affordance */}
+            <div className="relative flex-1 sm:max-w-xs">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#79716b] dark:text-[#a6a09b]" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search articles..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] rounded-[8px] pl-9 pr-14 py-1.5 text-xs text-[#292524] dark:text-[#fafaf9] placeholder:text-[#a6a09b] focus:outline-none focus:border-[#615fff] focus:ring-1 focus:ring-[#615fff] transition-all font-mono"
+              />
+              {searchQuery ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9]"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              ) : (
+                <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none px-1.5 py-0.5 text-[10px] font-mono text-[#a6a09b] bg-[#fafaf9] dark:bg-[#201d1b] border border-[#e7e5e4] dark:border-[#292524] rounded">
+                  /
+                </kbd>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom row: Topic Filter Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-mono scrollbar-none">
+            <span className="text-[#a6a09b] text-[11px] pr-1 uppercase tracking-wider flex items-center gap-1">
+              <Tag className="h-3 w-3" /> Topics:
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedTopic('all')}
+              className={cn(
+                'px-2.5 py-0.5 rounded-[6px] border text-[11px] whitespace-nowrap transition-colors',
+                selectedTopic === 'all'
+                  ? 'bg-[#292524] text-white dark:bg-[#fafaf9] dark:text-[#0c0a09] border-transparent font-medium'
+                  : 'bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524] text-[#79716b] dark:text-[#a6a09b] hover:border-[#615fff]',
+              )}
+            >
+              All Topics
+            </button>
+            {allTopics.map((topic) => (
+              <button
+                key={topic}
+                type="button"
+                onClick={() => setSelectedTopic(topic)}
+                className={cn(
+                  'px-2.5 py-0.5 rounded-[6px] border text-[11px] whitespace-nowrap transition-colors',
+                  selectedTopic === topic
+                    ? 'bg-[#615fff] text-white border-[#615fff] font-medium'
+                    : 'bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524] text-[#79716b] dark:text-[#a6a09b] hover:border-[#615fff]',
+                )}
+              >
+                {topic}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* =================================================================
+            4. CRAFTED CMS TABLE WITH TACTILE ROW DETAILS
             ================================================================= */}
         <div className="rounded-[12px] border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#171514] overflow-hidden shadow-none">
           <div className="overflow-x-auto">
@@ -134,10 +403,10 @@ function BlogsIndexPage() {
               <thead>
                 <tr className="border-b border-[#e7e5e4] dark:border-[#292524] bg-[#fafaf9] dark:bg-[#121110]">
                   <th className="py-3 px-5 text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-[#79716b] dark:text-[#a6a09b]">
-                    Title
+                    Article
                   </th>
-                  <th className="py-3 px-5 text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-[#79716b] dark:text-[#a6a09b] w-36">
-                    Date
+                  <th className="py-3 px-5 text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-[#79716b] dark:text-[#a6a09b] w-48">
+                    Published / Time
                   </th>
                   <th className="py-3 px-5 text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-[#79716b] dark:text-[#a6a09b] text-right w-44">
                     Actions
@@ -149,92 +418,187 @@ function BlogsIndexPage() {
                   <tr>
                     <td
                       colSpan={3}
-                      className="py-12 px-5 text-center text-xs text-[#79716b] dark:text-[#a6a09b]"
+                      className="py-16 px-5 text-center space-y-3"
                     >
-                      No articles found.
-                      {searchQuery && (
-                        <button
-                          onClick={() => setSearchQuery('')}
-                          className="text-[#615fff] ml-2 hover:underline font-mono"
-                        >
-                          Clear search
-                        </button>
-                      )}
+                      <div className="h-10 w-10 mx-auto rounded-full bg-[#fafaf9] dark:bg-[#201d1b] border border-[#e7e5e4] dark:border-[#292524] flex items-center justify-center text-[#a6a09b]">
+                        <Search className="h-4 w-4" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-[#292524] dark:text-[#fafaf9]">
+                          No articles found
+                        </p>
+                        <p className="text-xs text-[#79716b] dark:text-[#a6a09b] max-w-sm mx-auto">
+                          {searchQuery ||
+                          selectedTopic !== 'all' ||
+                          activeTab !== 'all'
+                            ? 'No posts matched your current search filters.'
+                            : 'Your publication archive is empty. Begin by creating your first technical post.'}
+                        </p>
+                      </div>
+                      <div className="pt-2 flex items-center justify-center gap-3">
+                        {(searchQuery ||
+                          selectedTopic !== 'all' ||
+                          activeTab !== 'all') && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSearchQuery('')
+                              setSelectedTopic('all')
+                              setActiveTab('all')
+                            }}
+                            className="px-3 py-1.5 text-xs font-mono text-[#615fff] hover:underline"
+                          >
+                            Reset filters
+                          </button>
+                        )}
+                        <Link to="/new">
+                          <Button
+                            variant="default"
+                            size="xs"
+                            className="text-xs font-mono bg-[#615fff] text-white"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Create Article
+                          </Button>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ) : (
-                  filteredArticles.map((art) => (
-                    <tr
-                      key={art.id}
-                      className="group hover:bg-[#fafaf9] dark:hover:bg-[#1c1917] transition-colors"
-                    >
-                      {/* Title Column */}
-                      <td className="py-3.5 px-5 align-middle">
-                        <div className="space-y-1">
-                          <Link
-                            to="/blog/$id"
-                            params={{ id: art.id }}
-                            className="text-sm font-medium text-[#292524] dark:text-[#fafaf9] group-hover:text-[#615fff] transition-colors line-clamp-1"
-                          >
-                            {art.title}
-                          </Link>
-                          <div className="flex items-center gap-2 text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b]">
-                            <span>/{art.slug}</span>
-                            {art.status === 'draft' && (
-                              <span className="px-1.5 py-0.2 rounded text-[10px] bg-[#d97757]/10 text-[#d97757] border border-[#d97757]/30">
-                                Draft
+                  filteredArticles.map((art) => {
+                    const isDraft = art.status === 'draft'
+                    const hasPendingDiffs = art.proposedDiffs.some(
+                      (d) => d.status === 'pending',
+                    )
+
+                    return (
+                      <tr
+                        key={art.id}
+                        onClick={() =>
+                          navigate({
+                            to: '/blog/$id',
+                            params: { id: art.id },
+                          })
+                        }
+                        className="group hover:bg-[#fafaf9]/90 dark:hover:bg-[#1a1716] transition-colors cursor-pointer"
+                      >
+                        {/* Article Column */}
+                        <td className="py-4 px-5 align-middle">
+                          <div className="space-y-1.5">
+                            {/* Title with hover color */}
+                            <div className="flex items-center gap-2.5">
+                              <span className="text-sm sm:text-[15px] font-medium text-[#292524] dark:text-[#fafaf9] group-hover:text-[#615fff] transition-colors leading-snug line-clamp-1">
+                                {art.title}
                               </span>
-                            )}
-                            {art.isStale && (
-                              <span className="px-1.5 py-0.2 rounded text-[10px] bg-[#d97757]/10 text-[#d97757] border border-[#d97757]/30">
-                                Stale
+
+                              {/* Subtle status tag */}
+                              {isDraft && (
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[10px] font-mono uppercase tracking-wider bg-[#d97757]/10 text-[#d97757] border border-[#d97757]/30 shrink-0">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-[#d97757]" />
+                                  Draft
+                                </span>
+                              )}
+
+                              {art.isStale && (
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[10px] font-mono uppercase tracking-wider bg-[#d97757]/10 text-[#d97757] border border-[#d97757]/30 shrink-0">
+                                  <AlertCircle className="h-2.5 w-2.5" />
+                                  Stale
+                                </span>
+                              )}
+
+                              {hasPendingDiffs && (
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[10px] font-mono uppercase tracking-wider bg-[#615fff]/10 text-[#615fff] border border-[#615fff]/30 shrink-0">
+                                  Diffs Ready
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Secondary Line: Slug + Micro Topic Chips */}
+                            <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b]">
+                              <span className="text-[#a6a09b] dark:text-[#79716b]">
+                                /{art.slug}
                               </span>
-                            )}
+
+                              {art.topics.slice(0, 3).map((topic) => (
+                                <span
+                                  key={topic}
+                                  className="px-1.5 py-0.2 rounded-[4px] text-[10px] bg-[#fafaf9] dark:bg-[#121110] border border-[#e7e5e4] dark:border-[#292524] text-[#79716b] dark:text-[#a6a09b]"
+                                >
+                                  {topic}
+                                </span>
+                              ))}
+
+                              {art.topics.length > 3 && (
+                                <span className="text-[10px] text-[#a6a09b]">
+                                  +{art.topics.length - 3}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Date Column */}
-                      <td className="py-3.5 px-5 align-middle text-xs font-mono text-[#79716b] dark:text-[#a6a09b] whitespace-nowrap">
-                        {art.publishedAt}
-                      </td>
+                        {/* Date & Reading Time Column */}
+                        <td className="py-4 px-5 align-middle whitespace-nowrap">
+                          <div className="space-y-0.5">
+                            <div className="text-xs font-mono text-[#292524] dark:text-[#fafaf9]">
+                              {art.publishedAt}
+                            </div>
+                            <div className="text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b] flex items-center gap-1">
+                              <Clock className="h-3 w-3 text-[#a6a09b]" />
+                              <span>{art.readingTime}</span>
+                            </div>
+                          </div>
+                        </td>
 
-                      {/* Actions Column */}
-                      <td className="py-3.5 px-5 align-middle text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            to="/blog/$id/edit"
-                            params={{ id: art.id }}
-                            className="inline-flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] hover:border-[#615fff] hover:text-[#615fff] transition-colors bg-white dark:bg-[#171514]"
-                            title="Edit Post"
-                          >
-                            <Edit3 className="h-3 w-3" />
-                            <span>Edit</span>
-                          </Link>
+                        {/* Actions Column */}
+                        <td
+                          className="py-4 px-5 align-middle text-right whitespace-nowrap"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="flex items-center justify-end gap-1.5">
+                            {/* Read Link */}
+                            <Link
+                              to="/blog/$id"
+                              params={{ id: art.id }}
+                              className="inline-flex items-center gap-1 text-xs font-mono px-2 py-1 rounded-[6px] text-[#79716b] hover:text-[#292524] dark:hover:text-[#fafaf9] hover:bg-[#fafaf9] dark:hover:bg-[#201d1b] border border-transparent hover:border-[#e7e5e4] dark:hover:border-[#292524] transition-all"
+                              title="Read Article"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              <span className="hidden sm:inline">Read</span>
+                            </Link>
 
-                          <Link
-                            to="/blog/$id"
-                            params={{ id: art.id }}
-                            className="inline-flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-[6px] text-[#79716b] hover:text-[#292524] dark:hover:text-[#fafaf9] hover:bg-[#fafaf9] dark:hover:bg-[#201d1b] transition-colors"
-                            title="View / Read Post"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            <span>Read</span>
-                          </Link>
+                            {/* Edit Link */}
+                            <Link
+                              to="/blog/$id/edit"
+                              params={{ id: art.id }}
+                              className="inline-flex items-center gap-1 text-xs font-mono px-2 py-1 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] hover:border-[#615fff] hover:text-[#615fff] bg-white dark:bg-[#171514] transition-all shadow-none"
+                              title="Edit Article"
+                            >
+                              <Edit3 className="h-3 w-3" />
+                              <span className="hidden sm:inline">Edit</span>
+                            </Link>
 
-                          <button
-                            onClick={(e) =>
-                              handleDeleteArticle(art.id, art.title, e)
-                            }
-                            className="p-1 text-[#79716b] hover:text-[#ff0000] rounded transition-colors"
-                            title="Delete Post"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                            {/* Delete Button with Tooltip Popover confirmation */}
+                            <DeleteConfirmPopover
+                              onConfirm={() => handleDeleteArticle(art.id)}
+                              title="Delete this article?"
+                              description={`"${art.title.slice(0, 36)}${art.title.length > 36 ? '...' : ''}" will be permanently removed.`}
+                              align="right"
+                            >
+                              <button
+                                type="button"
+                                className="p-1.5 text-[#79716b] hover:text-[#ff0000] dark:text-[#a6a09b] dark:hover:text-[#ff3333] hover:bg-[#ff0000]/5 rounded-[6px] transition-colors"
+                                title="Delete article"
+                                aria-label={`Delete ${art.title}`}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </DeleteConfirmPopover>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })
                 )}
               </tbody>
             </table>
@@ -242,12 +606,29 @@ function BlogsIndexPage() {
         </div>
 
         {/* =================================================================
-            4. MINIMAL FOOTNOTE
+            5. QUIET FOOTNOTE & WORKSPACE STATUS
             ================================================================= */}
-        <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b]">
-          <span>✦ Standard blog CMS table view</span>
-          <Link to="/new" className="text-[#615fff] hover:underline">
-            + Create another article →
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b] border-t border-[#e7e5e4]/60 dark:border-[#292524]/60">
+          <div className="flex items-center gap-3">
+            <span>✦ Git-backed Markdown storage</span>
+            <span className="hidden sm:inline text-[#e7e5e4] dark:text-[#292524]">
+              |
+            </span>
+            <span className="hidden sm:inline">
+              Press{' '}
+              <kbd className="px-1 py-0.5 rounded bg-white dark:bg-[#1f1c1a] border border-[#e7e5e4] dark:border-[#292524] text-[10px]">
+                /
+              </kbd>{' '}
+              to focus search
+            </span>
+          </div>
+
+          <Link
+            to="/new"
+            className="text-[#615fff] hover:underline inline-flex items-center gap-1"
+          >
+            <span>Draft a new article</span>
+            <span>→</span>
           </Link>
         </div>
       </main>
