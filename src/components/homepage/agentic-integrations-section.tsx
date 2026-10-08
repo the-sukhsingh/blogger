@@ -44,8 +44,8 @@ export function AgenticIntegrationsSection() {
               href="#agent"
               className="p-4 py-6 bg-card hover:border-foreground transition-colors flex items-center justify-center group"
             >
-              <div className="relative h-7 w-full flex items-center justify-center overflow-hidden">
-                <AnimatePresence mode="popLayout" initial={false}>
+              <div className="relative h-7 w-full flex items-center justify-center">
+                <AnimatePresence initial={false}>
                   <motion.span
                     key={agent.name}
                     initial={{
@@ -68,7 +68,7 @@ export function AgenticIntegrationsSection() {
                       ease: [0.23, 0, 0.32, 1],
                       delay: 0.01 * (slotIndex + half * 4),
                     }}
-                    className="font-mono text-xl font-bold uppercase tracking-wider text-foreground block text-center w-full whitespace-nowrap"
+                    className="absolute inset-0 flex items-center justify-center font-mono text-xl font-bold uppercase tracking-wider text-foreground whitespace-nowrap text-center"
                   >
                     {agent.name}
                   </motion.span>
