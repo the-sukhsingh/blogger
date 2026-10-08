@@ -52,7 +52,9 @@ export function Navbar() {
           <Link
             to="/blogs"
             className={`transition-colors hover:text-foreground flex items-center gap-1.5 ${
-              currentPath === '/blogs' ? 'text-foreground font-bold' : ''
+              currentPath === '/blogs' || currentPath === '/blog'
+                ? 'text-foreground font-bold'
+                : ''
             }`}
           >
             <BookOpen className="h-3.5 w-3.5" />
@@ -66,27 +68,8 @@ export function Navbar() {
             }`}
           >
             <PenTool className="h-3.5 w-3.5" />
-            <span>Editor</span>
+            <span>New Post</span>
           </Link>
-
-          <Link
-            to="/blogs"
-            search={{ view: 'graph' } as any}
-            className="transition-colors hover:text-foreground flex items-center gap-1.5"
-          >
-            <Network className="h-3.5 w-3.5" />
-            <span>Content Graph</span>
-          </Link>
-
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1 hover:text-foreground transition-colors"
-          >
-            <span>Git Sync</span>
-            <ArrowUpRight className="h-3 w-3 opacity-60" />
-          </a>
         </nav>
 
         {/* Right Action Buttons */}

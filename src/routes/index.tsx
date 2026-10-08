@@ -106,28 +106,8 @@ function AutoSendLandingPage() {
             >
               ARTICLES
             </Link>
-            <Link
-              to="/blogs"
-              search={{ view: 'graph' } as any}
-              className="hover:text-foreground transition-colors"
-            >
-              GRAPH
-            </Link>
             <Link to="/new" className="hover:text-foreground transition-colors">
-              EDITOR
-            </Link>
-            <a
-              href="#docs"
-              className="flex items-center gap-1 hover:text-foreground transition-colors"
-            >
-              <span>DOCS</span>
-              <ArrowUpRight className="h-3 w-3 opacity-60" />
-            </a>
-            <Link
-              to="/blogs"
-              className="hover:text-foreground transition-colors"
-            >
-              PUBLICATIONS
+              NEW POST
             </Link>
           </nav>
 
