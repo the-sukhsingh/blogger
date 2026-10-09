@@ -446,40 +446,38 @@ npx convex dev`}
       content: (
         <div className="space-y-6 text-[14px] leading-relaxed text-muted-foreground">
           <p>
-            Integrate Beelog directly into your build scripts, Git pre-commit hooks, or deployment
-            pipelines.
+            Fetch your published blogs dynamically from your personal website, Astro static site generator,
+            Next.js App Router, or Hugo. Manage your credentials and inspect request logs in the{' '}
+            <Link to="/integrations" className="text-amber-500 underline font-semibold">
+              Integrations Dashboard
+            </Link>.
           </p>
 
           <div className="space-y-4">
             <div className="space-y-2">
               <span className="text-xs font-mono text-muted-foreground block">
-                Publish via cURL
+                GET /api/v1/blogs (Fetch published blogs)
               </span>
               <pre className="p-4 rounded-[12px] bg-background border border-border font-mono text-[12px] text-foreground overflow-x-auto">
-                {`curl -X POST https://api.beelog.dev/v1/publish \\
-  -H "Authorization: Bearer $BEELOG_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "slug": "mcp-server-architecture",
-    "status": "published",
-    "runAeoAudit": true
-  }'`}
+                {`curl -X GET 'https://quick-mole-268.convex.site/api/v1/blogs?status=published' \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`}
               </pre>
             </div>
 
             <div className="space-y-2">
               <span className="text-xs font-mono text-muted-foreground block">
-                Node / TypeScript SDK
+                Astro / Next.js Fetch Example
               </span>
               <pre className="p-4 rounded-[12px] bg-background border border-border font-mono text-[12px] text-foreground overflow-x-auto">
-                {`import { Beelog } from '@beelog/client'
+                {`const response = await fetch('https://quick-mole-268.convex.site/api/v1/blogs', {
+  headers: {
+    'Authorization': \`Bearer \${process.env.BEELOG_API_KEY}\`,
+  },
+  next: { revalidate: 60 } // Next.js ISR
+});
 
-const beelog = new Beelog({ apiKey: process.env.BEELOG_API_KEY })
-
-const result = await beelog.articles.sync({
-  directory: './content/posts',
-  autoLinkExistingTopics: true,
-})`}
+const { data: articles } = await response.json();`}
               </pre>
             </div>
           </div>

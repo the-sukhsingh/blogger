@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Plus, Menu, X, BookOpen, PenTool, Home, RotateCcw, LogIn, LogOut, User as UserIcon } from 'lucide-react'
+import { Plus, Menu, X, BookOpen, PenTool, Home, RotateCcw, LogIn, LogOut, User as UserIcon, Key } from 'lucide-react'
 import { useConvexAuth, useAuthActions } from '@convex-dev/auth/react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -84,6 +84,8 @@ export function Navbar() {
     currentPath === '/blog' ||
     currentPath.startsWith('/blog/')
   const isDocsActive = currentPath === '/docs' || currentPath.startsWith('/docs')
+  const isIntegrationsActive =
+    currentPath === '/integrations' || currentPath.startsWith('/integrations')
   const isEditorActive = currentPath === '/new' || currentPath.endsWith('/edit')
   const isHomeActive = currentPath === '/'
 
@@ -146,6 +148,18 @@ export function Navbar() {
               )}
             >
               Docs
+            </Link>
+
+            <Link
+              to="/integrations"
+              className={cn(
+                'px-3 py-1 text-xs rounded-[6px] transition-all font-medium',
+                isIntegrationsActive
+                  ? 'bg-white dark:bg-[#1a1716] text-[#292524] dark:text-[#fafaf9] shadow-xs border border-[#e7e5e4] dark:border-[#292524]'
+                  : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] hover:bg-[#e7e5e4]/40 dark:hover:bg-[#1f1c1a]',
+              )}
+            >
+              Integrations
             </Link>
 
             <Link
@@ -254,6 +268,15 @@ export function Navbar() {
                       {user?.email || 'Logged in'}
                     </p>
                   </div>
+                  <Link
+                    to="/integrations"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-[#292524] dark:text-[#fafaf9] hover:bg-[#e7e5e4]/40 dark:hover:bg-[#1f1c1a] rounded-[6px] transition-colors"
+                  >
+                    <Key className="h-3.5 w-3.5 text-amber-500" />
+                    <span>API Keys & Integration</span>
+                  </Link>
+
                   <button
                     type="button"
                     onClick={async () => {
@@ -344,6 +367,19 @@ export function Navbar() {
           >
             <BookOpen className="h-3.5 w-3.5 text-[#f59e0b]" />
             <span>Docs</span>
+          </Link>
+
+          <Link
+            to="/integrations"
+            className={cn(
+              'flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-xs font-medium transition-colors',
+              isIntegrationsActive
+                ? 'bg-white dark:bg-[#171514] text-[#292524] dark:text-[#fafaf9] border border-[#e7e5e4] dark:border-[#292524]'
+                : 'text-[#79716b] dark:text-[#a6a09b] hover:bg-white dark:hover:bg-[#171514]',
+            )}
+          >
+            <Key className="h-3.5 w-3.5 text-[#f59e0b]" />
+            <span>Integrations</span>
           </Link>
 
           <Link
