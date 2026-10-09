@@ -1,9 +1,13 @@
 import * as React from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Plus, Menu, X, BookOpen, PenTool, Home, RotateCcw } from 'lucide-react'
+import { Plus, Menu, X, BookOpen, PenTool, Home, RotateCcw, LogIn, LogOut, User as UserIcon } from 'lucide-react'
+import { useConvexAuth, useAuthActions } from '@convex-dev/auth/react'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 import { ThemeSwitcher } from '#/components/ui/theme-switcher'
 import { Button } from '#/components/ui/button'
 import { BlogStore } from '#/lib/blog-store'
+import { AuthModal } from '#/components/auth-modal'
 import { cn } from '#/lib/utils'
 
 export function Navbar() {
@@ -11,7 +15,14 @@ export function Navbar() {
   const currentPath = routerState.location.pathname
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [resetConfirmOpen, setResetConfirmOpen] = React.useState(false)
+  const [authModalOpen, setAuthModalOpen] = React.useState(false)
+  const [userMenuOpen, setUserMenuOpen] = React.useState(false)
   const resetRef = React.useRef<HTMLDivElement>(null)
+  const userMenuRef = React.useRef<HTMLDivElement>(null)
+
+  const { isAuthenticated, isLoading: authLoading } = useConvexAuth()
+  const { signOut } = useAuthActions()
+  const user = useQuery(api.users.viewer)
 
   // Close mobile menu on route change
   React.useEffect(() => {
@@ -36,6 +47,25 @@ export function Navbar() {
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [resetConfirmOpen])
+
+  // Close user menu on outside click / Escape
+  React.useEffect(() => {
+    if (!userMenuOpen) return
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setUserMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside, true)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside, true)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [userMenuOpen])
 
   const handleResetSeed = () => {
     BlogStore.resetToSeedData()
@@ -176,6 +206,61 @@ export function Navbar() {
 
           <div className="h-4 w-[1px] bg-[#e7e5e4] dark:border-[#292524] hidden sm:block" />
 
+          {/* Authentication State button / User Menu */}
+          {authLoading ? (
+            <div className="h-8 w-16 bg-[#e7e5e4]/50 dark:bg-[#292524]/50 rounded-[6px] animate-pulse hidden sm:block" />
+          ) : isAuthenticated ? (
+            <div ref={userMenuRef} className="relative hidden sm:block">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((prev) => !prev)}
+                aria-label="User account menu"
+                className="flex items-center gap-2 px-2.5 py-1 text-xs rounded-[6px] bg-white dark:bg-[#1a1716] border border-[#e7e5e4] dark:border-[#292524] text-[#292524] dark:text-[#fafaf9] shadow-xs hover:border-[#615fff]/50 transition-colors"
+              >
+                <div className="h-5 w-5 rounded-full bg-[#615fff]/15 dark:bg-[#615fff]/25 text-[#615fff] flex items-center justify-center font-mono font-bold text-[10px]">
+                  {user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                </div>
+                <span className="max-w-[100px] truncate font-medium">
+                  {user?.name || user?.email?.split('@')[0] || 'Author'}
+                </span>
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 z-50 w-52 rounded-[10px] p-2.5 bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524] shadow-xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-2 py-1.5 border-b border-[#e7e5e4] dark:border-[#292524] mb-1">
+                    <p className="text-xs font-semibold text-[#292524] dark:text-[#fafaf9] truncate">
+                      {user?.name || 'Author'}
+                    </p>
+                    <p className="text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b] truncate">
+                      {user?.email || 'Logged in'}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setUserMenuOpen(false)
+                      await signOut()
+                    }}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-[6px] transition-colors"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setAuthModalOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              <span>Sign In</span>
+            </Button>
+          )}
+
           {/* Primary CTA */}
           <Link to="/new" className="hidden sm:inline-flex">
             <Button variant="default" size="sm">
@@ -243,6 +328,32 @@ export function Navbar() {
           </Link>
 
           <div className="pt-2 border-t border-[#e7e5e4] dark:border-[#292524] space-y-2">
+            {!isAuthenticated ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  setAuthModalOpen(true)
+                }}
+                className="w-full justify-center gap-1.5"
+              >
+                <LogIn className="h-3.5 w-3.5" />
+                <span>Sign In / Register</span>
+              </Button>
+            ) : (
+              <button
+                type="button"
+                onClick={async () => {
+                  setMobileMenuOpen(false)
+                  await signOut()
+                }}
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-[8px] text-xs font-mono text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors border border-red-200 dark:border-red-900/60"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span>Sign Out ({user?.email?.split('@')[0] || 'User'})</span>
+              </button>
+            )}
             <Link to="/new" className="block w-full">
               <Button variant="default" size="sm" className="w-full justify-center">
                 <Plus className="h-3.5 w-3.5 mr-1" />
@@ -260,6 +371,9 @@ export function Navbar() {
           </div>
         </div>
       )}
+
+      {/* Auth Modal for Login / Registration */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </header>
   )
 }

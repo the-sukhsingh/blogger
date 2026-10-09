@@ -2,6 +2,8 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ThemeProvider } from '#/components/theme-provider'
+import { ConvexAuthProvider } from '@convex-dev/auth/react'
+import { convex } from '#/lib/convex'
 
 import appCss from '../styles.css?url'
 
@@ -59,7 +61,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent selection:text-accent-foreground font-sans">
-        <ThemeProvider defaultMode="light">{children}</ThemeProvider>
+        <ThemeProvider defaultMode="light">
+          <ConvexAuthProvider client={convex}>
+            {children}
+          </ConvexAuthProvider>
+        </ThemeProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
