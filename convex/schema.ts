@@ -22,5 +22,36 @@ export default defineSchema({
   })
     .index("by_slug", ["slug"])
     .index("by_status", ["status"])
-    .index("by_status_and_publishedAt", ["status", "publishedAt"]),
+    .index("by_status_and_publishedAt", ["status", "publishedAt"])
+    .index("by_authorId", ["authorId"]),
+
+  apiKeys: defineTable({
+    name: v.string(),
+    key: v.string(),
+    preview: v.string(),
+    userId: v.id("users"),
+    status: v.union(v.literal("active"), v.literal("revoked")),
+    createdAt: v.number(),
+    lastUsedAt: v.optional(v.number()),
+    totalRequests: v.optional(v.number()),
+  })
+    .index("by_key", ["key"])
+    .index("by_userId", ["userId"])
+    .index("by_userId_and_status", ["userId", "status"]),
+
+  apiLogs: defineTable({
+    keyId: v.id("apiKeys"),
+    userId: v.id("users"),
+    endpoint: v.string(),
+    method: v.string(),
+    status: v.number(),
+    ip: v.optional(v.string()),
+    userAgent: v.optional(v.string()),
+    durationMs: v.optional(v.number()),
+    timestamp: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_keyId", ["keyId"])
+    .index("by_timestamp", ["timestamp"])
+    .index("by_userId_and_timestamp", ["userId", "timestamp"]),
 });
