@@ -1036,10 +1036,12 @@ export const BlogStore = {
     topics: string[],
     isStale: boolean,
   ): { overall: number; metrics: ArticleHealthMetrics } {
-    const wordCount = content.split(/\s+/).filter(Boolean).length
-    const hasHeadings = (content.match(/#{1,3}\s+/g) || []).length >= 3
-    const hasCodeBlock = content.includes('```')
-    const hasTopics = topics.length > 0
+    const safeContent = typeof content === 'string' ? content : ''
+    const safeTopics = Array.isArray(topics) ? topics : []
+    const wordCount = safeContent.split(/\s+/).filter(Boolean).length
+    const hasHeadings = (safeContent.match(/#{1,3}\s+/g) || []).length >= 3
+    const hasCodeBlock = safeContent.includes('```')
+    const hasTopics = safeTopics.length > 0
 
     const contentScore = Math.min(
       100,
@@ -1101,16 +1103,18 @@ export const BlogStore = {
   },
 
   computeSeo(title: string, content: string): SeoAnalysis {
-    const headings = (content.match(/#{1,3}\s+/g) || []).length
-    const words = content.split(/\s+/).filter(Boolean).length
+    const safeTitle = typeof title === 'string' ? title : ''
+    const safeContent = typeof content === 'string' ? content : ''
+    const headings = (safeContent.match(/#{1,3}\s+/g) || []).length
+    const words = safeContent.split(/\s+/).filter(Boolean).length
     return {
-      title,
+      title: safeTitle,
       description:
-        content
+        safeContent
           .slice(0, 140)
           .replace(/[#*`_]/g, '')
           .trim() + '...',
-      primaryKeyword: title.toLowerCase().split(' ').slice(0, 3).join(' '),
+      primaryKeyword: safeTitle.toLowerCase().split(' ').slice(0, 3).join(' '),
       searchIntent: 'Technical architecture & implementation',
       headingCount: headings,
       readabilityScore: Math.min(
@@ -1121,7 +1125,7 @@ export const BlogStore = {
         headings >= 3
           ? 'Logical heading structure found (H2/H3 tiers).'
           : 'Add more subheadings to improve reader scanning.',
-        title.length >= 25 && title.length <= 70
+        safeTitle.length >= 25 && safeTitle.length <= 70
           ? 'Title length optimal for SERP display (between 25-70 chars).'
           : 'Consider refining title length for optimal SERP clipping.',
       ],
@@ -1129,20 +1133,22 @@ export const BlogStore = {
   },
 
   computeAeo(title: string, content: string): AeoAnalysis {
+    const safeTitle = typeof title === 'string' ? title : ''
+    const safeContent = typeof content === 'string' ? content : ''
     const hasDef =
-      content.toLowerCase().includes(' is ') ||
-      content.toLowerCase().includes('are ') ||
-      content.toLowerCase().includes('defined as')
+      safeContent.toLowerCase().includes(' is ') ||
+      safeContent.toLowerCase().includes('are ') ||
+      safeContent.toLowerCase().includes('defined as')
 
     const firstParagraph =
-      content.split('\n\n').find((p) => p.trim() && !p.startsWith('#')) || ''
+      safeContent.split('\n\n').find((p) => p.trim() && !p.startsWith('#')) || ''
     const isEarly =
       firstParagraph.toLowerCase().includes(' is ') ||
       firstParagraph.toLowerCase().includes('are ')
 
     return {
       readinessScore: isEarly ? 94 : hasDef ? 75 : 55,
-      primaryQuestion: `What is ${title.split(':')[0].trim()}?`,
+      primaryQuestion: `What is ${safeTitle.split(':')[0].trim()}?`,
       directAnswerSnippet:
         firstParagraph
           .slice(0, 180)

@@ -82,7 +82,7 @@ function BlogReaderPage() {
         slug: art.slug,
         title: art.title,
         excerpt: art.excerpt || '',
-        content: art.content,
+        content: art.content || '',
         publishedAt: art.publishedAt
           ? typeof art.publishedAt === 'number'
             ? new Date(art.publishedAt).toISOString()
@@ -118,7 +118,7 @@ function BlogReaderPage() {
         slug: a.slug,
         title: a.title,
         excerpt: a.excerpt || '',
-        content: a.content,
+        content: a.content || '',
         publishedAt: a.publishedAt
           ? typeof a.publishedAt === 'number'
             ? new Date(a.publishedAt).toISOString()
@@ -201,7 +201,7 @@ function BlogReaderPage() {
 
   // Render markdown with rich styling for headings, code blocks, callouts, and links
   const renderFormattedContent = (content: string) => {
-    const lines = content.split('\n')
+    const lines = (typeof content === 'string' ? content : '').split('\n')
     const elements: React.ReactNode[] = []
     let inCodeBlock = false
     let codeLanguage = ''

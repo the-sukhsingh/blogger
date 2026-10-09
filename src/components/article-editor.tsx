@@ -78,7 +78,7 @@ export function ArticleEditor({
 
   // Word count & reading time
   const wordCount = React.useMemo(() => {
-    return (content + ' ' + title).split(/\s+/).filter(Boolean).length
+    return ((content || '') + ' ' + (title || '')).split(/\s+/).filter(Boolean).length
   }, [content, title])
 
   const readingTimeEstimate = React.useMemo(() => {

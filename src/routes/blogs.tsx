@@ -65,7 +65,7 @@ function BlogsIndexPage() {
           slug: a.slug,
           title: a.title,
           excerpt: a.excerpt || '',
-          content: a.content,
+          content: a.content || '',
           publishedAt: a.publishedAt
             ? typeof a.publishedAt === 'number'
               ? new Date(a.publishedAt).toISOString()
