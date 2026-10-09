@@ -98,11 +98,11 @@ export function AuthModal({
       <DialogContent className="max-w-[420px] p-6 sm:p-7 border border-[#e7e5e4] dark:border-[#292524] bg-white dark:bg-[#12100f] shadow-2xl rounded-2xl">
         <DialogHeader className="space-y-1.5 pb-2">
           <div className="flex items-center gap-2 mb-1">
-            <div className="h-6 w-6 rounded-[6px] bg-[#615fff] flex items-center justify-center text-white text-xs font-mono font-bold shadow-xs">
-              ✦
+            <div className="h-6 w-6 rounded-[6px] bg-[#f59e0b] dark:bg-[#d97706] flex items-center justify-center text-white text-xs font-mono font-bold shadow-xs">
+              🐝
             </div>
             <span className="text-xs font-mono font-medium tracking-wider text-[#79716b] dark:text-[#a6a09b] uppercase">
-              AutoSend Access
+              Beelog Access
             </span>
           </div>
           <DialogTitle className="text-xl font-semibold tracking-tight text-[#1c1917] dark:text-[#f5f5f4]">

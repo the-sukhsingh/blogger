@@ -155,15 +155,15 @@ export function Footer() {
         <div className="pt-8 border-t border-[#e7e5e4] dark:border-[#292524] flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3 text-[#79716b] dark:text-[#a6a09b]">
             <span className="flex items-center gap-1.5 font-bold tracking-wider text-foreground">
-              <span className="text-[#615fff]">✦</span> AUTOSEND
+              <span className="text-[#f59e0b]">🐝</span> BEELOG
             </span>
             <span>·</span>
-            <span>© 2026 AGENT PUBLISHING SYSTEM</span>
+            <span>© 2026 TECHNICAL PUBLISHING SYSTEM</span>
           </div>
 
           <div className="flex items-center gap-2 text-[#79716b] dark:text-[#a6a09b] font-mono text-[11px]">
             <span className="h-2 w-2 rounded-full bg-[#5ea500] animate-pulse" />
-            <span>ALL INTELLIGENCE AGENTS OPERATIONAL</span>
+            <span>ALL PUBLISHING SERVICES OPERATIONAL</span>
           </div>
 
           <div className="flex items-center gap-4 text-[#79716b] dark:text-[#a6a09b]">
@@ -195,7 +195,7 @@ export function Footer() {
               <Globe className="h-4 w-4" />
             </a>
             <a
-              href="https://autosend.dev"
+              href="https://beelog.dev"
               target="_blank"
               rel="noreferrer"
               className="hover:text-foreground"

@@ -83,6 +83,7 @@ export function Navbar() {
     currentPath === '/blogs' ||
     currentPath === '/blog' ||
     currentPath.startsWith('/blog/')
+  const isDocsActive = currentPath === '/docs' || currentPath.startsWith('/docs')
   const isEditorActive = currentPath === '/new' || currentPath.endsWith('/edit')
   const isHomeActive = currentPath === '/'
 
@@ -96,12 +97,12 @@ export function Navbar() {
             to="/"
             className="flex items-center gap-2.5 text-[#292524] dark:text-[#fafaf9] hover:opacity-85 transition-opacity group"
           >
-            <div className="h-6 w-6 rounded-[6px] bg-[#615fff] flex items-center justify-center text-white text-xs font-mono font-bold shadow-xs transition-transform group-hover:scale-105">
-              ✦
+            <div className="h-6 w-6 rounded-[6px] bg-[#f59e0b] dark:bg-[#d97706] flex items-center justify-center text-white text-xs font-mono font-bold shadow-xs transition-transform group-hover:scale-105">
+              🐝
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold tracking-tight">
-                AutoSend
+                Beelog
               </span>
               <span className="hidden sm:inline-block text-[11px] font-mono text-[#79716b] dark:text-[#a6a09b] px-1.5 py-0.5 rounded-[4px] bg-white dark:bg-[#171514] border border-[#e7e5e4] dark:border-[#292524]">
                 publishing
@@ -133,6 +134,18 @@ export function Navbar() {
               )}
             >
               Articles
+            </Link>
+
+            <Link
+              to="/docs"
+              className={cn(
+                'px-3 py-1 text-xs rounded-[6px] transition-all font-medium',
+                isDocsActive
+                  ? 'bg-white dark:bg-[#1a1716] text-[#292524] dark:text-[#fafaf9] shadow-xs border border-[#e7e5e4] dark:border-[#292524]'
+                  : 'text-[#79716b] dark:text-[#a6a09b] hover:text-[#292524] dark:hover:text-[#fafaf9] hover:bg-[#e7e5e4]/40 dark:hover:bg-[#1f1c1a]',
+              )}
+            >
+              Docs
             </Link>
 
             <Link
@@ -318,6 +331,19 @@ export function Navbar() {
           >
             <BookOpen className="h-3.5 w-3.5" />
             <span>Articles</span>
+          </Link>
+
+          <Link
+            to="/docs"
+            className={cn(
+              'flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-xs font-medium transition-colors',
+              isDocsActive
+                ? 'bg-white dark:bg-[#171514] text-[#292524] dark:text-[#fafaf9] border border-[#e7e5e4] dark:border-[#292524]'
+                : 'text-[#79716b] dark:text-[#a6a09b] hover:bg-white dark:hover:bg-[#171514]',
+            )}
+          >
+            <BookOpen className="h-3.5 w-3.5 text-[#f59e0b]" />
+            <span>Docs</span>
           </Link>
 
           <Link

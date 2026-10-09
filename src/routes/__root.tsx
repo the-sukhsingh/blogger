@@ -18,12 +18,12 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Agent — AI Publishing System for Technical Blogs',
+        title: 'Beelog — AI Publishing System for Technical Blogs',
       },
       {
         name: 'description',
         content:
-          'Treat a technical blog like a codebase. An AI-native publishing workspace for developers, engineers, and technical writers.',
+          'Beelog: Treat your technical blog like a codebase. An AI-native publishing workspace for developers, engineers, and technical writers.',
       },
     ],
     links: [
