@@ -18,6 +18,7 @@ export default defineSchema({
     updatedAt: v.optional(v.number()),
     readingTime: v.optional(v.string()),
     gitBranch: v.optional(v.string()),
+    healthScore: v.optional(v.number()),
   })
     .index("by_slug", ["slug"])
     .index("by_status", ["status"])

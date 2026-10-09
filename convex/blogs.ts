@@ -1,5 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
+import { INITIAL_BLOGS } from "./seedData";
 
 function calculateReadingTime(text: string): string {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
@@ -9,7 +11,7 @@ function calculateReadingTime(text: string): string {
 
 /**
  * List blogs, optionally filtered by status ('draft' | 'published').
- * Results are ordered from newest to oldest and bounded to prevent unbounded reads.
+ * Results are ordered from newest to oldest and bounded.
  */
 export const list = query({
   args: {
@@ -63,7 +65,30 @@ export const getBySlug = query({
 });
 
 /**
+ * Get a blog either by its Convex ID or by its slug.
+ * Useful for universal route matching.
+ */
+export const getByIdOrSlug = query({
+  args: {
+    idOrSlug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const normalizedId = ctx.db.normalizeId("blogs", args.idOrSlug);
+    if (normalizedId) {
+      const doc = await ctx.db.get(normalizedId);
+      if (doc) return doc;
+    }
+
+    return await ctx.db
+      .query("blogs")
+      .withIndex("by_slug", (q) => q.eq("slug", args.idOrSlug))
+      .unique();
+  },
+});
+
+/**
  * Create a new blog post.
+ * If user is authenticated, automatically links author & authorId.
  */
 export const create = mutation({
   args: {
@@ -77,6 +102,7 @@ export const create = mutation({
     author: v.optional(v.string()),
     readingTime: v.optional(v.string()),
     gitBranch: v.optional(v.string()),
+    healthScore: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
@@ -86,6 +112,16 @@ export const create = mutation({
 
     if (existing) {
       throw new Error(`Blog with slug "${args.slug}" already exists`);
+    }
+
+    const userId = await getAuthUserId(ctx);
+    let authorName = args.author;
+
+    if (userId) {
+      const user = await ctx.db.get(userId);
+      if (user && (!authorName || authorName === "Staff Engineer" || authorName === "Author")) {
+        authorName = user.name || user.email || "Author";
+      }
     }
 
     const now = Date.now();
@@ -101,9 +137,11 @@ export const create = mutation({
       coverImage: args.coverImage,
       status: args.status,
       topics: args.topics,
-      author: args.author,
+      author: authorName || "Author",
+      authorId: userId ?? undefined,
       readingTime,
-      gitBranch: args.gitBranch,
+      gitBranch: args.gitBranch || "main",
+      healthScore: args.healthScore,
       publishedAt,
       updatedAt: now,
     });
@@ -126,6 +164,7 @@ export const update = mutation({
     author: v.optional(v.string()),
     readingTime: v.optional(v.string()),
     gitBranch: v.optional(v.string()),
+    healthScore: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.get(args.id);
@@ -173,6 +212,12 @@ export const update = mutation({
     if (args.topics !== undefined) updateFields.topics = args.topics;
     if (args.author !== undefined) updateFields.author = args.author;
     if (args.gitBranch !== undefined) updateFields.gitBranch = args.gitBranch;
+    if (args.healthScore !== undefined) updateFields.healthScore = args.healthScore;
+
+    const userId = await getAuthUserId(ctx);
+    if (userId && !existing.authorId) {
+      updateFields.authorId = userId;
+    }
 
     await ctx.db.patch(args.id, updateFields);
     return args.id;
@@ -241,5 +286,50 @@ export const remove = mutation({
 
     await ctx.db.delete(args.id);
     return args.id;
+  },
+});
+
+/**
+ * Seed initial sample blogs if none exist, or force-reset seed data.
+ */
+export const seed = mutation({
+  args: {
+    force: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("blogs").take(1);
+    if (existing.length > 0 && !args.force) {
+      return { seeded: false, count: 0 };
+    }
+
+    if (args.force) {
+      const all = await ctx.db.query("blogs").take(100);
+      for (const item of all) {
+        await ctx.db.delete(item._id);
+      }
+    }
+
+    const now = Date.now();
+    let count = 0;
+
+    for (const post of INITIAL_BLOGS) {
+      await ctx.db.insert("blogs", {
+        title: post.title,
+        slug: post.slug,
+        content: post.content,
+        excerpt: post.excerpt,
+        status: post.status,
+        topics: post.topics,
+        author: post.author,
+        readingTime: post.readingTime,
+        gitBranch: post.gitBranch,
+        healthScore: post.healthScore,
+        publishedAt: post.status === "published" ? now - (count * 86400000 * 3) : undefined,
+        updatedAt: now - (count * 86400000 * 2),
+      });
+      count++;
+    }
+
+    return { seeded: true, count };
   },
 });
