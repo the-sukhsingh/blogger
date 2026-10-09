@@ -31,6 +31,8 @@ import { DiffViewer } from '#/components/ui/diff-viewer'
 import { DeleteConfirmPopover } from '#/components/ui/delete-confirm-popover'
 import { BlogStore, formatUpdateDate } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/blog/$id/')({
@@ -40,23 +42,100 @@ export const Route = createFileRoute('/blog/$id/')({
 function BlogReaderPage() {
   const { id } = Route.useParams()
   const navigate = useNavigate()
-  const [article, setArticle] = React.useState<Article | null>(null)
-  const [allArticles, setAllArticles] = React.useState<Article[]>([])
-  const [copiedLink, setCopiedLink] = React.useState(false)
-  const [copiedCodeIndex, setCopiedCodeIndex] = React.useState<number | null>(
-    null,
-  )
+  const convexArticle = useQuery(api.blogs.getByIdOrSlug, { idOrSlug: id })
+  const convexArticles = useQuery(api.blogs.list, {})
+  const removeBlog = useMutation(api.blogs.remove)
 
-  React.useEffect(() => {
-    const arts = BlogStore.getArticles()
-    setAllArticles(arts)
-    const current = BlogStore.getArticleById(id)
-    if (current) {
-      setArticle(current)
-    } else if (arts.length > 0) {
-      setArticle(arts[0])
+  const [copiedLink, setCopiedLink] = React.useState(false)
+  const [copiedCodeIndex, setCopiedCodeIndex] = React.useState<number | null>(null)
+
+  const article = React.useMemo<Article | null>(() => {
+    if (convexArticle) {
+      const art = convexArticle
+      const topics = art.topics || ['Engineering']
+      const content = art.content || ''
+      const title = art.title || 'Untitled'
+      const all = (convexArticles || []).map((a) => ({
+        id: a._id,
+        title: a.title,
+        slug: a.slug,
+      }))
+      const seo = BlogStore.computeSeo(title, content)
+      const aeo = BlogStore.computeAeo(title, content)
+      const internalLinks = BlogStore.computeInternalLinks(art._id, content, all as any)
+      const healthMetrics = BlogStore.computeHealth(content, seo, aeo, internalLinks.outbound.length)
+      const healthScore =
+        art.healthScore ||
+        Math.round(
+          (healthMetrics.content +
+            healthMetrics.seo +
+            healthMetrics.aeo +
+            healthMetrics.links +
+            healthMetrics.freshness +
+            healthMetrics.technical) /
+            6,
+        )
+
+      return {
+        id: art._id,
+        slug: art.slug,
+        title: art.title,
+        excerpt: art.excerpt || '',
+        content: art.content,
+        publishedAt: art.publishedAt ? formatUpdateDate(art.publishedAt) : 'Draft',
+        updatedAt: art.updatedAt ? formatUpdateDate(art.updatedAt) : 'Recently',
+        readingTime: art.readingTime || '5 min read',
+        gitBranch: art.gitBranch || 'main',
+        commitHash: 'main',
+        status: art.status as any,
+        topics,
+        healthScore,
+        healthMetrics,
+        isStale: false,
+        proposedDiffs: [],
+        seo,
+        aeo,
+        internalLinks,
+        revisionHistory: [],
+      }
     }
-  }, [id])
+    return BlogStore.getArticleById(id) || null
+  }, [convexArticle, convexArticles, id])
+
+  const allArticles = React.useMemo<Article[]>(() => {
+    if (convexArticles && convexArticles.length > 0) {
+      return convexArticles.map((a) => ({
+        id: a._id,
+        slug: a.slug,
+        title: a.title,
+        excerpt: a.excerpt || '',
+        content: a.content,
+        publishedAt: a.publishedAt ? formatUpdateDate(a.publishedAt) : 'Draft',
+        updatedAt: a.updatedAt ? formatUpdateDate(a.updatedAt) : 'Recently',
+        readingTime: a.readingTime || '5 min read',
+        gitBranch: a.gitBranch || 'main',
+        commitHash: 'main',
+        status: a.status as any,
+        topics: a.topics || ['Engineering'],
+        healthScore: a.healthScore || 90,
+        healthMetrics: {
+          content: 90,
+          seo: 90,
+          aeo: 90,
+          links: 90,
+          freshness: 90,
+          technical: 90,
+        },
+        isStale: false,
+        proposedDiffs: [],
+        seo: BlogStore.computeSeo(a.title, a.content),
+        aeo: BlogStore.computeAeo(a.title, a.content),
+        internalLinks: { outbound: [], suggestions: [] },
+        revisionHistory: [],
+      }))
+    }
+    return BlogStore.getArticles()
+  }, [convexArticles])
 
   if (!article) {
     return (
@@ -315,12 +394,15 @@ function BlogReaderPage() {
             </button>
 
             <DeleteConfirmPopover
-              onConfirm={() => {
+              onConfirm={async () => {
+                if ((convexArticle as any)?._id) {
+                  await removeBlog({ id: (convexArticle as any)._id })
+                }
                 BlogStore.deleteArticle(article.id)
                 navigate({ to: '/blogs' })
               }}
               title="Delete this article?"
-              description="This will permanently delete this post from local storage."
+              description="This will permanently delete this post from the database."
               align="right"
             >
               <button

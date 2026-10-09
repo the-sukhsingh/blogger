@@ -2,10 +2,11 @@ import * as React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArticleEditor } from '#/components/article-editor'
 import { BlogStore } from '#/lib/blog-store'
-import type { Article } from '#/lib/blog-store'
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export const Route = createFileRoute('/blog/$id/edit')({
   component: EditBlogPage,
@@ -13,24 +14,20 @@ export const Route = createFileRoute('/blog/$id/edit')({
 
 function EditBlogPage() {
   const { id } = Route.useParams()
-  const [article, setArticle] = React.useState<Article | null | undefined>(
-    undefined,
-  )
+  const convexArticle = useQuery(api.blogs.getByIdOrSlug, { idOrSlug: id })
+  const localArticle = React.useMemo(() => BlogStore.getArticleById(id), [id])
 
-  React.useEffect(() => {
-    const found = BlogStore.getArticleById(id)
-    setArticle(found || null)
-  }, [id])
-
-  if (article === undefined) {
+  if (convexArticle === undefined && !localArticle) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center font-mono text-xs text-[#79716b]">
-        Loading article data from localStorage...
+        Loading article data from database...
       </div>
     )
   }
 
-  if (article === null) {
+  const article = convexArticle || localArticle
+
+  if (!article) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <Navbar />
@@ -45,5 +42,20 @@ function EditBlogPage() {
     )
   }
 
-  return <ArticleEditor initialArticle={article} isNew={false} />
+  return (
+    <ArticleEditor
+      initialArticle={{
+        _id: (article as any)._id,
+        id: (article as any)._id || (article as any).id,
+        title: article.title,
+        slug: article.slug,
+        content: article.content,
+        topics: article.topics,
+        gitBranch: article.gitBranch,
+        status: article.status,
+        author: article.author,
+      }}
+      isNew={false}
+    />
+  )
 }

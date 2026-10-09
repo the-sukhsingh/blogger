@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { Plus, Menu, X, BookOpen, PenTool, Home, RotateCcw, LogIn, LogOut, User as UserIcon } from 'lucide-react'
 import { useConvexAuth, useAuthActions } from '@convex-dev/auth/react'
-import { useQuery } from 'convex/react'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { ThemeSwitcher } from '#/components/ui/theme-switcher'
 import { Button } from '#/components/ui/button'
@@ -67,11 +67,16 @@ export function Navbar() {
     }
   }, [userMenuOpen])
 
-  const handleResetSeed = () => {
+  const seedBlogs = useMutation(api.blogs.seed)
+
+  const handleResetSeed = async () => {
+    try {
+      await seedBlogs({ force: true })
+    } catch (err) {
+      console.error('Failed to reset seed blogs in Convex:', err)
+    }
     BlogStore.resetToSeedData()
     setResetConfirmOpen(false)
-    // Force a page reload so the current route re-fetches from store
-    window.location.reload()
   }
 
   const isArticlesActive =

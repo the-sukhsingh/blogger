@@ -15,10 +15,13 @@ import { Button } from '#/components/ui/button'
 import { NotionEditor } from '#/components/notion-editor'
 import { BlogStore } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import type { Id } from '../../convex/_generated/dataModel'
 import { cn } from '#/lib/utils'
 
 export interface ArticleEditorProps {
-  initialArticle?: Article
+  initialArticle?: Partial<Article> & { _id?: string }
   isNew?: boolean
   initialTopic?: string
   initialTitle?: string
@@ -94,13 +97,18 @@ export function ArticleEditor({
     setSaveStatus('unsaved')
   }
 
-  // Save article to localStorage
-  const handleSave = (publishState?: 'published' | 'draft') => {
+  const createBlog = useMutation(api.blogs.create)
+  const updateBlog = useMutation(api.blogs.update)
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
+
+  // Save article to Convex database
+  const handleSave = async (publishState?: 'published' | 'draft') => {
     setSaveStatus('saving')
+    setErrorMessage(null)
     const finalStatus = publishState || status
 
     const finalTitle = title.trim() || 'Untitled'
-    const finalSlug =
+    let finalSlug =
       slug.trim() ||
       finalTitle
         .toLowerCase()
@@ -108,23 +116,79 @@ export function ArticleEditor({
         .replace(/(^-|-$)/g, '') ||
       `post-${Date.now()}`
 
-    const saved = BlogStore.saveArticle({
-      id: initialArticle?.id,
-      slug: finalSlug,
-      title: finalTitle,
-      content,
-      topics,
-      gitBranch,
-      status: finalStatus,
-      proposedDiffs: initialArticle?.proposedDiffs || [],
-    })
+    try {
+      const blogId = (initialArticle as any)?._id || initialArticle?.id
 
-    setTimeout(() => {
-      setSaveStatus('saved')
-      if (isNew) {
-        navigate({ to: '/blog/$id', params: { id: saved.id } })
+      if (isNew || !blogId) {
+        let savedId: string
+        try {
+          savedId = await createBlog({
+            title: finalTitle,
+            slug: finalSlug,
+            content,
+            topics,
+            gitBranch,
+            status: finalStatus === 'draft' ? 'draft' : 'published',
+          })
+        } catch (err: any) {
+          if (err?.message?.includes('already exists')) {
+            finalSlug = `${finalSlug}-${Date.now().toString().slice(-4)}`
+            savedId = await createBlog({
+              title: finalTitle,
+              slug: finalSlug,
+              content,
+              topics,
+              gitBranch,
+              status: finalStatus === 'draft' ? 'draft' : 'published',
+            })
+          } else {
+            throw err
+          }
+        }
+
+        // Also sync local storage
+        BlogStore.saveArticle({
+          id: savedId,
+          slug: finalSlug,
+          title: finalTitle,
+          content,
+          topics,
+          gitBranch,
+          status: finalStatus,
+          proposedDiffs: [],
+        })
+
+        setSaveStatus('saved')
+        navigate({ to: '/blog/$id', params: { id: savedId } })
+      } else {
+        await updateBlog({
+          id: blogId as Id<'blogs'>,
+          title: finalTitle,
+          slug: finalSlug,
+          content,
+          topics,
+          gitBranch,
+          status: finalStatus === 'draft' ? 'draft' : 'published',
+        })
+
+        BlogStore.saveArticle({
+          id: blogId,
+          slug: finalSlug,
+          title: finalTitle,
+          content,
+          topics,
+          gitBranch,
+          status: finalStatus,
+          proposedDiffs: initialArticle?.proposedDiffs || [],
+        })
+
+        setSaveStatus('saved')
       }
-    }, 300)
+    } catch (err: any) {
+      console.error('Failed to save article:', err)
+      setErrorMessage(err?.message || 'Failed to save article.')
+      setSaveStatus('unsaved')
+    }
   }
 
   // Keyboard shortcut for Cmd/Ctrl+S

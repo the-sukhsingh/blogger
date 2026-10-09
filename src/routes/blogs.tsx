@@ -21,6 +21,8 @@ import {
   getArticleTimestamp,
 } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/blogs')({
@@ -34,20 +36,63 @@ function BlogsIndexPage() {
   const navigate = useNavigate()
   const searchInputRef = React.useRef<HTMLInputElement>(null)
 
-  const [articles, setArticles] = React.useState<Article[]>([])
+  const convexArticles = useQuery(api.blogs.list, {})
+  const removeBlog = useMutation(api.blogs.remove)
+  const seedBlogs = useMutation(api.blogs.seed)
+
   const [searchQuery, setSearchQuery] = React.useState('')
   const [activeTab, setActiveTab] = React.useState<FilterTab>('all')
   const [selectedTopic, setSelectedTopic] = React.useState<string>('all')
   const [sortOrder, setSortOrder] = React.useState<SortOrder>('newest-update')
 
-  // Load articles from localStorage on mount
-  const refreshArticles = React.useCallback(() => {
-    setArticles(BlogStore.getArticles())
-  }, [])
-
+  // Auto-seed initial demo articles if database is completely empty
   React.useEffect(() => {
-    refreshArticles()
-  }, [refreshArticles])
+    if (convexArticles && convexArticles.length === 0) {
+      seedBlogs({ force: false }).catch(() => {})
+    }
+  }, [convexArticles, seedBlogs])
+
+  const articles = React.useMemo<Article[]>(() => {
+    if (convexArticles && convexArticles.length > 0) {
+      return convexArticles.map((a) => {
+        const topics = a.topics || ['Engineering']
+        const content = a.content || ''
+        const title = a.title || 'Untitled'
+        const seo = BlogStore.computeSeo(title, content)
+        const aeo = BlogStore.computeAeo(title, content)
+        return {
+          id: a._id,
+          slug: a.slug,
+          title: a.title,
+          excerpt: a.excerpt || '',
+          content: a.content,
+          publishedAt: a.publishedAt ? formatUpdateDate(a.publishedAt) : 'Draft',
+          updatedAt: a.updatedAt ? formatUpdateDate(a.updatedAt) : 'Recently',
+          readingTime: a.readingTime || '5 min read',
+          gitBranch: a.gitBranch || 'main',
+          commitHash: 'main',
+          status: a.status as any,
+          topics,
+          healthScore: a.healthScore || 90,
+          healthMetrics: {
+            content: 90,
+            seo: 90,
+            aeo: 90,
+            links: 90,
+            freshness: 90,
+            technical: 90,
+          },
+          isStale: false,
+          proposedDiffs: [],
+          seo,
+          aeo,
+          internalLinks: { outbound: [], suggestions: [] },
+          revisionHistory: [],
+        }
+      })
+    }
+    return BlogStore.getArticles()
+  }, [convexArticles])
 
   // Global keyboard shortcut: press '/' to focus search
   React.useEffect(() => {
@@ -127,10 +172,14 @@ function BlogsIndexPage() {
     return result
   }, [articles, activeTab, selectedTopic, searchQuery, sortOrder])
 
-  // Deletion handler using the inline tooltip popover
-  const handleDeleteArticle = (id: string) => {
+  // Deletion handler using Convex mutation with local fallback
+  const handleDeleteArticle = async (id: string) => {
+    try {
+      await removeBlog({ id: id as any })
+    } catch {
+      // fallback
+    }
     BlogStore.deleteArticle(id)
-    refreshArticles()
   }
 
   return (
