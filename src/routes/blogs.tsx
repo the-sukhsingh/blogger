@@ -66,8 +66,16 @@ function BlogsIndexPage() {
           title: a.title,
           excerpt: a.excerpt || '',
           content: a.content,
-          publishedAt: a.publishedAt ? formatUpdateDate(a.publishedAt) : 'Draft',
-          updatedAt: a.updatedAt ? formatUpdateDate(a.updatedAt) : 'Recently',
+          publishedAt: a.publishedAt
+            ? typeof a.publishedAt === 'number'
+              ? new Date(a.publishedAt).toISOString()
+              : String(a.publishedAt)
+            : 'Draft',
+          updatedAt: a.updatedAt
+            ? typeof a.updatedAt === 'number'
+              ? new Date(a.updatedAt).toISOString()
+              : String(a.updatedAt)
+            : new Date().toISOString(),
           readingTime: a.readingTime || '5 min read',
           gitBranch: a.gitBranch || 'main',
           commitHash: 'main',

@@ -831,7 +831,7 @@ export const BlogStore = {
           updatedAt:
             a.updatedAt ||
             a.revisionHistory[0]?.timestamp ||
-            (a.publishedAt.includes('202')
+            (typeof a.publishedAt === 'string' && a.publishedAt.includes('202')
               ? a.publishedAt
               : '2026-10-06 14:22'),
         }))
@@ -1203,19 +1203,46 @@ export const BlogStore = {
   },
 }
 
-export function formatUpdateDate(dateStr?: string): {
+export function formatUpdateDate(dateInput?: string | number | Date | { date?: string; time?: string; full?: string } | null): {
   date: string
   time: string
   full: string
 } {
-  if (!dateStr) return { date: 'Recently', time: '', full: 'Recently' }
+  if (!dateInput) return { date: 'Recently', time: '', full: 'Recently' }
 
-  // Normalize timestamp (handle "2026-10-06 14:22" or ISO)
-  const normalized = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T')
-  const d = new Date(normalized)
+  // If already a formatted object from previous invocation
+  if (typeof dateInput === 'object' && dateInput !== null && !(dateInput instanceof Date)) {
+    if (typeof dateInput.date === 'string' && typeof dateInput.full === 'string') {
+      return {
+        date: dateInput.date,
+        time: dateInput.time || '',
+        full: dateInput.full,
+      }
+    }
+  }
+
+  let d: Date
+  if (dateInput instanceof Date) {
+    d = dateInput
+  } else if (typeof dateInput === 'number') {
+    d = new Date(dateInput)
+  } else if (typeof dateInput === 'string') {
+    const trimmed = dateInput.trim()
+    if (!trimmed) return { date: 'Recently', time: '', full: 'Recently' }
+
+    if (/^\d{11,}$/.test(trimmed)) {
+      d = new Date(Number(trimmed))
+    } else {
+      const normalized = trimmed.includes('T') ? trimmed : trimmed.replace(' ', 'T')
+      d = new Date(normalized)
+    }
+  } else {
+    return { date: 'Recently', time: '', full: 'Recently' }
+  }
 
   if (isNaN(d.getTime())) {
-    return { date: dateStr, time: '', full: dateStr }
+    const fallback = typeof dateInput === 'string' ? dateInput : 'Recently'
+    return { date: fallback, time: '', full: fallback }
   }
 
   const dateFormatted = d.toLocaleDateString('en-US', {
@@ -1237,21 +1264,44 @@ export function formatUpdateDate(dateStr?: string): {
 
 export function getArticleTimestamp(art: Article): number {
   if (art.updatedAt) {
-    const t = new Date(
-      art.updatedAt.includes('T')
-        ? art.updatedAt
-        : art.updatedAt.replace(' ', 'T'),
-    ).getTime()
-    if (!isNaN(t)) return t
+    if (typeof art.updatedAt === 'number') return art.updatedAt
+    if (typeof art.updatedAt === 'string') {
+      const trimmed = art.updatedAt.trim()
+      if (/^\d{11,}$/.test(trimmed)) {
+        const num = Number(trimmed)
+        if (!isNaN(num)) return num
+      }
+      const normalized = trimmed.includes('T') ? trimmed : trimmed.replace(' ', 'T')
+      const t = new Date(normalized).getTime()
+      if (!isNaN(t)) return t
+    } else if (typeof (art.updatedAt as any)?.full === 'string') {
+      const t = new Date((art.updatedAt as any).full).getTime()
+      if (!isNaN(t)) return t
+    }
   }
-  if (art.revisionHistory.length > 0) {
+
+  if (art.publishedAt) {
+    if (typeof art.publishedAt === 'number') return art.publishedAt
+    if (typeof art.publishedAt === 'string') {
+      const trimmed = art.publishedAt.trim()
+      if (/^\d{11,}$/.test(trimmed)) {
+        const num = Number(trimmed)
+        if (!isNaN(num)) return num
+      }
+      const normalized = trimmed.includes('T') ? trimmed : trimmed.replace(' ', 'T')
+      const t = new Date(normalized).getTime()
+      if (!isNaN(t)) return t
+    }
+  }
+
+  if (art.revisionHistory && art.revisionHistory.length > 0) {
     const rev = art.revisionHistory[0]
-    const t = new Date(
-      rev.timestamp.includes('T')
-        ? rev.timestamp
-        : rev.timestamp.replace(' ', 'T'),
-    ).getTime()
-    if (!isNaN(t)) return t
+    if (rev && typeof rev.timestamp === 'string') {
+      const normalized = rev.timestamp.includes('T') ? rev.timestamp : rev.timestamp.replace(' ', 'T')
+      const t = new Date(normalized).getTime()
+      if (!isNaN(t)) return t
+    }
   }
+
   return 0
 }
