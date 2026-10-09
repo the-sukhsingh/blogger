@@ -1054,11 +1054,12 @@ export const BlogStore = {
         ),
       ),
     )
+    const safeTitle = typeof title === 'string' ? title : ''
     const seoScore = Math.min(
       100,
       Math.max(
         45,
-        (title.length > 20 && title.length < 90 ? 40 : 20) +
+        (safeTitle.length > 20 && safeTitle.length < 90 ? 40 : 20) +
           (hasHeadings ? 35 : 15) +
           (hasTopics ? 25 : 10),
       ),
@@ -1067,8 +1068,8 @@ export const BlogStore = {
       100,
       Math.max(
         40,
-        (content.toLowerCase().includes('is ') ||
-        content.toLowerCase().includes('defined as')
+        (safeContent.toLowerCase().includes('is ') ||
+        safeContent.toLowerCase().includes('defined as')
           ? 45
           : 20) +
           (hasHeadings ? 35 : 20) +
@@ -1076,7 +1077,7 @@ export const BlogStore = {
       ),
     )
     const linksScore =
-      content.includes('http') || content.includes('](') ? 90 : 70
+      safeContent.includes('http') || safeContent.includes('](') ? 90 : 70
     const freshnessScore = isStale ? 48 : 95
     const technicalScore = hasCodeBlock ? 92 : 75
 
@@ -1174,6 +1175,8 @@ export const BlogStore = {
     content: string,
     articles: Article[],
   ): { outbound: InternalLinkItem[]; suggestions: InternalLinkSuggestion[] } {
+    const safeContent = typeof content === 'string' ? content : ''
+    const lowerContent = safeContent.toLowerCase()
     const outbound: InternalLinkItem[] = []
     const suggestions: InternalLinkSuggestion[] = []
 
@@ -1181,7 +1184,7 @@ export const BlogStore = {
       if (art.id === currentId) continue
 
       // Check if existing markdown link points to it
-      if (content.includes(art.slug) || content.includes(art.id)) {
+      if (safeContent.includes(art.slug) || safeContent.includes(art.id)) {
         outbound.push({
           targetId: art.id,
           targetTitle: art.title,
@@ -1192,7 +1195,8 @@ export const BlogStore = {
         // Look for topic or keyword mentions
         const topics = Array.isArray(art.topics) ? art.topics : []
         for (const topic of topics) {
-          if (content.toLowerCase().includes(topic.toLowerCase())) {
+          const lowerTopic = typeof topic === 'string' ? topic.toLowerCase() : ''
+          if (lowerTopic && lowerContent.includes(lowerTopic)) {
             suggestions.push({
               targetId: art.id,
               targetTitle: art.title,

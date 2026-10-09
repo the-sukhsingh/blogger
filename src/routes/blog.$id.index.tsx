@@ -64,18 +64,9 @@ function BlogReaderPage() {
       const seo = BlogStore.computeSeo(title, content)
       const aeo = BlogStore.computeAeo(title, content)
       const internalLinks = BlogStore.computeInternalLinks(art._id, content, all as any)
-      const healthMetrics = BlogStore.computeHealth(content, seo, aeo, internalLinks.outbound.length)
-      const healthScore =
-        art.healthScore ||
-        Math.round(
-          (healthMetrics.content +
-            healthMetrics.seo +
-            healthMetrics.aeo +
-            healthMetrics.links +
-            healthMetrics.freshness +
-            healthMetrics.technical) /
-            6,
-        )
+      const computedHealth = BlogStore.computeHealth(title, content, topics, false)
+      const healthMetrics = computedHealth.metrics
+      const healthScore = art.healthScore || computedHealth.overall
 
       return {
         id: art._id,
