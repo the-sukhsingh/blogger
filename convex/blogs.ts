@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { INITIAL_BLOGS } from "./seedData";
@@ -333,3 +333,76 @@ export const seed = mutation({
     return { seeded: true, count };
   },
 });
+
+/**
+ * Query for the public HTTP API: fetches articles for a validated API user.
+ */
+export const getBlogsForApi = internalQuery({
+  args: {
+    userId: v.id("users"),
+    status: v.optional(
+      v.union(v.literal("draft"), v.literal("published"), v.literal("all"))
+    ),
+    topic: v.optional(v.string()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // 1. Fetch user articles
+    let userBlogs = await ctx.db
+      .query("blogs")
+      .withIndex("by_authorId", (q) => q.eq("authorId", args.userId))
+      .order("desc")
+      .collect();
+
+    // If user hasn't explicitly authored any yet (e.g. initial workspace), fall back to workspace blogs
+    if (userBlogs.length === 0) {
+      userBlogs = await ctx.db.query("blogs").order("desc").collect();
+    }
+
+    // Filter by status if specified
+    if (args.status && args.status !== "all") {
+      userBlogs = userBlogs.filter((b) => b.status === args.status);
+    }
+
+    // Filter by topic if specified
+    if (args.topic) {
+      const topicLower = args.topic.toLowerCase();
+      userBlogs = userBlogs.filter(
+        (b) => b.topics && b.topics.some((t) => t.toLowerCase() === topicLower)
+      );
+    }
+
+    const limit = Math.min(args.limit || 50, 100);
+    return userBlogs.slice(0, limit);
+  },
+});
+
+/**
+ * Query for the public HTTP API: fetch a single blog by slug or ID.
+ */
+export const getBlogForApi = internalQuery({
+  args: {
+    userId: v.id("users"),
+    idOrSlug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // 1. Try by slug
+    const bySlug = await ctx.db
+      .query("blogs")
+      .withIndex("by_slug", (q) => q.eq("slug", args.idOrSlug))
+      .first();
+
+    if (bySlug) {
+      return bySlug;
+    }
+
+    // 2. Try by ID within blogs table
+    const byId = await ctx.db
+      .query("blogs")
+      .filter((q) => q.eq(q.field("_id"), args.idOrSlug))
+      .first();
+
+    return byId || null;
+  },
+});
+
