@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '#/lib/utils'
 
@@ -158,10 +159,16 @@ export const DialogContent = React.forwardRef<
     }
   }, [open])
 
-  if (!open) return null
+  const [mounted, setMounted] = React.useState(false)
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!open || !mounted) return null
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop with blur (Emil / better-ui) */}
       <div
         className="fixed inset-0 bg-background/80 backdrop-blur-xs transition-opacity duration-150 ease-out animate-in fade-in"
@@ -178,7 +185,7 @@ export const DialogContent = React.forwardRef<
         role="dialog"
         aria-modal="true"
         className={cn(
-          'relative z-50 w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-xl',
+          'relative z-10 w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-xl my-auto',
           'transition-[transform,opacity] duration-150 ease-out origin-center',
           'animate-in fade-in zoom-in-95',
           'overscroll-contain',
@@ -192,14 +199,15 @@ export const DialogContent = React.forwardRef<
             setOpen(false)
             onClose?.()
           }}
-          className="absolute right-4 top-4 rounded-sm p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="absolute right-4 top-4 z-20 rounded-md p-1.5 text-[#79716b] hover:text-[#292524] dark:text-[#a6a09b] dark:hover:text-[#fafaf9] hover:bg-[#e7e5e4]/50 dark:hover:bg-[#201d1b] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#615fff]"
           aria-label="Close dialog"
         >
           <X className="h-4 w-4" />
         </button>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 })
 DialogContent.displayName = 'DialogContent'

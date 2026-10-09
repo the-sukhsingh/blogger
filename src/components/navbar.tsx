@@ -87,7 +87,8 @@ export function Navbar() {
   const isHomeActive = currentPath === '/'
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#fafaf9]/85 dark:bg-[#0c0a09]/85 backdrop-blur-md border-b border-[#e7e5e4] dark:border-[#292524] transition-colors">
+    <>
+      <header className="sticky top-0 z-50 w-full bg-[#fafaf9]/85 dark:bg-[#0c0a09]/85 backdrop-blur-md border-b border-[#e7e5e4] dark:border-[#292524] transition-colors">
       <div className="max-w-[1120px] mx-auto px-6 h-14 flex items-center justify-between">
         {/* Left: Brand Identity */}
         <div className="flex items-center gap-6">
@@ -378,7 +379,9 @@ export function Navbar() {
       )}
 
       {/* Auth Modal for Login / Registration */}
-      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </header>
-  )
+
+    <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+  </>
+)
 }
