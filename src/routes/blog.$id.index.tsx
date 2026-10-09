@@ -59,6 +59,7 @@ function BlogReaderPage() {
         id: a._id,
         title: a.title,
         slug: a.slug,
+        topics: a.topics || ['Engineering'],
       }))
       const seo = BlogStore.computeSeo(title, content)
       const aeo = BlogStore.computeAeo(title, content)

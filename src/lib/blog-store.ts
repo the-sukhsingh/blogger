@@ -1184,7 +1184,8 @@ export const BlogStore = {
         })
       } else {
         // Look for topic or keyword mentions
-        for (const topic of art.topics) {
+        const topics = Array.isArray(art.topics) ? art.topics : []
+        for (const topic of topics) {
           if (content.toLowerCase().includes(topic.toLowerCase())) {
             suggestions.push({
               targetId: art.id,
