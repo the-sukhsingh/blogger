@@ -32,7 +32,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           disabled={disabled}
           className={cn(
-            // AutoSend design.md: bg #ffffff, 1px #e7e5e4 border, radius 12px, padding 12px 16px
+            // Beelog design.md: bg #ffffff, 1px #e7e5e4 border, radius 12px, padding 12px 16px
             'flex h-[44px] w-full rounded-[12px] border bg-white dark:bg-[#171514] px-4 py-3',
             // 16px on mobile to prevent iOS Safari auto-zoom, 14px/16px text
             'text-[15px] sm:text-[14px] text-[#292524] dark:text-[#fafaf9]',

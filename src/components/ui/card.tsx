@@ -12,7 +12,7 @@ export const Card = React.forwardRef<
     ref={ref}
     className={cn(
       'border text-card-foreground transition-[border-color,box-shadow,transform] duration-150 ease-out',
-      // AutoSend design.md: cards are flat and weightless, with soft shadow ONLY on showcase
+      // Beelog design.md: cards are flat and weightless, with soft shadow ONLY on showcase
       {
         'rounded-[16px] bg-white dark:bg-[#171514] border-[#e7e5e4] dark:border-[#292524]':
           variant === 'default',

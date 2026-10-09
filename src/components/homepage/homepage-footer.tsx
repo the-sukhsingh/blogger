@@ -7,42 +7,42 @@ export function HomepageFooter() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-[12px]">
         <div className="space-y-3">
           <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
-            SOLUTIONS
+            PUBLISHING
           </div>
           <ul className="space-y-2 text-muted-foreground">
             <li>
-              <a href="#transactional" className="hover:text-foreground">
-                Transactional Emails
+              <a href="/blogs" className="hover:text-foreground">
+                All Articles
               </a>
             </li>
             <li>
-              <a href="#marketing" className="hover:text-foreground">
-                Marketing Emails
+              <a href="/blog/new" className="hover:text-foreground">
+                Markdown Editor
               </a>
             </li>
             <li>
-              <a href="#automation" className="hover:text-foreground">
-                Email Automation
+              <a href="#git-sync" className="hover:text-foreground">
+                Git-Backed Sync
               </a>
             </li>
             <li>
-              <a href="#agents" className="hover:text-foreground">
-                Agents & LLMs
+              <a href="#diff-engine" className="hover:text-foreground">
+                AI Diffs & Review
               </a>
             </li>
             <li>
-              <a href="#deliverability" className="hover:text-foreground">
-                Deliverability
+              <a href="#aeo" className="hover:text-foreground">
+                Answer Engine Optimization
               </a>
             </li>
             <li>
-              <a href="#inbound" className="hover:text-foreground">
-                Inbound Email API
+              <a href="#graph" className="hover:text-foreground">
+                Content Knowledge Graph
               </a>
             </li>
             <li>
-              <a href="#builder" className="hover:text-foreground">
-                Email Builder
+              <a href="#health" className="hover:text-foreground">
+                Freshness & Stale Claims
               </a>
             </li>
           </ul>
@@ -50,32 +50,70 @@ export function HomepageFooter() {
 
         <div className="space-y-3">
           <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
-            DOCS
+            DOCUMENTATION
           </div>
           <ul className="space-y-2 text-muted-foreground">
             <li>
-              <a href="#getting-started" className="hover:text-foreground">
+              <a href="/docs" className="hover:text-foreground">
                 Getting Started
               </a>
             </li>
             <li>
-              <a href="#api" className="hover:text-foreground">
-                API Reference
+              <a href="/docs#editor" className="hover:text-foreground">
+                Writing Workspace
               </a>
             </li>
             <li>
-              <a href="#agents" className="hover:text-foreground">
-                Agents
+              <a href="/docs#intelligence" className="hover:text-foreground">
+                Content Intelligence
               </a>
             </li>
             <li>
-              <a href="#wiki" className="hover:text-foreground">
-                Wiki
+              <a href="/docs#git" className="hover:text-foreground">
+                Git Workflows
               </a>
             </li>
             <li>
-              <a href="#changelog" className="hover:text-foreground">
-                Changelog
+              <a href="/docs#convex" className="hover:text-foreground">
+                Convex Backend
+              </a>
+            </li>
+            <li>
+              <a href="/docs#api" className="hover:text-foreground">
+                API & CLI Reference
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="space-y-3">
+          <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
+            FRAMEWORKS
+          </div>
+          <ul className="space-y-2 text-muted-foreground">
+            <li>
+              <a href="#astro" className="hover:text-foreground">
+                Astro & Starlight
+              </a>
+            </li>
+            <li>
+              <a href="#nextjs" className="hover:text-foreground">
+                Next.js App Router
+              </a>
+            </li>
+            <li>
+              <a href="#hugo" className="hover:text-foreground">
+                Hugo & Zola
+              </a>
+            </li>
+            <li>
+              <a href="#docusaurus" className="hover:text-foreground">
+                Docusaurus
+              </a>
+            </li>
+            <li>
+              <a href="#github-actions" className="hover:text-foreground">
+                GitHub Actions CI
               </a>
             </li>
           </ul>
@@ -87,51 +125,28 @@ export function HomepageFooter() {
           </div>
           <ul className="space-y-2 text-muted-foreground">
             <li>
-              <a href="#faq" className="hover:text-foreground">
-                FAQ
+              <a href="/blogs" className="hover:text-foreground">
+                Engineering Blog
               </a>
             </li>
             <li>
-              <a href="#blog" className="hover:text-foreground">
-                Blog
+              <a href="/docs#aeo" className="hover:text-foreground">
+                AEO Checklist
               </a>
             </li>
             <li>
-              <a href="#glossary" className="hover:text-foreground">
-                Glossary
+              <a href="#style-guide" className="hover:text-foreground">
+                Author Voice Models
               </a>
             </li>
             <li>
-              <a href="#affiliate" className="hover:text-foreground">
-                Be an Affiliate
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="space-y-3">
-          <div className="font-mono font-bold uppercase tracking-[0.08em] text-foreground">
-            COMPARE
-          </div>
-          <ul className="space-y-2 text-muted-foreground">
-            <li>
-              <a href="#sendgrid" className="hover:text-foreground">
-                SendGrid
+              <a href="#changelog" className="hover:text-foreground">
+                Changelog
               </a>
             </li>
             <li>
-              <a href="#loops" className="hover:text-foreground">
-                Loops
-              </a>
-            </li>
-            <li>
-              <a href="#resend" className="hover:text-foreground">
-                Resend
-              </a>
-            </li>
-            <li>
-              <a href="#postmark" className="hover:text-foreground">
-                Postmark
+              <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-foreground">
+                GitHub Repository
               </a>
             </li>
           </ul>
@@ -143,28 +158,28 @@ export function HomepageFooter() {
           </div>
           <ul className="space-y-2 text-muted-foreground">
             <li>
-              <a href="#fair-use" className="hover:text-foreground">
-                Fair Use
-              </a>
-            </li>
-            <li>
               <a href="#privacy" className="hover:text-foreground">
-                Privacy
+                Privacy Policy
               </a>
             </li>
             <li>
               <a href="#terms" className="hover:text-foreground">
-                Terms
+                Terms of Service
               </a>
             </li>
             <li>
-              <a href="#sub-processors" className="hover:text-foreground">
-                Sub-Processors
+              <a href="#security" className="hover:text-foreground">
+                Security & Data Integrity
               </a>
             </li>
             <li>
-              <a href="#dpa" className="hover:text-foreground">
-                Data Processing Addendum
+              <a href="#fair-use" className="hover:text-foreground">
+                Acceptable Use Policy
+              </a>
+            </li>
+            <li>
+              <a href="#license" className="hover:text-foreground">
+                Open Source License
               </a>
             </li>
           </ul>
@@ -174,8 +189,8 @@ export function HomepageFooter() {
       {/* Bottom Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-border text-[11px] font-mono text-muted-foreground">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-foreground">AUTOSEND</span>
-          <span>© 2026 • PEERLIST INC.</span>
+          <span className="font-bold text-foreground">BEELOG</span>
+          <span>© 2026 • AI-NATIVE PUBLISHING FOR TECHNICAL BLOGS</span>
         </div>
 
         {/* Status indicator */}

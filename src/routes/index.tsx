@@ -16,10 +16,10 @@ import {
 } from '#/components/homepage'
 
 export const Route = createFileRoute('/')({
-  component: AutoSendLandingPage,
+  component: BeelogLandingPage,
 })
 
-function AutoSendLandingPage() {
+function BeelogLandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
       {/* Global Unified Navigation */}

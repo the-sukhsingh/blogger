@@ -58,10 +58,10 @@ export function TransactionalPublishingSection() {
     <section className="space-y-8 pt-6">
       <div className="space-y-2">
         <div className="text-[11px] font-mono font-semibold uppercase tracking-[0.10em] text-[#d97757]">
-          #01 — TRANSACTIONAL PUBLISHING
+          #01 — GIT-BACKED PUBLISHING & DIFF ENGINE
         </div>
         <h2 className="text-[28px] md:text-[36px] font-sans font-medium text-foreground">
-          OTPs, updates, and diffs your readers can rely on.
+          Git diffs, markdown sync, and technical reviews your readers can rely on.
         </h2>
       </div>
 
@@ -175,7 +175,7 @@ export function TransactionalPublishingSection() {
                 </button>
               </div>
               <div className="text-[10px] font-mono uppercase text-muted-foreground">
-                api.autosend.dev
+                api.beelog.dev
               </div>
             </div>
 
@@ -189,7 +189,7 @@ export function TransactionalPublishingSection() {
               ) : (
                 <pre className="text-xs font-mono p-4 rounded-[12px] bg-background border border-border text-foreground overflow-x-auto leading-relaxed">
                   {activeCodeTab === 'curl' &&
-                    `curl --location 'https://api.autosend.dev/v1/publish' \\
+                    `curl --location 'https://api.beelog.dev/v1/publish' \\
 --header 'Authorization: Bearer YOUR_API_KEY' \\
 --header 'Content-Type: application/json' \\
 --data-raw '{
@@ -201,9 +201,9 @@ export function TransactionalPublishingSection() {
   }
 }'`}
                   {activeCodeTab === 'typescript' &&
-                    `import { AutoSend } from '@autosend/client'
+                    `import { Beelog } from '@beelog/client'
 
-const client = new AutoSend({ apiKey: process.env.AUTOSEND_KEY })
+const client = new Beelog({ apiKey: process.env.BEELOG_KEY })
 
 await client.articles.sync({
   path: './content/blog',
@@ -212,11 +212,11 @@ await client.articles.sync({
   }
 })`}
                   {activeCodeTab === 'rust' &&
-                    `use autosend_sdk::AutoSend;
+                    `use beelog_sdk::Beelog;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = AutoSend::new("API_KEY");
+    let client = Beelog::new("API_KEY");
     let review = client.review_post("mcp-typescript.md").await?;
     println!("Status: {:?}", review.health);
     Ok(())

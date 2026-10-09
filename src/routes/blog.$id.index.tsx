@@ -699,7 +699,7 @@ function BlogReaderPage() {
                     {article.seo.title}
                   </div>
                   <div className="text-[10px] text-[#5ea500] font-mono">
-                    https://autosend.dev/blog/{article.slug}
+                    https://beelog.dev/blog/{article.slug}
                   </div>
                   <p className="text-[11px] text-[#79716b] line-clamp-2">
                     {article.seo.description}
