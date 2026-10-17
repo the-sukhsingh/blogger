@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Navbar } from '#/components/navbar'
+import { PageHeader } from '#/components/page-header'
 import { Button } from '#/components/ui/button'
 import { AuthModal } from '#/components/auth-modal'
 import { useConvexAuth } from '@convex-dev/auth/react'
@@ -181,62 +182,65 @@ export function IntegrationsPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl mx-auto px-6 w-full py-10 space-y-8">
-        {/* Minimal Header */}
-        <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-sans font-bold text-foreground tracking-tight">
-                API & Integrations
-              </h1>
-              <p className="text-[13px] text-muted-foreground leading-relaxed">
-                Connect your technical articles to your personal Astro, Next.js, or Hugo site via secure REST endpoints.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              {isAuthenticated ? (
-                <Button
-                  size="sm"
-                  onClick={() => setCreateModalOpen(true)}
-                  className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-xs"
+      <main className="flex-1 max-w-[1120px] w-full mx-auto px-6 py-12 space-y-8">
+        {/* =================================================================
+            1. REFINED EDITORIAL HEADER (MATCHING /blogs)
+            ================================================================= */}
+        <PageHeader
+          eyebrow="DEVELOPER PLATFORM"
+          title={
+            <>
+              API &{' '}
+              <span className="italic font-normal">integrations</span>.
+            </>
+          }
+          description="Connect your technical articles to your personal Astro, Next.js, or Hugo site via secure REST endpoints. Query published content and test responses in real-time."
+          stats={
+            <>
+              <span>{apiKeys.length} keys configured</span>
+              <span>·</span>
+              <span className="text-[#5ea500]">{activeKeysCount} active</span>
+              <span>·</span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-[#f5f5f4] dark:bg-[#1c1917] border border-[#e7e5e4] dark:border-[#292524] text-foreground">
+                <span className="text-[#79716b] dark:text-[#a6a09b]">Base:</span>
+                <code className="select-all">{CONVEX_SITE_URL.replace(/^https?:\/\//, '')}</code>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(CONVEX_SITE_URL, 'base-endpoint')}
+                  className="hover:text-foreground text-[#79716b] dark:text-[#a6a09b] transition-colors ml-0.5"
+                  title="Copy base URL"
                 >
-                  <Plus className="w-3.5 h-3.5 mr-1" />
-                  Generate Key
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  onClick={() => setAuthModalOpen(true)}
-                  className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-xs"
-                >
-                  Sign In to Create Keys
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Endpoint Copy Bar */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[8px] bg-muted/60 border border-border text-[12px] font-mono text-muted-foreground">
-            <span className="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400">
-              API Base
-            </span>
-            <span className="text-border">|</span>
-            <code className="text-foreground select-all">{CONVEX_SITE_URL}</code>
-            <button
-              type="button"
-              onClick={() => copyToClipboard(CONVEX_SITE_URL, 'base-endpoint')}
-              className="ml-1 hover:text-foreground transition-colors"
-              title="Copy base URL"
-            >
-              {copiedId === 'base-endpoint' ? (
-                <Check className="w-3 h-3 text-emerald-500" />
-              ) : (
-                <Copy className="w-3 h-3" />
-              )}
-            </button>
-          </div>
-        </div>
+                  {copiedId === 'base-endpoint' ? (
+                    <Check className="w-3 h-3 text-[#5ea500]" />
+                  ) : (
+                    <Copy className="w-3 h-3" />
+                  )}
+                </button>
+              </span>
+            </>
+          }
+          actions={
+            isAuthenticated ? (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => setCreateModalOpen(true)}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Generate Key</span>
+              </Button>
+            ) : (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => setAuthModalOpen(true)}
+              >
+                <Key className="h-3.5 w-3.5" />
+                <span>Sign In to Create Keys</span>
+              </Button>
+            )
+          }
+        />
 
         {/* Secret Key Revealed Card (Shown once immediately after key generation) */}
         {newlyCreatedKey && (

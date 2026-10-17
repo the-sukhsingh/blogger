@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Navbar } from '#/components/navbar'
+import { PageHeader } from '#/components/page-header'
+import { Button } from '#/components/ui/button'
 import {
   BookOpen,
   Code2,
@@ -481,7 +483,46 @@ const { data: articles } = await res.json();`}
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
       <Navbar />
 
-      <div className="flex-1 max-w-6xl mx-auto px-6 w-full py-8">
+      <main className="flex-1 max-w-[1120px] w-full mx-auto px-6 py-12 space-y-8">
+        {/* =================================================================
+            1. REFINED EDITORIAL HEADER (MATCHING /blogs)
+            ================================================================= */}
+        <PageHeader
+          eyebrow="DOCUMENTATION & GUIDES"
+          title={
+            <>
+              System architecture &{' '}
+              <span className="italic font-normal">reference</span>.
+            </>
+          }
+          description="Architecture documentation, Git-first workflows, and REST API integration guides for running Beelog with your custom publication."
+          stats={
+            <>
+              <span>{sections.length} guides</span>
+              <span>·</span>
+              <span className="text-[#5ea500]">Git-first</span>
+              <span>·</span>
+              <span className="text-[#d97757]">v1.0 API</span>
+            </>
+          }
+          actions={
+            <>
+              <Link to="/integrations">
+                <Button variant="outline" size="sm">
+                  <Key className="h-3.5 w-3.5" />
+                  <span>API Keys</span>
+                </Button>
+              </Link>
+              <Link to="/blogs">
+                <Button variant="default" size="sm">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  <span>Browse Articles</span>
+                </Button>
+              </Link>
+            </>
+          }
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Left Navigation Sidebar */}
           <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-20">
@@ -575,7 +616,7 @@ const { data: articles } = await res.json();`}
           </aside>
 
           {/* Main Content Area */}
-          <main className="lg:col-span-9 space-y-10">
+          <section className="lg:col-span-9 space-y-10">
             <article className="space-y-6">
               {/* Clean Breadcrumb & Header */}
               <div className="space-y-2 pb-4 border-b border-border">
@@ -586,9 +627,9 @@ const { data: articles } = await res.json();`}
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl sm:text-3xl font-sans font-bold text-foreground tracking-tight">
+                  <h2 className="text-2xl sm:text-3xl font-sans font-bold text-foreground tracking-tight">
                     {activeSection.title}
-                  </h1>
+                  </h2>
                   {activeSection.badge && (
                     <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/20">
                       {activeSection.badge}
@@ -673,9 +714,9 @@ const { data: articles } = await res.json();`}
                 })()}
               </div>
             </article>
-          </main>
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

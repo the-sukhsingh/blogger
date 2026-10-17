@@ -13,6 +13,7 @@ import {
 
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
+import { PageHeader } from '#/components/page-header'
 import { Button } from '#/components/ui/button'
 import { DeleteConfirmPopover } from '#/components/ui/delete-confirm-popover'
 import {
@@ -198,22 +199,17 @@ function BlogsIndexPage() {
         {/* =================================================================
             1. REFINED EDITORIAL HEADER WITH COOPER / LORA SERIF
             ================================================================= */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#e7e5e4] dark:border-[#292524] pb-8">
-          <div className="space-y-2 max-w-2xl">
-            <span className="eyebrow-tag block text-[#79716b] dark:text-[#a6a09b]">
-              PUBLICATION ARCHIVE
-            </span>
-            <h1 className="font-display text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-tight text-[#292524] dark:text-[#fafaf9] leading-[1.15]">
+        <PageHeader
+          eyebrow="PUBLICATION ARCHIVE"
+          title={
+            <>
               Curated essays &{' '}
               <span className="italic font-normal">dispatches</span>.
-            </h1>
-            <p className="text-xs sm:text-sm text-[#79716b] dark:text-[#a6a09b] leading-relaxed pt-1">
-              A living knowledge base of technical architecture, agent
-              mechanics, and engineering notes. Versioned with Git and stored in
-              local Markdown.
-            </p>
-            {/* Inline stats */}
-            <div className="flex items-center gap-3 pt-1 text-[11px] font-mono text-[#a6a09b] dark:text-[#79716b]">
+            </>
+          }
+          description="A living knowledge base of technical architecture, agent mechanics, and engineering notes. Versioned with Git and stored in local Markdown."
+          stats={
+            <>
               <span>{stats.total} articles</span>
               <span>·</span>
               <span className="text-[#5ea500]">{stats.published} published</span>
@@ -223,18 +219,17 @@ function BlogsIndexPage() {
                   <span className="text-[#d97757]">{stats.drafts} drafts</span>
                 </>
               )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0">
+            </>
+          }
+          actions={
             <Link to="/new">
               <Button variant="default" size="sm">
                 <Plus className="h-3.5 w-3.5" />
                 <span>New Article</span>
               </Button>
             </Link>
-          </div>
-        </div>
+          }
+        />
 
         {/* =================================================================
             3. UNIFIED FILTER + SEARCH TOOLBAR
