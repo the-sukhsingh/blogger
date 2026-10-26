@@ -19,11 +19,32 @@ export default defineSchema({
     readingTime: v.optional(v.string()),
     gitBranch: v.optional(v.string()),
     healthScore: v.optional(v.number()),
+    claps: v.optional(v.number()),
+    views: v.optional(v.number()),
   })
     .index("by_slug", ["slug"])
     .index("by_status", ["status"])
     .index("by_status_and_publishedAt", ["status", "publishedAt"])
     .index("by_authorId", ["authorId"]),
+
+  comments: defineTable({
+    blogId: v.id("blogs"),
+    authorName: v.string(),
+    authorAvatar: v.optional(v.string()),
+    content: v.string(),
+    createdAt: v.number(),
+    likes: v.optional(v.number()),
+  })
+    .index("by_blogId", ["blogId"])
+    .index("by_blogId_and_createdAt", ["blogId", "createdAt"]),
+
+  reactions: defineTable({
+    blogId: v.id("blogs"),
+    reactionType: v.string(),
+    count: v.number(),
+  })
+    .index("by_blogId", ["blogId"])
+    .index("by_blogId_and_type", ["blogId", "reactionType"]),
 
   apiKeys: defineTable({
     name: v.string(),

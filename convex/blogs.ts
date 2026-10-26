@@ -406,3 +406,20 @@ export const getBlogForApi = internalQuery({
   },
 });
 
+/**
+ * Increment views counter for an article.
+ */
+export const incrementViews = mutation({
+  args: {
+    id: v.id("blogs"),
+  },
+  handler: async (ctx, args) => {
+    const blog = await ctx.db.get(args.id);
+    if (!blog) return;
+
+    const nextViews = (blog.views || 0) + 1;
+    await ctx.db.patch(args.id, { views: nextViews });
+    return nextViews;
+  },
+});
+

@@ -11,7 +11,9 @@
 import type * as apiKeys from "../apiKeys.js";
 import type * as auth from "../auth.js";
 import type * as blogs from "../blogs.js";
+import type * as comments from "../comments.js";
 import type * as http from "../http.js";
+import type * as reactions from "../reactions.js";
 import type * as seedData from "../seedData.js";
 import type * as users from "../users.js";
 
@@ -25,7 +27,9 @@ declare const fullApi: ApiFromModules<{
   apiKeys: typeof apiKeys;
   auth: typeof auth;
   blogs: typeof blogs;
+  comments: typeof comments;
   http: typeof http;
+  reactions: typeof reactions;
   seedData: typeof seedData;
   users: typeof users;
 }>;
