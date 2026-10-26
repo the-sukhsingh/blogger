@@ -349,14 +349,14 @@ Write your step-by-step technical implementation here.
               <span className="hidden md:inline">Research</span>
             </button>
 
-            {/* AI Assist & Diff Review */}
+            {/* AI Agent & Diff Review */}
             <button
               onClick={() => setAiAssistOpen(true)}
               className="flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] text-[#79716b] hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
-              title="AI Polish & Diff Review"
+              title="AI Agent: Polish Flow, Strengthen AEO, and Generate Diffs"
             >
-              <Wand2 className="h-3.5 w-3.5" />
-              <span className="hidden md:inline">AI Assist</span>
+              <Wand2 className="h-3.5 w-3.5 text-[#615fff]" />
+              <span className="hidden md:inline">AI Agent</span>
             </button>
 
             {/* Visual vs Markdown Source toggle */}

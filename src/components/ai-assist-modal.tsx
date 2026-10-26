@@ -144,6 +144,7 @@ export function AiAssistModal({
               <div className="border border-[#e7e5e4] dark:border-[#292524] rounded-lg overflow-hidden">
                 <DiffViewer
                   title="Proposed Modifications (Before / After)"
+                  diffs={diffResult.lines}
                   lines={diffResult.lines}
                   defaultCollapsed={false}
                 />

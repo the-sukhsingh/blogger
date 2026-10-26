@@ -5,7 +5,7 @@ import { Badge } from '#/components/ui/badge'
 import { cn } from '#/lib/utils'
 
 export interface DiffLine {
-  type: 'unchanged' | 'addition' | 'deletion'
+  type: 'unchanged' | 'addition' | 'deletion' | 'added' | 'removed'
   content: string
   oldLineNumber?: number
   newLineNumber?: number
@@ -14,17 +14,28 @@ export interface DiffLine {
 export interface DiffViewerProps {
   title?: string
   description?: string
-  diffs: DiffLine[]
+  diffs?: DiffLine[]
+  lines?: DiffLine[]
+  defaultCollapsed?: boolean
   onAccept?: () => void
   onReject?: () => void
   defaultViewMode?: 'split' | 'unified'
   className?: string
 }
 
+function isAddition(type: string): boolean {
+  return type === 'addition' || type === 'added'
+}
+
+function isDeletion(type: string): boolean {
+  return type === 'deletion' || type === 'removed'
+}
+
 export function DiffViewer({
   title = 'Proposed AI Modification',
   description = 'Review the changes before accepting. Preserves your voice and technical precision.',
   diffs,
+  lines,
   onAccept,
   onReject,
   defaultViewMode = 'unified',
@@ -37,8 +48,15 @@ export function DiffViewer({
     'pending' | 'accepted' | 'rejected'
   >('pending')
 
-  const additionsCount = diffs.filter((d) => d.type === 'addition').length
-  const deletionsCount = diffs.filter((d) => d.type === 'deletion').length
+  // Safely resolve diff list whether passed via diffs or lines prop
+  const activeDiffs: DiffLine[] = Array.isArray(diffs)
+    ? diffs
+    : Array.isArray(lines)
+      ? lines
+      : []
+
+  const additionsCount = activeDiffs.filter((d) => isAddition(d.type)).length
+  const deletionsCount = activeDiffs.filter((d) => isDeletion(d.type)).length
 
   const handleAccept = () => {
     setStatus('accepted')
@@ -147,20 +165,24 @@ export function DiffViewer({
 
       {/* Diff Content */}
       <div className="font-mono text-xs overflow-x-auto">
-        {viewMode === 'unified' ? (
+        {activeDiffs.length === 0 ? (
+          <div className="p-6 text-center text-muted-foreground font-mono">
+            No changes to display.
+          </div>
+        ) : viewMode === 'unified' ? (
           <div className="divide-y divide-[#e7e5e4]/50 dark:divide-[#292524]/50">
-            {diffs.map((diff, idx) => (
+            {activeDiffs.map((diff, idx) => (
               <div
                 key={idx}
                 className={cn(
                   'flex items-start px-4 py-1.5 font-mono leading-relaxed select-text',
                   {
                     'bg-[#5ea500]/8 text-[#292524] dark:text-[#fafaf9] border-l-2 border-[#5ea500]':
-                      diff.type === 'addition',
+                      isAddition(diff.type),
                     'bg-[#ff0000]/8 text-[#292524] dark:text-[#fafaf9] border-l-2 border-[#ff0000]':
-                      diff.type === 'deletion',
+                      isDeletion(diff.type),
                     'text-[#79716b] dark:text-[#a6a09b]':
-                      diff.type === 'unchanged',
+                      !isAddition(diff.type) && !isDeletion(diff.type),
                   },
                 )}
               >
@@ -171,9 +193,9 @@ export function DiffViewer({
                   {diff.newLineNumber || ''}
                 </span>
                 <span className="w-5 shrink-0 select-none font-bold">
-                  {diff.type === 'addition'
+                  {isAddition(diff.type)
                     ? '+'
-                    : diff.type === 'deletion'
+                    : isDeletion(diff.type)
                       ? '-'
                       : ' '}
                 </span>
@@ -190,8 +212,8 @@ export function DiffViewer({
               <div className="bg-[#fafaf9] dark:bg-[#121110] px-4 py-1.5 text-[11px] font-semibold text-[#79716b] uppercase tracking-wider select-none border-b border-[#e7e5e4] dark:border-[#292524]">
                 Original
               </div>
-              {diffs
-                .filter((d) => d.type !== 'addition')
+              {activeDiffs
+                .filter((d) => !isAddition(d.type))
                 .map((diff, idx) => (
                   <div
                     key={idx}
@@ -199,9 +221,9 @@ export function DiffViewer({
                       'flex items-start px-4 py-1.5 leading-relaxed select-text',
                       {
                         'bg-[#ff0000]/8 text-[#292524] dark:text-[#fafaf9]':
-                          diff.type === 'deletion',
+                          isDeletion(diff.type),
                         'text-[#79716b] dark:text-[#a6a09b]':
-                          diff.type === 'unchanged',
+                          !isDeletion(diff.type),
                       },
                     )}
                   >
@@ -209,7 +231,7 @@ export function DiffViewer({
                       {diff.oldLineNumber || ''}
                     </span>
                     <span className="w-4 shrink-0 select-none">
-                      {diff.type === 'deletion' ? '-' : ' '}
+                      {isDeletion(diff.type) ? '-' : ' '}
                     </span>
                     <span className="flex-1 whitespace-pre-wrap break-all text-[#292524] dark:text-[#fafaf9]">
                       {diff.content}
@@ -223,8 +245,8 @@ export function DiffViewer({
               <div className="bg-[#fafaf9] dark:bg-[#121110] px-4 py-1.5 text-[11px] font-semibold text-[#79716b] uppercase tracking-wider select-none border-b border-[#e7e5e4] dark:border-[#292524]">
                 Proposed
               </div>
-              {diffs
-                .filter((d) => d.type !== 'deletion')
+              {activeDiffs
+                .filter((d) => !isDeletion(d.type))
                 .map((diff, idx) => (
                   <div
                     key={idx}
@@ -232,9 +254,9 @@ export function DiffViewer({
                       'flex items-start px-4 py-1.5 leading-relaxed select-text',
                       {
                         'bg-[#5ea500]/8 text-[#292524] dark:text-[#fafaf9]':
-                          diff.type === 'addition',
+                          isAddition(diff.type),
                         'text-[#79716b] dark:text-[#a6a09b]':
-                          diff.type === 'unchanged',
+                          !isAddition(diff.type),
                       },
                     )}
                   >
@@ -242,7 +264,7 @@ export function DiffViewer({
                       {diff.newLineNumber || ''}
                     </span>
                     <span className="w-4 shrink-0 select-none">
-                      {diff.type === 'addition' ? '+' : ' '}
+                      {isAddition(diff.type) ? '+' : ' '}
                     </span>
                     <span className="flex-1 whitespace-pre-wrap break-all text-[#292524] dark:text-[#fafaf9]">
                       {diff.content}

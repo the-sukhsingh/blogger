@@ -281,23 +281,34 @@ export async function initializeService(config: ServiceConfig) {
   /**
    * Discover content gaps across the entire publication.
    */
-  static discoverContentGaps(articles: Article[]): ContentGapRecommendation[] {
+  static discoverContentGaps(articles: Article[] = []): ContentGapRecommendation[] {
+    const safeArticles = Array.isArray(articles) ? articles : []
     const existingTopics = new Set<string>()
-    const existingTitles = articles.map((a) => a.title.toLowerCase())
+    const existingTitles = safeArticles.map((a) => (a?.title || '').toLowerCase())
 
-    articles.forEach((a) => {
-      a.topics.forEach((t) => existingTopics.add(t.toLowerCase()))
+    safeArticles.forEach((a) => {
+      ;(a?.topics || []).forEach((t) => existingTopics.add((t || '').toLowerCase()))
     })
 
     const gaps: ContentGapRecommendation[] = []
 
     // 1. Check MCP / AI Agents
-    const hasMcp = articles.some((a) => a.title.toLowerCase().includes('mcp') || a.topics.some((t) => t.toLowerCase().includes('mcp')))
-    const hasMcpSecurity = existingTitles.some((t) => t.includes('security') && t.includes('mcp'))
+    const hasMcp = safeArticles.some(
+      (a) =>
+        (a?.title || '').toLowerCase().includes('mcp') ||
+        (a?.topics || []).some((t) => (t || '').toLowerCase().includes('mcp'))
+    )
+    const hasMcpSecurity = existingTitles.some(
+      (t) => t.includes('security') && t.includes('mcp')
+    )
 
     if (hasMcp && !hasMcpSecurity) {
-      const mcpArticles = articles
-        .filter((a) => a.title.toLowerCase().includes('mcp') || a.topics.some((t) => t.toLowerCase().includes('mcp')))
+      const mcpArticles = safeArticles
+        .filter(
+          (a) =>
+            (a?.title || '').toLowerCase().includes('mcp') ||
+            (a?.topics || []).some((t) => (t || '').toLowerCase().includes('mcp'))
+        )
         .slice(0, 3)
 
       gaps.push({
@@ -317,11 +328,23 @@ export async function initializeService(config: ServiceConfig) {
     }
 
     // 2. Check RAG / Vector DB
-    const hasRag = articles.some((a) => a.title.toLowerCase().includes('rag') || a.topics.some((t) => t.toLowerCase().includes('rag')))
-    const hasHybridSearch = existingTitles.some((t) => t.includes('hybrid') || (t.includes('bm25') && t.includes('rag')))
+    const hasRag = safeArticles.some(
+      (a) =>
+        (a?.title || '').toLowerCase().includes('rag') ||
+        (a?.topics || []).some((t) => (t || '').toLowerCase().includes('rag'))
+    )
+    const hasHybridSearch = existingTitles.some(
+      (t) => t.includes('hybrid') || (t.includes('bm25') && t.includes('rag'))
+    )
 
     if (hasRag && !hasHybridSearch) {
-      const ragArticles = articles.filter((a) => a.title.toLowerCase().includes('rag') || a.topics.some((t) => t.toLowerCase().includes('rag'))).slice(0, 3)
+      const ragArticles = safeArticles
+        .filter(
+          (a) =>
+            (a?.title || '').toLowerCase().includes('rag') ||
+            (a?.topics || []).some((t) => (t || '').toLowerCase().includes('rag'))
+        )
+        .slice(0, 3)
 
       gaps.push({
         id: 'gap-hybrid-rag',
@@ -340,8 +363,14 @@ export async function initializeService(config: ServiceConfig) {
     }
 
     // 3. Check Reactive Convex / Fullstack
-    const hasConvex = articles.some((a) => a.title.toLowerCase().includes('convex') || a.topics.some((t) => t.toLowerCase().includes('convex')))
-    const hasConvexAuth = existingTitles.some((t) => t.includes('auth') || t.includes('rbac'))
+    const hasConvex = safeArticles.some(
+      (a) =>
+        (a?.title || '').toLowerCase().includes('convex') ||
+        (a?.topics || []).some((t) => (t || '').toLowerCase().includes('convex'))
+    )
+    const hasConvexAuth = existingTitles.some(
+      (t) => t.includes('auth') || t.includes('rbac')
+    )
 
     if (hasConvex && !hasConvexAuth) {
       gaps.push({
@@ -349,7 +378,7 @@ export async function initializeService(config: ServiceConfig) {
         title: 'Role-Based Access Control (RBAC) in Reactive TypeScript Backends',
         topic: 'Backend',
         rationale: `You have reactive database tutorials, but authorization patterns and session boundary enforcement represent a high-intent search query for developer teams.`,
-        connectedArticles: articles.slice(0, 2).map((a) => ({ id: a.id, title: a.title })),
+        connectedArticles: safeArticles.slice(0, 2).map((a) => ({ id: a.id, title: a.title })),
         targetIntent: 'Identity, Auth & Multi-tenant Isolation',
         suggestedOutline: [
           'Validating Identity Inside Convex Server Functions',
@@ -367,7 +396,7 @@ export async function initializeService(config: ServiceConfig) {
         title: 'Deterministic State Machines for AI Agent Orchestration',
         topic: 'AI Agents',
         rationale: 'Agents that execute unpredictable multi-step tool calls require deterministic replay and checkpointing. This bridges agent theory with production resilience.',
-        connectedArticles: articles.slice(0, 2).map((a) => ({ id: a.id, title: a.title })),
+        connectedArticles: safeArticles.slice(0, 2).map((a) => ({ id: a.id, title: a.title })),
         targetIntent: 'State Management & Fault Tolerance',
         suggestedOutline: [
           'The Flaws of Open-Loop LLM Tool Execution',
@@ -384,23 +413,24 @@ export async function initializeService(config: ServiceConfig) {
   /**
    * Build Knowledge Graph data from articles and their topics.
    */
-  static buildKnowledgeGraph(articles: Article[]): KnowledgeGraphData {
+  static buildKnowledgeGraph(articles: Article[] = []): KnowledgeGraphData {
+    const safeArticles = Array.isArray(articles) ? articles : []
     const nodes: GraphNode[] = []
     const links: GraphLink[] = []
 
     const topicSet = new Set<string>()
 
     // Add article nodes
-    articles.forEach((art) => {
+    safeArticles.forEach((art) => {
       nodes.push({
         id: art.id,
-        label: art.title,
+        label: art.title || 'Untitled',
         type: 'article',
         slug: art.slug,
         val: 14,
       })
 
-      art.topics.forEach((t) => {
+      ;(art?.topics || []).forEach((t) => {
         topicSet.add(t)
         links.push({
           source: art.id,
@@ -421,8 +451,8 @@ export async function initializeService(config: ServiceConfig) {
     })
 
     // Add internal links between articles
-    articles.forEach((art) => {
-      art.internalLinks?.outbound?.forEach((out) => {
+    safeArticles.forEach((art) => {
+      art?.internalLinks?.outbound?.forEach((out) => {
         if (nodes.some((n) => n.id === out.targetId)) {
           links.push({
             source: art.id,
@@ -439,13 +469,14 @@ export async function initializeService(config: ServiceConfig) {
   /**
    * Publication Chat: answers queries grounded in the actual publication repository.
    */
-  static answerPublicationQuery(query: string, articles: Article[]): string {
-    const q = query.toLowerCase()
+  static answerPublicationQuery(query: string, articles: Article[] = []): string {
+    const safeArticles = Array.isArray(articles) ? articles : []
+    const q = (query || '').toLowerCase()
 
     if (q.includes('outdated') || q.includes('stale') || q.includes('fresh')) {
-      const stale = articles.filter((a) => a.isStale || (a.healthScore && a.healthScore < 85))
+      const stale = safeArticles.filter((a) => a?.isStale || (a?.healthScore && a.healthScore < 85))
       if (stale.length === 0) {
-        return `All ${articles.length} articles across your publication are currently up-to-date with active dependency versions and high health scores.`
+        return `All ${safeArticles.length} articles across your publication are currently up-to-date with active dependency versions and high health scores.`
       }
       return `Found ${stale.length} article(s) that may require attention:\n\n${stale
         .map((a) => `• **${a.title}** (Health Score: ${a.healthScore}/100) — Stale API references or package updates needed.`)
@@ -453,8 +484,8 @@ export async function initializeService(config: ServiceConfig) {
     }
 
     if (q.includes('gap') || q.includes('write next') || q.includes('next post')) {
-      const gaps = this.discoverContentGaps(articles)
-      return `Based on analyzing your ${articles.length} existing articles, here are the top recommended next pieces:\n\n${gaps
+      const gaps = this.discoverContentGaps(safeArticles)
+      return `Based on analyzing your ${safeArticles.length} existing articles, here are the top recommended next pieces:\n\n${gaps
         .map(
           (g, idx) =>
             `${idx + 1}. **${g.title}** (${g.topic})\n   • *Why*: ${g.rationale}\n   • *Connects to*: ${g.connectedArticles.map((c) => c.title).join(', ')}`
@@ -464,8 +495,8 @@ export async function initializeService(config: ServiceConfig) {
 
     if (q.includes('topic') || q.includes('cluster') || q.includes('write about')) {
       const counts: Record<string, number> = {}
-      articles.forEach((a) => {
-        a.topics.forEach((t) => {
+      safeArticles.forEach((a) => {
+        ;(a?.topics || []).forEach((t) => {
           counts[t] = (counts[t] || 0) + 1
         })
       })
@@ -473,15 +504,15 @@ export async function initializeService(config: ServiceConfig) {
       return `Your publication currently spans ${sorted.length} topics. Your strongest clusters are:\n\n${sorted
         .slice(0, 5)
         .map(([topic, count]) => `• **${topic}**: ${count} article${count > 1 ? 's' : ''}`)
-        .join('\n')}\n\nTotal articles indexed: ${articles.length}.`
+        .join('\n')}\n\nTotal articles indexed: ${safeArticles.length}.`
     }
 
     if (q.includes('link') || q.includes('internal')) {
-      return `Internal linking analysis across ${articles.length} articles:\n\n• Top hub: "${articles[0]?.title || 'MCP Guide'}"\n• Cross-linking density: ${(
-        articles.reduce((acc, a) => acc + (a.internalLinks?.outbound?.length || 0), 0) / Math.max(articles.length, 1)
+      return `Internal linking analysis across ${safeArticles.length} articles:\n\n• Top hub: "${safeArticles[0]?.title || 'MCP Guide'}"\n• Cross-linking density: ${(
+        safeArticles.reduce((acc, a) => acc + (a?.internalLinks?.outbound?.length || 0), 0) / Math.max(safeArticles.length, 1)
       ).toFixed(1)} links per post\n• Tip: Make sure newer articles link back to foundational concepts to maintain reader journey flow.`
     }
 
-    return `I analyzed your publication containing ${articles.length} articles. You can ask me about topic clusters, content gaps ("what to write next"), stale articles, or internal linking opportunities!`
+    return `I analyzed your publication containing ${safeArticles.length} articles. You can ask me about topic clusters, content gaps ("what to write next"), stale articles, or internal linking opportunities!`
   }
 }
