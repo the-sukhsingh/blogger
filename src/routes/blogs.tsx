@@ -45,9 +45,15 @@ function BlogsIndexPage() {
   const seedBlogs = useMutation(api.blogs.seed)
 
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [activeTab, setActiveTab] = React.useState<FilterTab>('all')
+  const [activeTab, setActiveTab] = React.useState<FilterTab>(isAuthenticated ? 'all' : 'published')
   const [selectedTopic, setSelectedTopic] = React.useState<string>('all')
   const [sortOrder, setSortOrder] = React.useState<SortOrder>('newest-update')
+
+  React.useEffect(() => {
+    if (!isAuthenticated && activeTab === 'draft') {
+      setActiveTab('published')
+    }
+  }, [isAuthenticated, activeTab])
 
   const [importOpen, setImportOpen] = React.useState(false)
   const [exported, setExported] = React.useState(false)
@@ -130,6 +136,9 @@ function BlogsIndexPage() {
   const filteredArticles = React.useMemo(() => {
     return articles
       .filter((art) => {
+        // Anonymous visitors may ONLY see published articles
+        if (!isAuthenticated && art.status !== 'published') return false
+
         if (activeTab === 'published' && art.status !== 'published') return false
         if (activeTab === 'draft' && art.status !== 'draft') return false
         if (selectedTopic !== 'all' && !art.topics.includes(selectedTopic)) return false
@@ -153,15 +162,17 @@ function BlogsIndexPage() {
         const timeB = getArticleTimestamp(b)
         return sortOrder === 'newest-update' ? timeB - timeA : timeA - timeB
       })
-  }, [articles, activeTab, selectedTopic, searchQuery, sortOrder])
+  }, [articles, isAuthenticated, activeTab, selectedTopic, searchQuery, sortOrder])
 
   const stats = React.useMemo(() => {
+    const published = articles.filter((a) => a.status === 'published').length
+    const drafts = isAuthenticated ? articles.filter((a) => a.status === 'draft').length : 0
     return {
-      total: articles.length,
-      published: articles.filter((a) => a.status === 'published').length,
-      drafts: articles.filter((a) => a.status === 'draft').length,
+      total: isAuthenticated ? articles.length : published,
+      published,
+      drafts,
     }
-  }, [articles])
+  }, [articles, isAuthenticated])
 
   const handleDeleteArticle = async (id: string) => {
     try {
@@ -216,8 +227,14 @@ function BlogsIndexPage() {
               Manuscript Archive
             </h1>
             <p className="text-sm text-muted-foreground">
-              {stats.total} total articles · {stats.published} published
-              {stats.drafts > 0 && ` · ${stats.drafts} drafts`}
+              {isAuthenticated ? (
+                <>
+                  {stats.total} total articles · {stats.published} published
+                  {stats.drafts > 0 && ` · ${stats.drafts} drafts`}
+                </>
+              ) : (
+                <>{stats.published} published articles</>
+              )}
             </p>
           </div>
 
@@ -268,21 +285,27 @@ function BlogsIndexPage() {
         {/* Toolbar: Tabs & Search */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="flex items-center gap-1 border-b border-border sm:border-b-0 pb-2 sm:pb-0">
-            {(isAuthenticated ? (['all', 'published', 'draft'] as FilterTab[]) : (['all', 'published'] as FilterTab[])).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  'px-3 py-1.5 text-xs rounded transition-colors capitalize font-medium',
-                  activeTab === tab
-                    ? 'bg-muted text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {tab === 'all' ? `All (${stats.total})` : tab === 'published' ? `Published (${stats.published})` : `Drafts (${stats.drafts})`}
-              </button>
-            ))}
+            {isAuthenticated ? (
+              (['all', 'published', 'draft'] as FilterTab[]).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    'px-3 py-1.5 text-xs rounded transition-colors capitalize font-medium',
+                    activeTab === tab
+                      ? 'bg-muted text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {tab === 'all' ? `All (${stats.total})` : tab === 'published' ? `Published (${stats.published})` : `Drafts (${stats.drafts})`}
+                </button>
+              ))
+            ) : (
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
+                Published Archive ({stats.published})
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">

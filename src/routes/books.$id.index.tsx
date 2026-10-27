@@ -20,6 +20,7 @@ import { api } from '../../convex/_generated/api'
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
+import { AuthModal } from '#/components/auth-modal'
 import { DeleteConfirmPopover } from '#/components/ui/delete-confirm-popover'
 import {
   SUPPORTED_LANGUAGES,
@@ -51,6 +52,7 @@ function BookDetailPage() {
   const [editMetaModalOpen, setEditMetaModalOpen] = React.useState(false)
   const [shareModalOpen, setShareModalOpen] = React.useState(false)
   const [copiedShare, setCopiedShare] = React.useState(false)
+  const [authModalOpen, setAuthModalOpen] = React.useState(false)
 
   // Edit metadata form state
   const [editTitle, setEditTitle] = React.useState('')
@@ -77,6 +79,32 @@ function BookDetailPage() {
   }, [book])
 
   if (!book) {
+    if (!isAuthenticated) {
+      return (
+        <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+          <Navbar />
+          <main className="flex-1 max-w-md mx-auto px-6 py-24 text-center space-y-4">
+            <h1 className="font-serif text-3xl font-medium">Private Manuscript</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              This manuscript is currently in private draft. If you are the author, please sign in. If you are reviewing this book, please use the private share link provided by the author.
+            </p>
+            <div className="pt-2 flex items-center justify-center gap-3">
+              <Button size="sm" onClick={() => setAuthModalOpen(true)}>
+                Sign In
+              </Button>
+              <Link to="/books">
+                <Button variant="outline" size="sm">
+                  Browse Public Books
+                </Button>
+              </Link>
+            </div>
+          </main>
+          <Footer />
+          <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+        </div>
+      )
+    }
+
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <Navbar />
@@ -176,13 +204,15 @@ function BookDetailPage() {
           </Link>
 
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => setShareModalOpen(true)}
-              className="text-xs px-3 py-1.5 rounded border border-border bg-card text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
-            >
-              <Share2 className="h-3.5 w-3.5" />
-              <span>Share Link</span>
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => setShareModalOpen(true)}
+                className="text-xs px-3 py-1.5 rounded border border-border bg-card text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
+              >
+                <Share2 className="h-3.5 w-3.5" />
+                <span>Share Link</span>
+              </button>
+            )}
 
             <Link to="/books/$id/print" params={{ id: book._id as any }}>
               <Button variant="outline" size="sm" className="text-xs h-8 px-3 gap-1.5 font-sans">
@@ -331,14 +361,24 @@ function BookDetailPage() {
                         <span className="font-mono text-xs font-semibold text-muted-foreground">
                           #{chapter.order}
                         </span>
-                        <Link
-                          to="/books/$id/chapters/$chapterId"
-                          params={{ id: book._id as any, chapterId: chapter._id as any }}
-                          className="font-serif text-lg font-medium text-foreground hover:text-primary transition-colors leading-snug"
-                        >
-                          {chapter.title}
-                        </Link>
-                        {chapter.status === 'draft' && (
+                        {isAuthenticated ? (
+                          <Link
+                            to="/books/$id/chapters/$chapterId"
+                            params={{ id: book._id as any, chapterId: chapter._id as any }}
+                            className="font-serif text-lg font-medium text-foreground hover:text-primary transition-colors leading-snug"
+                          >
+                            {chapter.title}
+                          </Link>
+                        ) : (
+                          <Link
+                            to="/books/$id/preview"
+                            params={{ id: book._id as any }}
+                            className="font-serif text-lg font-medium text-foreground hover:text-primary transition-colors leading-snug"
+                          >
+                            {chapter.title}
+                          </Link>
+                        )}
+                        {chapter.status === 'draft' && isAuthenticated && (
                           <span className="px-1.5 py-0.2 rounded text-[10px] font-mono uppercase bg-amber-500/10 text-amber-600 border border-amber-500/20">
                             Draft
                           </span>

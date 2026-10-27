@@ -42,10 +42,17 @@ function BooksLibraryPage() {
   const seedBooks = useMutation(api.books.seed)
 
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [activeTab, setActiveTab] = React.useState<FilterTab>('all')
+  const [activeTab, setActiveTab] = React.useState<FilterTab>(isAuthenticated ? 'all' : 'published')
   const [selectedLanguage, setSelectedLanguage] = React.useState<string>('all')
   const [createModalOpen, setCreateModalOpen] = React.useState(false)
   const [copiedToken, setCopiedToken] = React.useState<string | null>(null)
+
+  // Sync activeTab if auth status changes
+  React.useEffect(() => {
+    if (!isAuthenticated && activeTab === 'draft') {
+      setActiveTab('published')
+    }
+  }, [isAuthenticated, activeTab])
 
   // Form state for creating a new book
   const [newTitle, setNewTitle] = React.useState('')
@@ -126,6 +133,9 @@ function BooksLibraryPage() {
   const filteredBooks = React.useMemo(() => {
     if (!books) return []
     return books.filter((b: any) => {
+      // Unauthenticated visitors may ONLY see published books
+      if (!isAuthenticated && b.status !== 'published') return false
+
       if (activeTab === 'published' && b.status !== 'published') return false
       if (activeTab === 'draft' && b.status !== 'draft') return false
       if (selectedLanguage !== 'all' && b.language !== selectedLanguage) return false
@@ -141,18 +151,20 @@ function BooksLibraryPage() {
 
       return true
     })
-  }, [books, activeTab, selectedLanguage, searchQuery])
+  }, [books, isAuthenticated, activeTab, selectedLanguage, searchQuery])
 
   // Aggregate stats
   const stats = React.useMemo(() => {
     const list = (books || []) as any[]
+    const published = list.filter((b: any) => b.status === 'published').length
+    const drafts = isAuthenticated ? list.filter((b: any) => b.status === 'draft').length : 0
     return {
-      total: list.length,
-      published: list.filter((b: any) => b.status === 'published').length,
-      drafts: list.filter((b: any) => b.status === 'draft').length,
+      total: isAuthenticated ? list.length : published,
+      published,
+      drafts,
       totalWords: list.reduce((acc: number, b: any) => acc + (b.totalWords || 0), 0),
     }
-  }, [books])
+  }, [books, isAuthenticated])
 
   const handleCopyShareLink = (shareToken: string) => {
     const url = `${window.location.origin}/share/${shareToken}`
@@ -176,8 +188,16 @@ function BooksLibraryPage() {
               Books & Publications
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {stats.total} books · {stats.published} published · {stats.drafts} drafts ·{' '}
-              {formatWordCount(stats.totalWords)} total written
+              {isAuthenticated ? (
+                <>
+                  {stats.total} books · {stats.published} published · {stats.drafts} drafts ·{' '}
+                  {formatWordCount(stats.totalWords)} total written
+                </>
+              ) : (
+                <>
+                  {stats.published} published volumes · {formatWordCount(stats.totalWords)} total written
+                </>
+              )}
             </p>
           </div>
 
@@ -197,25 +217,31 @@ function BooksLibraryPage() {
         {/* Toolbar: Filter Tabs, Language Selector & Search */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="flex items-center gap-1 border-b border-border sm:border-b-0 pb-2 sm:pb-0">
-            {(isAuthenticated ? (['all', 'published', 'draft'] as FilterTab[]) : (['all', 'published'] as FilterTab[])).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  'px-3 py-1.5 text-xs rounded transition-colors capitalize font-medium',
-                  activeTab === tab
-                    ? 'bg-muted text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {tab === 'all'
-                  ? `All Books (${stats.total})`
-                  : tab === 'published'
-                    ? `Published (${stats.published})`
-                    : `Drafts (${stats.drafts})`}
-              </button>
-            ))}
+            {isAuthenticated ? (
+              (['all', 'published', 'draft'] as FilterTab[]).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    'px-3 py-1.5 text-xs rounded transition-colors capitalize font-medium',
+                    activeTab === tab
+                      ? 'bg-muted text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {tab === 'all'
+                    ? `All Books (${stats.total})`
+                    : tab === 'published'
+                      ? `Published (${stats.published})`
+                      : `Drafts (${stats.drafts})`}
+                </button>
+              ))
+            ) : (
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
+                Published Library ({stats.published})
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -257,13 +283,15 @@ function BooksLibraryPage() {
                 ? 'No books match your current filters. Try resetting the search or language.'
                 : 'Your library is empty. Start your first book manuscript.'}
             </p>
-            <Button
-              onClick={() => setCreateModalOpen(true)}
-              size="sm"
-              className="text-xs font-sans"
-            >
-              Create Your First Book
-            </Button>
+            {isAuthenticated && (
+              <Button
+                onClick={() => setCreateModalOpen(true)}
+                size="sm"
+                className="text-xs font-sans"
+              >
+                Create Your First Book
+              </Button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -357,18 +385,20 @@ function BooksLibraryPage() {
                         <Printer className="h-4 w-4" />
                       </Link>
 
-                      <button
-                        type="button"
-                        onClick={() => handleCopyShareLink(book.shareToken)}
-                        className="p-2 text-xs text-muted-foreground hover:text-foreground rounded hover:bg-muted transition-colors"
-                        title="Copy Public Share Link"
-                      >
-                        {copiedToken === book.shareToken ? (
-                          <Check className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <Share2 className="h-4 w-4" />
-                        )}
-                      </button>
+                      {isAuthenticated && (
+                        <button
+                          type="button"
+                          onClick={() => handleCopyShareLink(book.shareToken)}
+                          className="p-2 text-xs text-muted-foreground hover:text-foreground rounded hover:bg-muted transition-colors"
+                          title="Copy Public Share Link"
+                        >
+                          {copiedToken === book.shareToken ? (
+                            <Check className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <Share2 className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
 
                       {isAuthenticated && (
                         <DeleteConfirmPopover
@@ -392,7 +422,7 @@ function BooksLibraryPage() {
 
                     <Link to="/books/$id" params={{ id: book._id as any }}>
                       <Button variant="outline" size="sm" className="text-xs h-8 px-3 gap-1 font-sans">
-                        <span>Chapters</span>
+                        <span>{isAuthenticated ? 'Studio' : 'Read'}</span>
                         <ArrowRight className="h-3 w-3" />
                       </Button>
                     </Link>
