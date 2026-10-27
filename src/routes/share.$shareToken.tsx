@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import {
-  BookOpen,
   ChevronLeft,
   ChevronRight,
   List,
@@ -9,7 +8,6 @@ import {
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { Button } from '#/components/ui/button'
-import { formatWordCount } from '#/lib/book-store'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/share/$shareToken')({
@@ -166,7 +164,7 @@ function PublicSharedBookPage() {
             </div>
 
             <nav className="space-y-1 text-xs font-mono">
-              {chapters.map((ch, idx) => (
+              {chapters.map((ch: any, idx: number) => (
                 <button
                   key={ch._id}
                   onClick={() => {
@@ -211,8 +209,8 @@ function PublicSharedBookPage() {
               <div className="leading-relaxed space-y-5">
                 {currentChapter.content
                   .split('\n')
-                  .filter((l) => !l.startsWith('# '))
-                  .map((line, idx) => {
+                  .filter((l: string) => !l.startsWith('# '))
+                  .map((line: string, idx: number) => {
                     if (line.startsWith('## ')) {
                       return (
                         <h2 key={idx} className="text-2xl font-medium mt-8 mb-3 tracking-tight">

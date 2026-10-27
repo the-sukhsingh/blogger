@@ -10,7 +10,6 @@ import {
   X,
   Check,
   ArrowRight,
-  Globe,
 } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -124,7 +123,7 @@ function BooksLibraryPage() {
   // Filter books
   const filteredBooks = React.useMemo(() => {
     if (!books) return []
-    return books.filter((b) => {
+    return books.filter((b: any) => {
       if (activeTab === 'published' && b.status !== 'published') return false
       if (activeTab === 'draft' && b.status !== 'draft') return false
       if (selectedLanguage !== 'all' && b.language !== selectedLanguage) return false
@@ -144,12 +143,12 @@ function BooksLibraryPage() {
 
   // Aggregate stats
   const stats = React.useMemo(() => {
-    const list = books || []
+    const list = (books || []) as any[]
     return {
       total: list.length,
-      published: list.filter((b) => b.status === 'published').length,
-      drafts: list.filter((b) => b.status === 'draft').length,
-      totalWords: list.reduce((acc, b) => acc + (b.totalWords || 0), 0),
+      published: list.filter((b: any) => b.status === 'published').length,
+      drafts: list.filter((b: any) => b.status === 'draft').length,
+      totalWords: list.reduce((acc: number, b: any) => acc + (b.totalWords || 0), 0),
     }
   }, [books])
 
@@ -264,9 +263,10 @@ function BooksLibraryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredBooks.map((book) => {
+            {filteredBooks.map((book: any) => {
               const isDraft = book.status === 'draft'
-              const trimSpec = TRIM_SIZE_SPECS[book.printSettings?.trimSize || '6x9']
+              const trimSizeKey = (book.printSettings?.trimSize || '6x9') as keyof typeof TRIM_SIZE_SPECS
+              const trimSpec = TRIM_SIZE_SPECS[trimSizeKey]
 
               return (
                 <div

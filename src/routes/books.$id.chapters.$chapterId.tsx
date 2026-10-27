@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import {
   ArrowLeft,
   Save,
@@ -8,7 +8,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
-import { api } from '../../../convex/_generated/api'
+import { api } from '../../convex/_generated/api'
 import { Button } from '#/components/ui/button'
 import { NotionEditor } from '#/components/notion-editor'
 import { PreviewModal } from '#/components/preview-modal'
@@ -21,7 +21,6 @@ export const Route = createFileRoute('/books/$id/chapters/$chapterId')({
 
 function ChapterEditorPage() {
   const { id: bookId, chapterId } = Route.useParams()
-  const navigate = useNavigate()
 
   const book = useQuery(api.books.get, { id: bookId as any })
   const chapter = useQuery(api.books.getChapter, { id: chapterId as any })

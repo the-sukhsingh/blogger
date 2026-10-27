@@ -16,6 +16,20 @@ export interface PrintSettings {
   runningHeaders: boolean
 }
 
+export const DEFAULT_PRINT_SETTINGS: PrintSettings = {
+  trimSize: '6x9',
+  fontFamily: 'serif',
+  fontSizePt: 11,
+  lineSpacing: 1.4,
+  gutterMarginIn: 0.75,
+  outerMarginIn: 0.5,
+  justifyText: true,
+  firstLineIndent: true,
+  includeToC: true,
+  showPageNumbers: true,
+  runningHeaders: true,
+}
+
 export interface BookChapter {
   _id?: string
   id?: string

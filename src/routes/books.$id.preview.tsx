@@ -4,15 +4,12 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
-  BookOpen,
   Printer,
   List,
-  Type,
 } from 'lucide-react'
 import { useQuery } from 'convex/react'
-import { api } from '../../../convex/_generated/api'
+import { api } from '../../convex/_generated/api'
 import { Button } from '#/components/ui/button'
-import { formatWordCount } from '#/lib/book-store'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/books/$id/preview')({
@@ -283,7 +280,7 @@ function BookReaderPreviewPage() {
             </div>
 
             <nav className="space-y-1.5 text-xs font-mono">
-              {chapters.map((ch, idx) => (
+              {chapters.map((ch: any, idx: number) => (
                 <button
                   key={ch._id}
                   onClick={() => {

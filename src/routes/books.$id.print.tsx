@@ -9,7 +9,7 @@ import {
   RotateCcw,
 } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
-import { api } from '../../../convex/_generated/api'
+import { api } from '../../convex/_generated/api'
 import { Button } from '#/components/ui/button'
 import {
   TRIM_SIZE_SPECS,
@@ -404,7 +404,7 @@ function BookPrintPdfPage() {
               </h2>
 
               <div className="space-y-3 font-serif text-sm">
-                {chapters.map((ch, i) => (
+                {chapters.map((ch: any, i: number) => (
                   <div key={ch._id} className="flex items-baseline justify-between border-b border-dotted pb-1">
                     <span>
                       <span className="font-mono text-xs text-neutral-500 mr-2">
@@ -427,7 +427,7 @@ function BookPrintPdfPage() {
         )}
 
         {/* 3. Each Chapter rendered into printable pages */}
-        {chapters.map((chapter, idx) => {
+        {chapters.map((chapter: any, idx: number) => {
           return (
             <section
               key={chapter._id}
@@ -477,8 +477,8 @@ function BookPrintPdfPage() {
               >
                 {chapter.content
                   .split('\n')
-                  .filter((l) => !l.startsWith('# '))
-                  .map((line, lIdx) => {
+                  .filter((l: string) => !l.startsWith('# '))
+                  .map((line: string, lIdx: number) => {
                     if (line.startsWith('## ')) {
                       return (
                         <h3

@@ -13,7 +13,6 @@ import {
   Check,
   X,
   Sliders,
-  ExternalLink,
 } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -309,7 +308,7 @@ function BookDetailPage() {
             </div>
           ) : (
             <div className="border border-border rounded-xl bg-card divide-y divide-border overflow-hidden">
-              {chapters.map((chapter, idx) => {
+              {chapters.map((chapter: any, idx: number) => {
                 const words = chapter.content
                   ? chapter.content.split(/\s+/).filter(Boolean).length
                   : 0
