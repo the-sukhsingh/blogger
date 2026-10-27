@@ -16,8 +16,11 @@ import { Route as IntegrationsRouteImport } from './routes/integrations'
 import { Route as NewRouteImport } from './routes/new'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogIdRouteImport } from './routes/blog.$id'
+import { Route as BooksIndexRouteImport } from './routes/books.index'
+import { Route as BooksIdRouteImport } from './routes/books.$id'
 import { Route as BlogIdIndexRouteImport } from './routes/blog.$id.index'
 import { Route as BlogIdEditRouteImport } from './routes/blog.$id.edit'
+import { Route as BooksIdIndexRouteImport } from './routes/books.$id.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,6 +57,16 @@ const BlogIdRoute = BlogIdRouteImport.update({
   path: '/blog/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BooksIndexRoute = BooksIndexRouteImport.update({
+  id: '/books/',
+  path: '/books/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksIdRoute = BooksIdRouteImport.update({
+  id: '/books/$id',
+  path: '/books/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIdIndexRoute = BlogIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -64,6 +77,11 @@ const BlogIdEditRoute = BlogIdEditRouteImport.update({
   path: '/edit',
   getParentRoute: () => BlogIdRoute,
 } as any)
+const BooksIdIndexRoute = BooksIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BooksIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,9 +90,12 @@ export interface FileRoutesByFullPath {
   '/integrations': typeof IntegrationsRoute
   '/new': typeof NewRoute
   '/blog/$id': typeof BlogIdRouteWithChildren
+  '/books/$id': typeof BooksIdRouteWithChildren
   '/blog/': typeof BlogIndexRoute
+  '/books/': typeof BooksIndexRoute
   '/blog/$id/edit': typeof BlogIdEditRoute
   '/blog/$id/': typeof BlogIdIndexRoute
+  '/books/$id/': typeof BooksIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -83,8 +104,10 @@ export interface FileRoutesByTo {
   '/integrations': typeof IntegrationsRoute
   '/new': typeof NewRoute
   '/blog': typeof BlogIndexRoute
+  '/books': typeof BooksIndexRoute
   '/blog/$id/edit': typeof BlogIdEditRoute
   '/blog/$id': typeof BlogIdIndexRoute
+  '/books/$id': typeof BooksIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -94,9 +117,12 @@ export interface FileRoutesById {
   '/integrations': typeof IntegrationsRoute
   '/new': typeof NewRoute
   '/blog/$id': typeof BlogIdRouteWithChildren
+  '/books/$id': typeof BooksIdRouteWithChildren
   '/blog/': typeof BlogIndexRoute
+  '/books/': typeof BooksIndexRoute
   '/blog/$id/edit': typeof BlogIdEditRoute
   '/blog/$id/': typeof BlogIdIndexRoute
+  '/books/$id/': typeof BooksIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,9 +133,12 @@ export interface FileRouteTypes {
     | '/integrations'
     | '/new'
     | '/blog/$id'
+    | '/books/$id'
     | '/blog/'
+    | '/books/'
     | '/blog/$id/edit'
     | '/blog/$id/'
+    | '/books/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,8 +147,10 @@ export interface FileRouteTypes {
     | '/integrations'
     | '/new'
     | '/blog'
+    | '/books'
     | '/blog/$id/edit'
     | '/blog/$id'
+    | '/books/$id'
   id:
     | '__root__'
     | '/'
@@ -128,9 +159,12 @@ export interface FileRouteTypes {
     | '/integrations'
     | '/new'
     | '/blog/$id'
+    | '/books/$id'
     | '/blog/'
+    | '/books/'
     | '/blog/$id/edit'
     | '/blog/$id/'
+    | '/books/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,7 +174,9 @@ export interface RootRouteChildren {
   IntegrationsRoute: typeof IntegrationsRoute
   NewRoute: typeof NewRoute
   BlogIdRoute: typeof BlogIdRouteWithChildren
+  BooksIdRoute: typeof BooksIdRouteWithChildren
   BlogIndexRoute: typeof BlogIndexRoute
+  BooksIndexRoute: typeof BooksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -194,6 +230,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/books/': {
+      id: '/books/'
+      path: '/books'
+      fullPath: '/books/'
+      preLoaderRoute: typeof BooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/$id': {
+      id: '/books/$id'
+      path: '/books/$id'
+      fullPath: '/books/$id'
+      preLoaderRoute: typeof BooksIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/$id/': {
       id: '/blog/$id/'
       path: '/'
@@ -207,6 +257,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/blog/$id/edit'
       preLoaderRoute: typeof BlogIdEditRouteImport
       parentRoute: typeof BlogIdRoute
+    }
+    '/books/$id/': {
+      id: '/books/$id/'
+      path: '/'
+      fullPath: '/books/$id/'
+      preLoaderRoute: typeof BooksIdIndexRouteImport
+      parentRoute: typeof BooksIdRoute
     }
   }
 }
@@ -224,6 +281,17 @@ const BlogIdRouteChildren: BlogIdRouteChildren = {
 const BlogIdRouteWithChildren =
   BlogIdRoute._addFileChildren(BlogIdRouteChildren)
 
+interface BooksIdRouteChildren {
+  BooksIdIndexRoute: typeof BooksIdIndexRoute
+}
+
+const BooksIdRouteChildren: BooksIdRouteChildren = {
+  BooksIdIndexRoute: BooksIdIndexRoute,
+}
+
+const BooksIdRouteWithChildren =
+  BooksIdRoute._addFileChildren(BooksIdRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogsRoute: BlogsRoute,
@@ -231,7 +299,9 @@ const rootRouteChildren: RootRouteChildren = {
   IntegrationsRoute: IntegrationsRoute,
   NewRoute: NewRoute,
   BlogIdRoute: BlogIdRouteWithChildren,
+  BooksIdRoute: BooksIdRouteWithChildren,
   BlogIndexRoute: BlogIndexRoute,
+  BooksIndexRoute: BooksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
