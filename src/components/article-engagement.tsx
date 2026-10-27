@@ -9,28 +9,24 @@ import {
   Trash2,
   Send,
   User,
-  Share2,
-  Copy,
-  Check,
 } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
-import { cn } from '#/lib/utils'
 
 interface ArticleEngagementProps {
   blogId?: string
-  title: string
-  slug: string
+  title?: string
+  slug?: string
   author?: string
 }
 
 export function ArticleEngagement({
   blogId,
-  title,
-  slug,
-  author = 'Staff Engineer',
+  title: _title,
+  slug: _slug,
+  author: _author = 'Staff Engineer',
 }: ArticleEngagementProps) {
   // Convex ID validation
   const validId = blogId && blogId.length > 10 ? (blogId as Id<'blogs'>) : null

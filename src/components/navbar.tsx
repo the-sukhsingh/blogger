@@ -66,9 +66,7 @@ export function Navbar() {
               <span className="font-serif text-lg font-medium tracking-tight">
                 Beelog
               </span>
-              <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest px-1.5 py-0.5 rounded border border-border">
-                Press
-              </span>
+            
             </Link>
 
             {/* Desktop Navigation Links */}

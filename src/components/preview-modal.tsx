@@ -8,8 +8,6 @@ import {
   Clock,
   Calendar,
   CheckCircle2,
-  AlertCircle,
-  ExternalLink,
 } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
@@ -63,7 +61,6 @@ export function PreviewModal({
       .map((p) => p.trim())
       .find((p) => p.length > 20 && !p.startsWith('#') && !p.startsWith('```')) || ''
 
-  const definitionFound = firstParagraph.length > 0
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">

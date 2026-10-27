@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { X, Upload, FileText, Check, AlertCircle } from 'lucide-react'
+import { X, Upload, AlertCircle } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { useNavigate } from '@tanstack/react-router'
 import { useMutation } from 'convex/react'
