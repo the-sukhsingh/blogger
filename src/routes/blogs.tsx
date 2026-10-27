@@ -24,6 +24,7 @@ import {
 } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
 import { useQuery, useMutation } from 'convex/react'
+import { useConvexAuth } from '@convex-dev/auth/react'
 import { api } from '../../convex/_generated/api'
 import { cn } from '#/lib/utils'
 
@@ -36,6 +37,7 @@ type SortOrder = 'newest-update' | 'oldest-update' | 'title'
 
 function BlogsIndexPage() {
   const navigate = useNavigate()
+  const { isAuthenticated } = useConvexAuth()
   const searchInputRef = React.useRef<HTMLInputElement>(null)
 
   const convexArticles = useQuery(api.blogs.list, {})
@@ -219,40 +221,54 @@ function BlogsIndexPage() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setImportOpen(true)}
-              className="text-xs h-9 px-3 gap-1.5"
-            >
-              <Upload className="h-3.5 w-3.5" />
-              <span>Import</span>
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExportAll}
-              className="text-xs h-9 px-3 gap-1.5"
-            >
-              {exported ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Download className="h-3.5 w-3.5" />}
-              <span>{exported ? 'Exported' : 'Export'}</span>
-            </Button>
-
-            <Link to="/new">
-              <Button size="sm" className="text-xs h-9 px-3.5 gap-1.5 font-sans">
-                <Plus className="h-3.5 w-3.5" />
-                <span>New Article</span>
+          {isAuthenticated ? (
+            <div className="flex flex-wrap items-center gap-2.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setImportOpen(true)}
+                className="text-xs h-9 px-3 gap-1.5"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                <span>Import</span>
               </Button>
-            </Link>
-          </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportAll}
+                className="text-xs h-9 px-3 gap-1.5"
+              >
+                {exported ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Download className="h-3.5 w-3.5" />}
+                <span>{exported ? 'Exported' : 'Export'}</span>
+              </Button>
+
+              <Link to="/new">
+                <Button size="sm" className="text-xs h-9 px-3.5 gap-1.5 font-sans">
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>New Article</span>
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportAll}
+                className="text-xs h-9 px-3 gap-1.5"
+              >
+                {exported ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Download className="h-3.5 w-3.5" />}
+                <span>{exported ? 'Exported' : 'Export'}</span>
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Toolbar: Tabs & Search */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="flex items-center gap-1 border-b border-border sm:border-b-0 pb-2 sm:pb-0">
-            {(['all', 'published', 'draft'] as FilterTab[]).map((tab) => (
+            {(isAuthenticated ? (['all', 'published', 'draft'] as FilterTab[]) : (['all', 'published'] as FilterTab[])).map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -383,41 +399,46 @@ function BlogsIndexPage() {
                     </div>
 
                     <div
-                      className="flex items-center gap-2 self-end sm:self-center shrink-0"
+                      className="flex items-center gap-1 self-end sm:self-center shrink-0"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Link
                         to="/blog/$id"
                         params={{ id: art.id }}
-                        className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                        className="p-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                         title="Read article"
                       >
-                        <ExternalLink className="h-4 w-4" />
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Read</span>
                       </Link>
 
-                      <Link
-                        to="/blog/$id/edit"
-                        params={{ id: art.id }}
-                        className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                        title="Edit article"
-                      >
-                        <Edit3 className="h-4 w-4" />
-                      </Link>
+                      {isAuthenticated && (
+                        <>
+                          <Link
+                            to="/blog/$id/edit"
+                            params={{ id: art.id }}
+                            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                            title="Edit article"
+                          >
+                            <Edit3 className="h-3.5 w-3.5" />
+                          </Link>
 
-                      <DeleteConfirmPopover
-                        onConfirm={() => handleDeleteArticle(art.id)}
-                        title="Delete this article?"
-                        description={`"${art.title.slice(0, 36)}..." will be permanently removed.`}
-                        align="right"
-                      >
-                        <button
-                          type="button"
-                          className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                          title="Delete article"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </DeleteConfirmPopover>
+                          <DeleteConfirmPopover
+                            onConfirm={() => handleDeleteArticle(art.id)}
+                            title="Delete this article?"
+                            description={`"${art.title.slice(0, 36)}..." will be permanently removed.`}
+                            align="right"
+                          >
+                            <button
+                              type="button"
+                              className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                              title="Delete article"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </DeleteConfirmPopover>
+                        </>
+                      )}
                     </div>
                   </div>
                 )

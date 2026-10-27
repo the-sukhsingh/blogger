@@ -18,6 +18,7 @@ import { SocialShareModal } from '#/components/social-share-modal'
 import { BlogStore, formatUpdateDate } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
 import { useQuery, useMutation } from 'convex/react'
+import { useConvexAuth } from '@convex-dev/auth/react'
 import { api } from '../../convex/_generated/api'
 import { cn } from '#/lib/utils'
 
@@ -28,6 +29,7 @@ export const Route = createFileRoute('/blog/$id/')({
 function BlogReaderPage() {
   const { id } = Route.useParams()
   const navigate = useNavigate()
+  const { isAuthenticated } = useConvexAuth()
   const convexArticle = useQuery(api.blogs.getByIdOrSlug, { idOrSlug: id })
   const removeBlog = useMutation(api.blogs.remove)
   const incrementViews = useMutation(api.blogs.incrementViews)
@@ -359,29 +361,33 @@ function BlogReaderPage() {
               <span>Share</span>
             </Button>
 
-            <Link to="/blog/$id/edit" params={{ id: article.id }}>
-              <Button size="sm" className="text-xs h-8 px-3 gap-1.5 font-sans">
-                <Edit3 className="h-3.5 w-3.5" />
-                <span>Edit</span>
-              </Button>
-            </Link>
+            {isAuthenticated && (
+              <>
+                <Link to="/blog/$id/edit" params={{ id: article.id }}>
+                  <Button size="sm" className="text-xs h-8 px-3 gap-1.5 font-sans">
+                    <Edit3 className="h-3.5 w-3.5" />
+                    <span>Edit</span>
+                  </Button>
+                </Link>
 
-            <DeleteConfirmPopover
-              onConfirm={async () => {
-                if ((convexArticle as any)?._id) {
-                  await removeBlog({ id: (convexArticle as any)._id })
-                }
-                BlogStore.deleteArticle(article.id)
-                navigate({ to: '/blogs' })
-              }}
-              title="Delete this article?"
-              description="This will permanently delete this post."
-              align="right"
-            >
-              <Button variant="ghost" size="sm" className="text-xs h-8 px-2 text-destructive hover:text-destructive">
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </DeleteConfirmPopover>
+                <DeleteConfirmPopover
+                  onConfirm={async () => {
+                    if ((convexArticle as any)?._id) {
+                      await removeBlog({ id: (convexArticle as any)._id })
+                    }
+                    BlogStore.deleteArticle(article.id)
+                    navigate({ to: '/blogs' })
+                  }}
+                  title="Delete this article?"
+                  description="This will permanently delete this post."
+                  align="right"
+                >
+                  <Button variant="ghost" size="sm" className="text-xs h-8 px-2 text-destructive hover:text-destructive">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </DeleteConfirmPopover>
+              </>
+            )}
           </div>
         </div>
 
