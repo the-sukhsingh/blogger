@@ -3,18 +3,8 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
-import {
-  BookOpen,
-  Printer,
-  Share2,
-  FileText,
-  Search,
-  Check,
-  Copy,
-  ArrowRight,
-  Globe,
-} from 'lucide-react'
-import { TRIM_SIZE_SPECS, SUPPORTED_LANGUAGES } from '#/lib/book-store'
+import { Search, ArrowRight } from 'lucide-react'
+import { TRIM_SIZE_SPECS } from '#/lib/book-store'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/docs')({
@@ -33,14 +23,7 @@ interface DocSection {
 export function DocsPage() {
   const [activeSectionId, setActiveSectionId] = React.useState('introduction')
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [copiedId, setCopiedId] = React.useState<string | null>(null)
   const searchInputRef = React.useRef<HTMLInputElement>(null)
-
-  const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text)
-    setCopiedId(id)
-    setTimeout(() => setCopiedId(null), 2000)
-  }
 
   const sections: DocSection[] = [
     {

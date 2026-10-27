@@ -13,17 +13,9 @@ import {
   Check,
   Plus,
   Trash2,
-  Play,
-  Terminal,
-  Activity,
   Code2,
   RefreshCw,
-  ExternalLink,
-  ChevronRight,
-  ShieldCheck,
-  AlertCircle,
-  Clock,
-  Sparkles,
+  Play,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/integrations')({
@@ -73,7 +65,7 @@ export function IntegrationsPage() {
   >('/api/v1/blogs')
   const [filterStatus, setFilterStatus] = React.useState<'published' | 'draft' | 'all'>('published')
   const [filterSlug, setFilterSlug] = React.useState('building-an-mcp-server-with-typescript')
-  const [filterLimit, setFilterLimit] = React.useState('10')
+  const [filterLimit] = React.useState('10')
   const [isSendingRequest, setIsSendingRequest] = React.useState(false)
   const [consoleResponse, setConsoleResponse] = React.useState<{
     status: number
@@ -995,7 +987,7 @@ export async function fetchPublishedArticles(apiKey: string): Promise<BlogArticl
       )}
 
       {/* Auth Modal */}
-      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   )
 }

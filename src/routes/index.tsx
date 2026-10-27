@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
