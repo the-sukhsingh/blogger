@@ -8,6 +8,8 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
+import { useConvexAuth } from '@convex-dev/auth/react'
+import { AuthModal } from '#/components/auth-modal'
 import { api } from '../../convex/_generated/api'
 import { Button } from '#/components/ui/button'
 import { NotionEditor } from '#/components/notion-editor'
@@ -82,12 +84,50 @@ function ChapterEditorPage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [title, content, status])
 
-  if (!book || !chapter) {
+  const { isAuthenticated, isLoading: authLoading } = useConvexAuth()
+  const [authModalOpen, setAuthModalOpen] = React.useState(false)
+
+  if (authLoading || !book || !chapter) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6 font-sans">
         <p className="text-sm text-muted-foreground animate-pulse font-mono">
           Loading chapter canvas...
         </p>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+        <header className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <Link
+            to="/books/$id"
+            params={{ id: bookId as any }}
+            className="text-xs font-mono text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to {book.title}</span>
+          </Link>
+        </header>
+
+        <main className="flex-1 max-w-lg mx-auto px-6 py-24 text-center space-y-4">
+          <h1 className="font-serif text-3xl font-medium">Author sign-in required</h1>
+          <p className="text-sm text-muted-foreground">
+            You must be signed in to edit this book chapter.
+          </p>
+          <div className="pt-2 flex items-center justify-center gap-3">
+            <Button size="sm" onClick={() => setAuthModalOpen(true)}>
+              Sign in to Edit
+            </Button>
+            <Link to="/books/$id/preview" params={{ id: bookId as any }}>
+              <Button variant="outline" size="sm">
+                Read in Book Preview
+              </Button>
+            </Link>
+          </div>
+        </main>
+        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
       </div>
     )
   }

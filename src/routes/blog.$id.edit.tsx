@@ -6,6 +6,8 @@ import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
 import { useQuery } from 'convex/react'
+import { useConvexAuth } from '@convex-dev/auth/react'
+import { AuthModal } from '#/components/auth-modal'
 import { api } from '../../convex/_generated/api'
 
 export const Route = createFileRoute('/blog/$id/edit')({
@@ -14,13 +16,42 @@ export const Route = createFileRoute('/blog/$id/edit')({
 
 function EditBlogPage() {
   const { id } = Route.useParams()
+  const { isAuthenticated, isLoading: authLoading } = useConvexAuth()
+  const [authModalOpen, setAuthModalOpen] = React.useState(false)
+
   const convexArticle = useQuery(api.blogs.getByIdOrSlug, { idOrSlug: id })
   const localArticle = React.useMemo(() => BlogStore.getArticleById(id), [id])
 
-  if (convexArticle === undefined && !localArticle) {
+  if (authLoading || (convexArticle === undefined && !localArticle)) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center font-mono text-xs text-[#79716b]">
-        Loading article data from database...
+      <div className="min-h-screen bg-background flex items-center justify-center font-mono text-xs text-muted-foreground">
+        Loading article data...
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+        <Navbar />
+        <main className="flex-1 max-w-lg mx-auto px-6 py-24 text-center space-y-4">
+          <h1 className="font-serif text-3xl font-medium">Authentication required</h1>
+          <p className="text-sm text-muted-foreground">
+            You must be signed in to edit this article.
+          </p>
+          <div className="pt-2 flex items-center justify-center gap-3">
+            <Button size="sm" onClick={() => setAuthModalOpen(true)}>
+              Sign in
+            </Button>
+            <Link to="/blog/$id" params={{ id }}>
+              <Button variant="outline" size="sm">
+                Read Article
+              </Button>
+            </Link>
+          </div>
+        </main>
+        <Footer />
+        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
       </div>
     )
   }
