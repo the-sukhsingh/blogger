@@ -18,9 +18,13 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogIdRouteImport } from './routes/blog.$id'
 import { Route as BooksIndexRouteImport } from './routes/books.index'
 import { Route as BooksIdRouteImport } from './routes/books.$id'
+import { Route as ShareShareTokenRouteImport } from './routes/share.$shareToken'
 import { Route as BlogIdIndexRouteImport } from './routes/blog.$id.index'
 import { Route as BlogIdEditRouteImport } from './routes/blog.$id.edit'
 import { Route as BooksIdIndexRouteImport } from './routes/books.$id.index'
+import { Route as BooksIdPreviewRouteImport } from './routes/books.$id.preview'
+import { Route as BooksIdPrintRouteImport } from './routes/books.$id.print'
+import { Route as BooksIdChaptersChapterIdRouteImport } from './routes/books.$id.chapters.$chapterId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -67,6 +71,11 @@ const BooksIdRoute = BooksIdRouteImport.update({
   path: '/books/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShareShareTokenRoute = ShareShareTokenRouteImport.update({
+  id: '/share/$shareToken',
+  path: '/share/$shareToken',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIdIndexRoute = BlogIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -82,6 +91,22 @@ const BooksIdIndexRoute = BooksIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BooksIdRoute,
 } as any)
+const BooksIdPreviewRoute = BooksIdPreviewRouteImport.update({
+  id: '/preview',
+  path: '/preview',
+  getParentRoute: () => BooksIdRoute,
+} as any)
+const BooksIdPrintRoute = BooksIdPrintRouteImport.update({
+  id: '/print',
+  path: '/print',
+  getParentRoute: () => BooksIdRoute,
+} as any)
+const BooksIdChaptersChapterIdRoute =
+  BooksIdChaptersChapterIdRouteImport.update({
+    id: '/chapters/$chapterId',
+    path: '/chapters/$chapterId',
+    getParentRoute: () => BooksIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -91,11 +116,15 @@ export interface FileRoutesByFullPath {
   '/new': typeof NewRoute
   '/blog/$id': typeof BlogIdRouteWithChildren
   '/books/$id': typeof BooksIdRouteWithChildren
+  '/share/$shareToken': typeof ShareShareTokenRoute
   '/blog/': typeof BlogIndexRoute
   '/books/': typeof BooksIndexRoute
   '/blog/$id/edit': typeof BlogIdEditRoute
+  '/books/$id/preview': typeof BooksIdPreviewRoute
+  '/books/$id/print': typeof BooksIdPrintRoute
   '/blog/$id/': typeof BlogIdIndexRoute
   '/books/$id/': typeof BooksIdIndexRoute
+  '/books/$id/chapters/$chapterId': typeof BooksIdChaptersChapterIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -103,11 +132,15 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/integrations': typeof IntegrationsRoute
   '/new': typeof NewRoute
+  '/share/$shareToken': typeof ShareShareTokenRoute
   '/blog': typeof BlogIndexRoute
   '/books': typeof BooksIndexRoute
   '/blog/$id/edit': typeof BlogIdEditRoute
+  '/books/$id/preview': typeof BooksIdPreviewRoute
+  '/books/$id/print': typeof BooksIdPrintRoute
   '/blog/$id': typeof BlogIdIndexRoute
   '/books/$id': typeof BooksIdIndexRoute
+  '/books/$id/chapters/$chapterId': typeof BooksIdChaptersChapterIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,11 +151,15 @@ export interface FileRoutesById {
   '/new': typeof NewRoute
   '/blog/$id': typeof BlogIdRouteWithChildren
   '/books/$id': typeof BooksIdRouteWithChildren
+  '/share/$shareToken': typeof ShareShareTokenRoute
   '/blog/': typeof BlogIndexRoute
   '/books/': typeof BooksIndexRoute
   '/blog/$id/edit': typeof BlogIdEditRoute
+  '/books/$id/preview': typeof BooksIdPreviewRoute
+  '/books/$id/print': typeof BooksIdPrintRoute
   '/blog/$id/': typeof BlogIdIndexRoute
   '/books/$id/': typeof BooksIdIndexRoute
+  '/books/$id/chapters/$chapterId': typeof BooksIdChaptersChapterIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -134,11 +171,15 @@ export interface FileRouteTypes {
     | '/new'
     | '/blog/$id'
     | '/books/$id'
+    | '/share/$shareToken'
     | '/blog/'
     | '/books/'
     | '/blog/$id/edit'
+    | '/books/$id/preview'
+    | '/books/$id/print'
     | '/blog/$id/'
     | '/books/$id/'
+    | '/books/$id/chapters/$chapterId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -146,11 +187,15 @@ export interface FileRouteTypes {
     | '/docs'
     | '/integrations'
     | '/new'
+    | '/share/$shareToken'
     | '/blog'
     | '/books'
     | '/blog/$id/edit'
+    | '/books/$id/preview'
+    | '/books/$id/print'
     | '/blog/$id'
     | '/books/$id'
+    | '/books/$id/chapters/$chapterId'
   id:
     | '__root__'
     | '/'
@@ -160,11 +205,15 @@ export interface FileRouteTypes {
     | '/new'
     | '/blog/$id'
     | '/books/$id'
+    | '/share/$shareToken'
     | '/blog/'
     | '/books/'
     | '/blog/$id/edit'
+    | '/books/$id/preview'
+    | '/books/$id/print'
     | '/blog/$id/'
     | '/books/$id/'
+    | '/books/$id/chapters/$chapterId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -175,6 +224,7 @@ export interface RootRouteChildren {
   NewRoute: typeof NewRoute
   BlogIdRoute: typeof BlogIdRouteWithChildren
   BooksIdRoute: typeof BooksIdRouteWithChildren
+  ShareShareTokenRoute: typeof ShareShareTokenRoute
   BlogIndexRoute: typeof BlogIndexRoute
   BooksIndexRoute: typeof BooksIndexRoute
 }
@@ -244,6 +294,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/share/$shareToken': {
+      id: '/share/$shareToken'
+      path: '/share/$shareToken'
+      fullPath: '/share/$shareToken'
+      preLoaderRoute: typeof ShareShareTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/$id/': {
       id: '/blog/$id/'
       path: '/'
@@ -265,6 +322,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksIdIndexRouteImport
       parentRoute: typeof BooksIdRoute
     }
+    '/books/$id/preview': {
+      id: '/books/$id/preview'
+      path: '/preview'
+      fullPath: '/books/$id/preview'
+      preLoaderRoute: typeof BooksIdPreviewRouteImport
+      parentRoute: typeof BooksIdRoute
+    }
+    '/books/$id/print': {
+      id: '/books/$id/print'
+      path: '/print'
+      fullPath: '/books/$id/print'
+      preLoaderRoute: typeof BooksIdPrintRouteImport
+      parentRoute: typeof BooksIdRoute
+    }
+    '/books/$id/chapters/$chapterId': {
+      id: '/books/$id/chapters/$chapterId'
+      path: '/chapters/$chapterId'
+      fullPath: '/books/$id/chapters/$chapterId'
+      preLoaderRoute: typeof BooksIdChaptersChapterIdRouteImport
+      parentRoute: typeof BooksIdRoute
+    }
   }
 }
 
@@ -282,11 +360,17 @@ const BlogIdRouteWithChildren =
   BlogIdRoute._addFileChildren(BlogIdRouteChildren)
 
 interface BooksIdRouteChildren {
+  BooksIdPreviewRoute: typeof BooksIdPreviewRoute
+  BooksIdPrintRoute: typeof BooksIdPrintRoute
   BooksIdIndexRoute: typeof BooksIdIndexRoute
+  BooksIdChaptersChapterIdRoute: typeof BooksIdChaptersChapterIdRoute
 }
 
 const BooksIdRouteChildren: BooksIdRouteChildren = {
+  BooksIdPreviewRoute: BooksIdPreviewRoute,
+  BooksIdPrintRoute: BooksIdPrintRoute,
   BooksIdIndexRoute: BooksIdIndexRoute,
+  BooksIdChaptersChapterIdRoute: BooksIdChaptersChapterIdRoute,
 }
 
 const BooksIdRouteWithChildren =
@@ -300,6 +384,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewRoute: NewRoute,
   BlogIdRoute: BlogIdRouteWithChildren,
   BooksIdRoute: BooksIdRouteWithChildren,
+  ShareShareTokenRoute: ShareShareTokenRoute,
   BlogIndexRoute: BlogIndexRoute,
   BooksIndexRoute: BooksIndexRoute,
 }
