@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUserId } from "@convex-dev/auth/server";
+import { getViewerId, requireAuth, requireOwner } from "./authz";
 
 function generateShareToken(): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -26,23 +26,41 @@ export const DEFAULT_PRINT_SETTINGS = {
 };
 
 /**
- * List all books, optionally filtered by status.
+ * List all books.
+ * - Anonymous callers can ONLY view published books.
+ * - Authenticated callers can view published books and their own drafts.
  */
 export const list = query({
   args: {
     status: v.optional(v.union(v.literal("draft"), v.literal("published"))),
   },
   handler: async (ctx, args) => {
+    const userId = await getViewerId(ctx);
     let books;
-    if (args.status) {
-      const status = args.status;
+
+    // Anonymous visitors can only see published books
+    if (!userId) {
       books = await ctx.db
         .query("books")
-        .withIndex("by_status", (q) => q.eq("status", status))
+        .withIndex("by_status", (q) => q.eq("status", "published"))
+        .order("desc")
+        .collect();
+    } else if (args.status === "draft") {
+      const drafts = await ctx.db
+        .query("books")
+        .withIndex("by_status", (q) => q.eq("status", "draft"))
+        .order("desc")
+        .collect();
+      books = drafts.filter((b) => !b.authorId || b.authorId === userId);
+    } else if (args.status === "published") {
+      books = await ctx.db
+        .query("books")
+        .withIndex("by_status", (q) => q.eq("status", "published"))
         .order("desc")
         .collect();
     } else {
-      books = await ctx.db.query("books").order("desc").collect();
+      const all = await ctx.db.query("books").order("desc").collect();
+      books = all.filter((b) => b.status === "published" || !b.authorId || b.authorId === userId);
     }
 
     // Attach chapter count and total word count for scannability
@@ -71,6 +89,7 @@ export const list = query({
 
 /**
  * Get a single book with all its chapters ordered by sequence.
+ * Drafts are protected and only readable by author.
  */
 export const get = query({
   args: {
@@ -80,11 +99,23 @@ export const get = query({
     const book = await ctx.db.get(args.id);
     if (!book) return null;
 
-    const chapters = await ctx.db
+    const userId = await getViewerId(ctx);
+    const isAuthor = userId && (!book.authorId || book.authorId === userId);
+
+    if (book.status === "draft" && !isAuthor) {
+      return null;
+    }
+
+    let chapters = await ctx.db
       .query("bookChapters")
       .withIndex("by_bookId_and_order", (q) => q.eq("bookId", args.id))
       .order("asc")
       .collect();
+
+    // Anonymous readers only see published chapters
+    if (!isAuthor) {
+      chapters = chapters.filter((ch) => ch.status === "published");
+    }
 
     const totalWords = chapters.reduce((acc, ch) => {
       return acc + (ch.content ? ch.content.split(/\s+/).filter(Boolean).length : 0);
@@ -100,6 +131,7 @@ export const get = query({
 
 /**
  * Get book by its slug.
+ * Drafts are protected and only readable by author.
  */
 export const getBySlug = query({
   args: {
@@ -113,11 +145,22 @@ export const getBySlug = query({
 
     if (!book) return null;
 
-    const chapters = await ctx.db
+    const userId = await getViewerId(ctx);
+    const isAuthor = userId && (!book.authorId || book.authorId === userId);
+
+    if (book.status === "draft" && !isAuthor) {
+      return null;
+    }
+
+    let chapters = await ctx.db
       .query("bookChapters")
       .withIndex("by_bookId_and_order", (q) => q.eq("bookId", book._id))
       .order("asc")
       .collect();
+
+    if (!isAuthor) {
+      chapters = chapters.filter((ch) => ch.status === "published");
+    }
 
     return {
       ...book,
@@ -195,7 +238,7 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await requireAuth(ctx);
     const now = Date.now();
     const shareToken = generateShareToken();
 
@@ -216,7 +259,7 @@ export const create = mutation({
       slug: finalSlug,
       description: args.description,
       author: args.author,
-      authorId: userId ? userId : undefined,
+      authorId: userId,
       coverImage: args.coverImage,
       status: args.status,
       language: args.language || "en",
@@ -247,7 +290,7 @@ export const create = mutation({
 });
 
 /**
- * Update book metadata.
+ * Update book metadata. Requires ownership.
  */
 export const update = mutation({
   args: {
@@ -264,17 +307,30 @@ export const update = mutation({
     isbn: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const existing = await ctx.db.get(args.id);
+    if (!existing) {
+      throw new Error("Book not found");
+    }
+
+    const { userId } = await requireOwner(ctx, existing);
     const { id, ...updates } = args;
-    await ctx.db.patch(id, {
+
+    const patchData: Record<string, any> = {
       ...updates,
       updatedAt: Date.now(),
-    });
+    };
+
+    if (!existing.authorId) {
+      patchData.authorId = userId;
+    }
+
+    await ctx.db.patch(id, patchData);
     return id;
   },
 });
 
 /**
- * Update print PDF layout settings.
+ * Update print PDF layout settings. Requires ownership.
  */
 export const updatePrintSettings = mutation({
   args: {
@@ -301,6 +357,13 @@ export const updatePrintSettings = mutation({
     }),
   },
   handler: async (ctx, args) => {
+    const existing = await ctx.db.get(args.id);
+    if (!existing) {
+      throw new Error("Book not found");
+    }
+
+    await requireOwner(ctx, existing);
+
     await ctx.db.patch(args.id, {
       printSettings: args.printSettings,
       updatedAt: Date.now(),
@@ -310,7 +373,7 @@ export const updatePrintSettings = mutation({
 });
 
 /**
- * Toggle public share link and optionally regenerate token.
+ * Toggle public share link and optionally regenerate token. Requires ownership.
  */
 export const toggleShareLink = mutation({
   args: {
@@ -319,6 +382,13 @@ export const toggleShareLink = mutation({
     regenerateToken: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    const existing = await ctx.db.get(args.id);
+    if (!existing) {
+      throw new Error("Book not found");
+    }
+
+    await requireOwner(ctx, existing);
+
     const patch: { isPublicLinkEnabled: boolean; shareToken?: string; updatedAt: number } = {
       isPublicLinkEnabled: args.enabled,
       updatedAt: Date.now(),
@@ -332,13 +402,20 @@ export const toggleShareLink = mutation({
 });
 
 /**
- * Delete a book and all associated chapters.
+ * Delete a book and all associated chapters. Requires ownership.
  */
 export const remove = mutation({
   args: {
     id: v.id("books"),
   },
   handler: async (ctx, args) => {
+    const existing = await ctx.db.get(args.id);
+    if (!existing) {
+      throw new Error("Book not found");
+    }
+
+    await requireOwner(ctx, existing);
+
     const chapters = await ctx.db
       .query("bookChapters")
       .withIndex("by_bookId", (q) => q.eq("bookId", args.id))
@@ -361,11 +438,27 @@ export const listChapters = query({
     bookId: v.id("books"),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const book = await ctx.db.get(args.bookId);
+    if (!book) return [];
+
+    const userId = await getViewerId(ctx);
+    const isAuthor = userId && (!book.authorId || book.authorId === userId);
+
+    if (book.status === "draft" && !isAuthor) {
+      return [];
+    }
+
+    let chapters = await ctx.db
       .query("bookChapters")
       .withIndex("by_bookId_and_order", (q) => q.eq("bookId", args.bookId))
       .order("asc")
       .collect();
+
+    if (!isAuthor) {
+      chapters = chapters.filter((ch) => ch.status === "published");
+    }
+
+    return chapters;
   },
 });
 
@@ -378,6 +471,16 @@ export const getChapter = query({
     if (!chapter) return null;
 
     const book = await ctx.db.get(chapter.bookId);
+    if (!book) return null;
+
+    const userId = await getViewerId(ctx);
+    const isAuthor = userId && (!book.authorId || book.authorId === userId);
+
+    // If either book or chapter is draft, require author
+    if ((chapter.status === "draft" || book.status === "draft") && !isAuthor) {
+      return null;
+    }
+
     return {
       ...chapter,
       book,
@@ -393,6 +496,13 @@ export const createChapter = mutation({
     status: v.optional(v.union(v.literal("draft"), v.literal("published"))),
   },
   handler: async (ctx, args) => {
+    const book = await ctx.db.get(args.bookId);
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    await requireOwner(ctx, book);
+
     const existingChapters = await ctx.db
       .query("bookChapters")
       .withIndex("by_bookId_and_order", (q) => q.eq("bookId", args.bookId))
@@ -432,18 +542,27 @@ export const updateChapter = mutation({
     excerpt: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const chapter = await ctx.db.get(args.id);
+    if (!chapter) {
+      throw new Error("Chapter not found");
+    }
+
+    const book = await ctx.db.get(chapter.bookId);
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    await requireOwner(ctx, book);
+
     const { id, ...updates } = args;
     const now = Date.now();
-    const chapter = await ctx.db.get(id);
 
     await ctx.db.patch(id, {
       ...updates,
       updatedAt: now,
     });
 
-    if (chapter) {
-      await ctx.db.patch(chapter.bookId, { updatedAt: now });
-    }
+    await ctx.db.patch(chapter.bookId, { updatedAt: now });
 
     return id;
   },
@@ -456,6 +575,13 @@ export const deleteChapter = mutation({
   handler: async (ctx, args) => {
     const chapter = await ctx.db.get(args.id);
     if (!chapter) return;
+
+    const book = await ctx.db.get(chapter.bookId);
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    await requireOwner(ctx, book);
 
     await ctx.db.delete(args.id);
     await ctx.db.patch(chapter.bookId, { updatedAt: Date.now() });
@@ -473,6 +599,16 @@ export const reorderChapters = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    if (args.chapterOrders.length === 0) return;
+
+    const firstChapter = await ctx.db.get(args.chapterOrders[0].id);
+    if (firstChapter) {
+      const book = await ctx.db.get(firstChapter.bookId);
+      if (book) {
+        await requireOwner(ctx, book);
+      }
+    }
+
     for (const item of args.chapterOrders) {
       await ctx.db.patch(item.id, {
         order: item.order,

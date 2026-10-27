@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { requireOwner, requireAuth } from "./authz";
 
 /**
  * List comments for an article, ordered from oldest to newest or newest to oldest.
@@ -69,7 +70,7 @@ export const like = mutation({
 });
 
 /**
- * Delete a comment.
+ * Delete a comment. Requires blog author ownership.
  */
 export const remove = mutation({
   args: {
@@ -79,6 +80,13 @@ export const remove = mutation({
     const comment = await ctx.db.get(args.commentId);
     if (!comment) {
       throw new Error("Comment not found");
+    }
+
+    const blog = await ctx.db.get(comment.blogId);
+    if (blog) {
+      await requireOwner(ctx, blog);
+    } else {
+      await requireAuth(ctx);
     }
 
     await ctx.db.delete(args.commentId);

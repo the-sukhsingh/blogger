@@ -10,6 +10,7 @@
 
 import type * as apiKeys from "../apiKeys.js";
 import type * as auth from "../auth.js";
+import type * as authz from "../authz.js";
 import type * as blogs from "../blogs.js";
 import type * as books from "../books.js";
 import type * as comments from "../comments.js";
@@ -27,6 +28,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   apiKeys: typeof apiKeys;
   auth: typeof auth;
+  authz: typeof authz;
   blogs: typeof blogs;
   books: typeof books;
   comments: typeof comments;

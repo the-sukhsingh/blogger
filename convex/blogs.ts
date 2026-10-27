@@ -1,6 +1,6 @@
 import { mutation, query, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUserId } from "@convex-dev/auth/server";
+import { getViewerId, requireAuth, requireOwner } from "./authz";
 import { INITIAL_BLOGS } from "./seedData";
 
 function calculateReadingTime(text: string): string {
@@ -10,8 +10,9 @@ function calculateReadingTime(text: string): string {
 }
 
 /**
- * List blogs, optionally filtered by status ('draft' | 'published').
- * Results are ordered from newest to oldest and bounded.
+ * List blogs.
+ * - Anonymous callers can ONLY view published articles.
+ * - Authenticated callers can view published articles and their own drafts.
  */
 export const list = query({
   args: {
@@ -20,69 +21,127 @@ export const list = query({
   },
   handler: async (ctx, args) => {
     const limit = Math.min(Math.max(args.limit ?? 50, 1), 100);
+    const userId = await getViewerId(ctx);
 
-    if (args.status) {
-      const status = args.status;
+    // Anonymous visitors can only see published articles
+    if (!userId) {
       return await ctx.db
         .query("blogs")
-        .withIndex("by_status", (q) => q.eq("status", status))
+        .withIndex("by_status", (q) => q.eq("status", "published"))
         .order("desc")
         .take(limit);
     }
 
-    return await ctx.db
-      .query("blogs")
-      .order("desc")
-      .take(limit);
+    // Authenticated author
+    if (args.status === "draft") {
+      const drafts = await ctx.db
+        .query("blogs")
+        .withIndex("by_status", (q) => q.eq("status", "draft"))
+        .order("desc")
+        .collect();
+      return drafts
+        .filter((b) => !b.authorId || b.authorId === userId)
+        .slice(0, limit);
+    }
+
+    if (args.status === "published") {
+      return await ctx.db
+        .query("blogs")
+        .withIndex("by_status", (q) => q.eq("status", "published"))
+        .order("desc")
+        .take(limit);
+    }
+
+    // Return published articles + current user's drafts
+    const all = await ctx.db.query("blogs").order("desc").collect();
+    return all
+      .filter((b) => b.status === "published" || !b.authorId || b.authorId === userId)
+      .slice(0, limit);
   },
 });
 
 /**
  * Get a single blog by its Convex document ID.
+ * Drafts are protected and only readable by author.
  */
 export const getById = query({
   args: {
     id: v.id("blogs"),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+    const blog = await ctx.db.get(args.id);
+    if (!blog) return null;
+
+    if (blog.status === "draft") {
+      const userId = await getViewerId(ctx);
+      if (!userId || (blog.authorId && blog.authorId !== userId)) {
+        return null;
+      }
+    }
+
+    return blog;
   },
 });
 
 /**
  * Get a single blog by its unique slug.
+ * Drafts are protected and only readable by author.
  */
 export const getBySlug = query({
   args: {
     slug: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const blog = await ctx.db
       .query("blogs")
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .unique();
+
+    if (!blog) return null;
+
+    if (blog.status === "draft") {
+      const userId = await getViewerId(ctx);
+      if (!userId || (blog.authorId && blog.authorId !== userId)) {
+        return null;
+      }
+    }
+
+    return blog;
   },
 });
 
 /**
  * Get a blog either by its Convex ID or by its slug.
- * Useful for universal route matching.
+ * Drafts are protected and only readable by author.
  */
 export const getByIdOrSlug = query({
   args: {
     idOrSlug: v.string(),
   },
   handler: async (ctx, args) => {
+    let blog = null;
     const normalizedId = ctx.db.normalizeId("blogs", args.idOrSlug);
     if (normalizedId) {
-      const doc = await ctx.db.get(normalizedId);
-      if (doc) return doc;
+      blog = await ctx.db.get(normalizedId);
     }
 
-    return await ctx.db
-      .query("blogs")
-      .withIndex("by_slug", (q) => q.eq("slug", args.idOrSlug))
-      .unique();
+    if (!blog) {
+      blog = await ctx.db
+        .query("blogs")
+        .withIndex("by_slug", (q) => q.eq("slug", args.idOrSlug))
+        .unique();
+    }
+
+    if (!blog) return null;
+
+    if (blog.status === "draft") {
+      const userId = await getViewerId(ctx);
+      if (!userId || (blog.authorId && blog.authorId !== userId)) {
+        return null;
+      }
+    }
+
+    return blog;
   },
 });
 
@@ -114,14 +173,12 @@ export const create = mutation({
       throw new Error(`Blog with slug "${args.slug}" already exists`);
     }
 
-    const userId = await getAuthUserId(ctx);
+    const userId = await requireAuth(ctx);
     let authorName = args.author;
 
-    if (userId) {
-      const user = await ctx.db.get(userId);
-      if (user && (!authorName || authorName === "Staff Engineer" || authorName === "Author")) {
-        authorName = user.name || user.email || "Author";
-      }
+    const user = await ctx.db.get(userId);
+    if (user && (!authorName || authorName === "Staff Engineer" || authorName === "Author")) {
+      authorName = user.name || user.email || "Author";
     }
 
     const now = Date.now();
@@ -138,7 +195,7 @@ export const create = mutation({
       status: args.status,
       topics: args.topics,
       author: authorName || "Author",
-      authorId: userId ?? undefined,
+      authorId: userId,
       readingTime,
       gitBranch: args.gitBranch || "main",
       healthScore: args.healthScore,
@@ -149,7 +206,7 @@ export const create = mutation({
 });
 
 /**
- * Update an existing blog post.
+ * Update an existing blog post. Requires ownership.
  */
 export const update = mutation({
   args: {
@@ -171,6 +228,8 @@ export const update = mutation({
     if (!existing) {
       throw new Error("Blog not found");
     }
+
+    const { userId } = await requireOwner(ctx, existing);
 
     if (args.slug && args.slug !== existing.slug) {
       const slugTaken = await ctx.db
@@ -214,8 +273,7 @@ export const update = mutation({
     if (args.gitBranch !== undefined) updateFields.gitBranch = args.gitBranch;
     if (args.healthScore !== undefined) updateFields.healthScore = args.healthScore;
 
-    const userId = await getAuthUserId(ctx);
-    if (userId && !existing.authorId) {
+    if (!existing.authorId) {
       updateFields.authorId = userId;
     }
 
@@ -225,7 +283,7 @@ export const update = mutation({
 });
 
 /**
- * Publish a draft blog post.
+ * Publish a draft blog post. Requires ownership.
  */
 export const publish = mutation({
   args: {
@@ -236,6 +294,8 @@ export const publish = mutation({
     if (!existing) {
       throw new Error("Blog not found");
     }
+
+    await requireOwner(ctx, existing);
 
     const now = Date.now();
     await ctx.db.patch(args.id, {
@@ -249,7 +309,7 @@ export const publish = mutation({
 });
 
 /**
- * Revert a published blog back to draft.
+ * Revert a published blog back to draft. Requires ownership.
  */
 export const unpublish = mutation({
   args: {
@@ -260,6 +320,8 @@ export const unpublish = mutation({
     if (!existing) {
       throw new Error("Blog not found");
     }
+
+    await requireOwner(ctx, existing);
 
     const now = Date.now();
     await ctx.db.patch(args.id, {
@@ -272,7 +334,7 @@ export const unpublish = mutation({
 });
 
 /**
- * Delete a blog post.
+ * Delete a blog post. Requires ownership.
  */
 export const remove = mutation({
   args: {
@@ -283,6 +345,8 @@ export const remove = mutation({
     if (!existing) {
       throw new Error("Blog not found");
     }
+
+    await requireOwner(ctx, existing);
 
     await ctx.db.delete(args.id);
     return args.id;

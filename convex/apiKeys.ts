@@ -27,14 +27,7 @@ function makePreview(key: string): string {
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    let userId = await getAuthUserId(ctx);
-    if (!userId) {
-      const anyUser = await ctx.db.query("users").first();
-      if (anyUser) {
-        userId = anyUser._id;
-      }
-    }
-
+    const userId = await getAuthUserId(ctx);
     if (!userId) {
       return [];
     }
@@ -65,17 +58,9 @@ export const create = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    let userId = await getAuthUserId(ctx);
+    const userId = await getAuthUserId(ctx);
     if (!userId) {
-      const anyUser = await ctx.db.query("users").first();
-      if (anyUser) {
-        userId = anyUser._id;
-      } else {
-        userId = await ctx.db.insert("users", {
-          name: "Staff Engineer",
-          email: "author@beelog.dev",
-        });
-      }
+      throw new Error("Unauthorized: Please sign in to create API keys.");
     }
 
     const trimmedName = args.name.trim();
@@ -186,14 +171,7 @@ export const getAnalytics = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    let userId = await getAuthUserId(ctx);
-    if (!userId) {
-      const anyUser = await ctx.db.query("users").first();
-      if (anyUser) {
-        userId = anyUser._id;
-      }
-    }
-
+    const userId = await getAuthUserId(ctx);
     if (!userId) {
       return {
         totalRequests: 0,
