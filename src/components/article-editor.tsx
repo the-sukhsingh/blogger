@@ -7,16 +7,8 @@ import {
   X,
   Plus,
   GitBranch,
-  Clock,
-  Check,
   Eye,
-  FileCode,
-  Layers,
-  Image,
-  BookOpen,
-  CheckCircle2,
   AlertCircle,
-  Code,
 } from 'lucide-react'
 
 import { Button } from '#/components/ui/button'
@@ -24,7 +16,7 @@ import { NotionEditor } from '#/components/notion-editor'
 import { PreviewModal } from '#/components/preview-modal'
 import { BlogStore } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
-import { useMutation, useQuery } from 'convex/react'
+import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
 import { cn } from '#/lib/utils'
@@ -64,7 +56,6 @@ export function ArticleEditor({
   initialTitle,
 }: ArticleEditorProps) {
   const navigate = useNavigate()
-  const convexArticles = useQuery(api.blogs.list, {})
 
   // Core Article State
   const [title, setTitle] = React.useState(

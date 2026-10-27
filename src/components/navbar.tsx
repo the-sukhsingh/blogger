@@ -66,7 +66,7 @@ export function Navbar() {
               <span className="font-serif text-lg font-medium tracking-tight">
                 Beelog
               </span>
-            
+            ``
             </Link>
 
             {/* Desktop Navigation Links */}

@@ -53,7 +53,7 @@ function EditBlogPage() {
         topics: article.topics,
         gitBranch: article.gitBranch,
         status: article.status,
-        author: article.author,
+        author: (article as any).author,
       }}
       isNew={false}
     />
