@@ -110,7 +110,7 @@ function BlogReaderPage() {
           headingHierarchy: true,
           slugValid: true,
         },
-        internalLinks: [],
+        internalLinks: { outbound: [], suggestions: [] },
       }
     }
     return BlogStore.getArticleById(id) || null
@@ -472,7 +472,8 @@ function BlogReaderPage() {
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
         title={article.title}
-        url={typeof window !== 'undefined' ? window.location.href : ''}
+        slug={article.slug}
+        content={article.content}
         author={authorName}
       />
     </div>

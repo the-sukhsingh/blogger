@@ -9,6 +9,7 @@ import {
   Upload,
   Download,
   Check,
+  Trash2,
 } from 'lucide-react'
 
 import { Navbar } from '#/components/navbar'
@@ -107,7 +108,7 @@ function BlogsIndexPage() {
             headingHierarchy: true,
             slugValid: true,
           },
-          internalLinks: [],
+          internalLinks: { outbound: [], suggestions: [] },
         }
       })
     }
@@ -146,8 +147,8 @@ function BlogsIndexPage() {
         if (sortOrder === 'title') {
           return a.title.localeCompare(b.title)
         }
-        const timeA = getArticleTimestamp(a.updatedAt)
-        const timeB = getArticleTimestamp(b.updatedAt)
+        const timeA = getArticleTimestamp(a)
+        const timeB = getArticleTimestamp(b)
         return sortOrder === 'newest-update' ? timeB - timeA : timeA - timeB
       })
   }, [articles, activeTab, selectedTopic, searchQuery, sortOrder])
@@ -408,7 +409,15 @@ function BlogsIndexPage() {
                         title="Delete this article?"
                         description={`"${art.title.slice(0, 36)}..." will be permanently removed.`}
                         align="right"
-                      />
+                      >
+                        <button
+                          type="button"
+                          className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+                          title="Delete article"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </DeleteConfirmPopover>
                     </div>
                   </div>
                 )
@@ -423,7 +432,6 @@ function BlogsIndexPage() {
       <ImportModal
         isOpen={importOpen}
         onClose={() => setImportOpen(false)}
-        onImportSuccess={() => {}}
       />
     </div>
   )
