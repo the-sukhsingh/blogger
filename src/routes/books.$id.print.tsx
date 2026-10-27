@@ -32,6 +32,17 @@ export const Route = createFileRoute('/books/$id/print')({
 
 type PageLayoutMode = 'spread' | 'single' | 'grid'
 
+// Build the ordered sequence of physical book pages
+interface BookPageData {
+  pageNumber: number
+  side: 'left' | 'right'
+  type: 'title' | 'toc' | 'chapter-start' | 'chapter-body' | 'blank'
+  chapterOrder?: number
+  chapterTitle?: string
+  contentBlocks?: string[]
+  isOpening?: boolean
+}
+
 export function BookPrintPdfPage() {
   const { id } = Route.useParams()
   const book = useQuery(api.books.get, { id: id as any })
@@ -56,62 +67,8 @@ export function BookPrintPdfPage() {
     }
   }, [book?.printSettings])
 
-  if (!book) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6 font-mono text-xs">
-        <p className="animate-pulse">Loading book print sheets...</p>
-      </div>
-    )
-  }
-
-  const chapters = book.chapters || []
+  const chapters = book?.chapters || []
   const trimSpec = TRIM_SIZE_SPECS[settings.trimSize]
-  const isRtl = book.direction === 'rtl'
-
-  const handleSaveSettings = async () => {
-    try {
-      await updatePrintSettings({
-        id: book._id,
-        printSettings: settings,
-      })
-      setSaved(true)
-      setTimeout(() => setSaved(false), 2000)
-    } catch (err) {
-      console.error('Failed to save print settings:', err)
-    }
-  }
-
-  const handlePrint = () => {
-    window.print()
-  }
-
-  const handleResetDefaults = () => {
-    setSettings(DEFAULT_PRINT_SETTINGS)
-    setChapterStartRecto(true)
-    setDropCaps(true)
-  }
-
-  const printStyles = generatePrintStylesheet(settings, book.title)
-
-  // Calculate base pixel dimensions from physical inches (96 DPI standard CSS pixel mapping)
-  const baseSheetWidthPx = trimSpec.widthIn * 96
-  const baseSheetHeightPx = trimSpec.heightIn * 96
-
-  // Scaled dimensions for preview
-  const scaleFactor = zoomScale / 100
-  const sheetWidthPx = layoutMode === 'grid' ? baseSheetWidthPx * 0.45 : baseSheetWidthPx * scaleFactor
-  const sheetHeightPx = layoutMode === 'grid' ? baseSheetHeightPx * 0.45 : baseSheetHeightPx * scaleFactor
-
-  // Build the ordered sequence of physical book pages
-  interface BookPageData {
-    pageNumber: number
-    side: 'left' | 'right'
-    type: 'title' | 'toc' | 'chapter-start' | 'chapter-body' | 'blank'
-    chapterOrder?: number
-    chapterTitle?: string
-    contentBlocks?: string[]
-    isOpening?: boolean
-  }
 
   const assembledPages = React.useMemo(() => {
     const pages: BookPageData[] = []
@@ -190,6 +147,59 @@ export function BookPrintPdfPage() {
 
     return pages
   }, [chapters, settings.includeToC, chapterStartRecto])
+
+  // Group assembled pages into 2-page spreads (Verso on left, Recto on right)
+  const spreads = React.useMemo(() => {
+    const list: BookPageData[][] = []
+    for (let i = 0; i < assembledPages.length; i += 2) {
+      list.push([assembledPages[i], assembledPages[i + 1]].filter(Boolean))
+    }
+    return list
+  }, [assembledPages])
+
+  if (!book) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6 font-mono text-xs">
+        <p className="animate-pulse">Loading book print sheets...</p>
+      </div>
+    )
+  }
+
+  const isRtl = book.direction === 'rtl'
+
+  const handleSaveSettings = async () => {
+    try {
+      await updatePrintSettings({
+        id: book._id,
+        printSettings: settings,
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (err) {
+      console.error('Failed to save print settings:', err)
+    }
+  }
+
+  const handlePrint = () => {
+    window.print()
+  }
+
+  const handleResetDefaults = () => {
+    setSettings(DEFAULT_PRINT_SETTINGS)
+    setChapterStartRecto(true)
+    setDropCaps(true)
+  }
+
+  const printStyles = generatePrintStylesheet(settings, book.title)
+
+  // Calculate base pixel dimensions from physical inches (96 DPI standard CSS pixel mapping)
+  const baseSheetWidthPx = trimSpec.widthIn * 96
+  const baseSheetHeightPx = trimSpec.heightIn * 96
+
+  // Scaled dimensions for preview
+  const scaleFactor = zoomScale / 100
+  const sheetWidthPx = layoutMode === 'grid' ? baseSheetWidthPx * 0.45 : baseSheetWidthPx * scaleFactor
+  const sheetHeightPx = layoutMode === 'grid' ? baseSheetHeightPx * 0.45 : baseSheetHeightPx * scaleFactor
 
   // Helper to render content blocks inside a page
   const renderBlocks = (blocks: string[] | undefined, hasDropCap: boolean) => {
@@ -410,15 +420,6 @@ export function BookPrintPdfPage() {
       </div>
     )
   }
-
-  // Group assembled pages into 2-page spreads (Verso on left, Recto on right)
-  const spreads = React.useMemo(() => {
-    const list: BookPageData[][] = []
-    for (let i = 0; i < assembledPages.length; i += 2) {
-      list.push([assembledPages[i], assembledPages[i + 1]].filter(Boolean))
-    }
-    return list
-  }, [assembledPages])
 
   return (
     <div className="min-h-screen bg-neutral-200 dark:bg-neutral-900 text-foreground flex flex-col font-sans transition-colors">

@@ -66,43 +66,9 @@ export function BookReaderPreviewPage() {
     }
   }
 
-  // Keyboard navigation
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
-
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-        e.preventDefault()
-        handleNext()
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        e.preventDefault()
-        handlePrev()
-      } else if (e.key.toLowerCase() === 'f') {
-        toggleFullscreen()
-      } else if (e.key.toLowerCase() === 't') {
-        setTocDrawerOpen((prev) => !prev)
-      } else if (e.key.toLowerCase() === 'm') {
-        setLayoutMode((m) => (m === 'spread' ? 'scroll' : 'spread'))
-      } else if (e.key === 'Escape') {
-        setTocDrawerOpen(false)
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentChapterIndex, spreadPageIndex, layoutMode, book])
-
-  if (!book) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6 font-mono text-xs">
-        <p className="animate-pulse">Loading manuscript reader...</p>
-      </div>
-    )
-  }
-
-  const chapters = book.chapters || []
+  const chapters = book?.chapters || []
   const currentChapter = chapters[currentChapterIndex] || null
-  const isRtl = book.direction === 'rtl'
+  const isRtl = book?.direction === 'rtl'
 
   // Chunk chapter paragraphs into pages for the 2-page spread simulator
   const chapterParagraphs = React.useMemo(() => {
@@ -125,6 +91,18 @@ export function BookReaderPreviewPage() {
       return acc + Math.max(1, Math.ceil(pCount / PARAGRAPHS_PER_PAGE))
     }, 0)
   )
+
+  // Calculate overall reading progress percentage
+  const overallProgress = React.useMemo(() => {
+    if (chapters.length === 0) return 0
+    let passedPages = 0
+    for (let i = 0; i < currentChapterIndex; i++) {
+      const pCount = (chapters[i].content || '').split('\n\n').filter(Boolean).length
+      passedPages += Math.max(1, Math.ceil(pCount / PARAGRAPHS_PER_PAGE))
+    }
+    passedPages += layoutMode === 'spread' ? spreadPageIndex : 0
+    return Math.min(100, Math.round((passedPages / estimatedTotalPages) * 100))
+  }, [currentChapterIndex, spreadPageIndex, chapters, layoutMode, estimatedTotalPages])
 
   const handleNext = () => {
     if (layoutMode === 'spread') {
@@ -162,17 +140,39 @@ export function BookReaderPreviewPage() {
     }
   }
 
-  // Calculate overall reading progress percentage
-  const overallProgress = React.useMemo(() => {
-    if (chapters.length === 0) return 0
-    let passedPages = 0
-    for (let i = 0; i < currentChapterIndex; i++) {
-      const pCount = (chapters[i].content || '').split('\n\n').filter(Boolean).length
-      passedPages += Math.max(1, Math.ceil(pCount / PARAGRAPHS_PER_PAGE))
+  // Keyboard navigation
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault()
+        handleNext()
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault()
+        handlePrev()
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen()
+      } else if (e.key.toLowerCase() === 't') {
+        setTocDrawerOpen((prev) => !prev)
+      } else if (e.key.toLowerCase() === 'm') {
+        setLayoutMode((m) => (m === 'spread' ? 'scroll' : 'spread'))
+      } else if (e.key === 'Escape') {
+        setTocDrawerOpen(false)
+      }
     }
-    passedPages += layoutMode === 'spread' ? spreadPageIndex : 0
-    return Math.min(100, Math.round((passedPages / estimatedTotalPages) * 100))
-  }, [currentChapterIndex, spreadPageIndex, chapters, layoutMode, estimatedTotalPages])
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentChapterIndex, spreadPageIndex, layoutMode, totalPagesInChapter, chapters.length])
+
+  if (!book) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6 font-mono text-xs">
+        <p className="animate-pulse">Loading manuscript reader...</p>
+      </div>
+    )
+  }
 
   // Palette styling definitions
   const paletteTheme = {
