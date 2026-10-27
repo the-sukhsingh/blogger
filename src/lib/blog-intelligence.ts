@@ -53,7 +53,7 @@ export class BlogIntelligence {
   /**
    * Run Research Agent on any topic to produce a structured, high-grade technical brief.
    */
-  static runResearch(topic: string, existingArticles: Article[] = []): ResearchResult {
+  static runResearch(topic: string, _existingArticles: Article[] = []): ResearchResult {
     const cleanTopic = topic.trim() || 'Modern Web Architecture'
     const lowerTopic = cleanTopic.toLowerCase()
 

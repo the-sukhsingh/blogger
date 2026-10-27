@@ -73,19 +73,23 @@ export interface Article {
   commitHash: string
   status: 'published' | 'draft' | 'needs-review'
   topics: string[]
-  entities: string[]
-  healthScore: number
-  healthMetrics: ArticleHealthMetrics
-  isStale: boolean
+  author?: string
+  coverImage?: string
+  claps?: number
+  views?: number
+  entities?: string[]
+  healthScore?: number
+  healthMetrics?: ArticleHealthMetrics
+  isStale?: boolean
   staleReason?: string
-  proposedDiffs: ProposedDiff[]
-  seo: SeoAnalysis
-  aeo: AeoAnalysis
-  internalLinks: {
+  proposedDiffs?: ProposedDiff[]
+  seo?: SeoAnalysis
+  aeo?: AeoAnalysis
+  internalLinks?: {
     outbound: InternalLinkItem[]
     suggestions: InternalLinkSuggestion[]
   }
-  revisionHistory: RevisionHistoryItem[]
+  revisionHistory?: RevisionHistoryItem[]
 }
 
 const STORAGE_KEY = 'blog_changer_articles_v1'
@@ -830,7 +834,7 @@ export const BlogStore = {
           ...a,
           updatedAt:
             a.updatedAt ||
-            a.revisionHistory[0]?.timestamp ||
+            a.revisionHistory?.[0]?.timestamp ||
             (typeof a.publishedAt === 'string' && a.publishedAt.includes('202')
               ? a.publishedAt
               : '2026-10-06 14:22'),
@@ -977,7 +981,7 @@ export const BlogStore = {
     const article = articles.find((a) => a.id === articleId)
     if (!article) return null
 
-    const diff = article.proposedDiffs.find((d) => d.id === diffId)
+    const diff = (article.proposedDiffs || []).find((d) => d.id === diffId)
     if (!diff) return null
 
     diff.status = 'accepted'
@@ -986,7 +990,7 @@ export const BlogStore = {
       .replace('T', ' ')
       .substring(0, 16)
     // Stale issue resolved once diff accepted
-    article.isStale = article.proposedDiffs.some((d) => d.status === 'pending')
+    article.isStale = (article.proposedDiffs || []).some((d) => d.status === 'pending')
 
     // Recalculate health
     const health = BlogStore.computeHealth(
@@ -1009,7 +1013,7 @@ export const BlogStore = {
     const article = articles.find((a) => a.id === articleId)
     if (!article) return null
 
-    const diff = article.proposedDiffs.find((d) => d.id === diffId)
+    const diff = (article.proposedDiffs || []).find((d) => d.id === diffId)
     if (!diff) return null
 
     diff.status = 'rejected'
