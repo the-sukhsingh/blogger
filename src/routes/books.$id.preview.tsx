@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Printer,
-  BookOpen,
   Columns2,
   Maximize2,
   Minimize2,
