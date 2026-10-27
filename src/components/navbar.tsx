@@ -114,13 +114,15 @@ export function Navbar() {
             <ThemeSwitcher />
 
             {/* Primary Action Button */}
-            <div className="hidden sm:flex items-center gap-2">
-              <Link to="/books">
-                <Button variant="default" size="sm" className="text-xs px-3.5 h-8 font-sans">
-                  New Book
-                </Button>
-              </Link>
-            </div>
+            {isAuthenticated && (
+              <div className="hidden sm:flex items-center gap-2">
+                <Link to="/books">
+                  <Button variant="default" size="sm" className="text-xs px-3.5 h-8 font-sans">
+                    New Book
+                  </Button>
+                </Link>
+              </div>
+            )}
 
             {/* User Account / Sign In */}
             {authLoading ? (
@@ -244,11 +246,13 @@ export function Navbar() {
             </Link>
 
             <div className="pt-3 border-t border-border flex flex-col gap-2">
-              <Link to="/books" className="w-full">
-                <Button variant="default" size="sm" className="w-full justify-center text-xs">
-                  New Book
-                </Button>
-              </Link>
+              {isAuthenticated && (
+                <Link to="/books" className="w-full">
+                  <Button variant="default" size="sm" className="w-full justify-center text-xs">
+                    New Book
+                  </Button>
+                </Link>
+              )}
               {!isAuthenticated ? (
                 <Button
                   variant="outline"
