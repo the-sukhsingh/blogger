@@ -14,8 +14,10 @@ import {
   Compass,
 } from 'lucide-react'
 import { useQuery } from 'convex/react'
+import { useConvexAuth } from '@convex-dev/auth/react'
 import { api } from '../../convex/_generated/api'
 import { Button } from '#/components/ui/button'
+import { AuthModal } from '#/components/auth-modal'
 import { formatWordCount } from '#/lib/book-store'
 import { cn } from '#/lib/utils'
 
@@ -29,7 +31,9 @@ type Typeface = 'serif' | 'sans' | 'mono'
 
 export function BookReaderPreviewPage() {
   const { id } = Route.useParams()
+  const { isAuthenticated, isLoading: authLoading } = useConvexAuth()
   const book = useQuery(api.books.get, { id: id as any })
+  const [authModalOpen, setAuthModalOpen] = React.useState(false)
 
   // Reader state
   const [currentChapterIndex, setCurrentChapterIndex] = React.useState(0)
@@ -166,10 +170,48 @@ export function BookReaderPreviewPage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [currentChapterIndex, spreadPageIndex, layoutMode, totalPagesInChapter, chapters.length])
 
-  if (!book) {
+  if (authLoading || book === undefined) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6 font-mono text-xs">
         <p className="animate-pulse">Loading manuscript reader...</p>
+      </div>
+    )
+  }
+
+  if (book === null) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+        <header className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <Link
+            to="/books"
+            className="text-xs font-mono text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Library</span>
+          </Link>
+        </header>
+
+        <main className="flex-1 max-w-lg mx-auto px-6 py-24 text-center space-y-4">
+          <h1 className="font-serif text-3xl font-medium">Private Manuscript</h1>
+          <p className="text-sm text-muted-foreground">
+            {!isAuthenticated
+              ? 'This book is a private draft or unpublished work. Please sign in with your author account to read it.'
+              : 'This manuscript could not be found or you do not have permission to view it.'}
+          </p>
+          <div className="pt-2 flex items-center justify-center gap-3">
+            {!isAuthenticated ? (
+              <Button size="sm" onClick={() => setAuthModalOpen(true)}>
+                Sign in to Read
+              </Button>
+            ) : null}
+            <Link to="/books">
+              <Button variant="outline" size="sm">
+                Browse Public Books
+              </Button>
+            </Link>
+          </div>
+        </main>
+        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
       </div>
     )
   }
@@ -833,6 +875,8 @@ export function BookReaderPreviewPage() {
           </aside>
         </div>
       )}
+
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   )
 }

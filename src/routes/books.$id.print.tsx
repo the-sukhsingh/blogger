@@ -16,8 +16,10 @@ import {
   X,
 } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
+import { useConvexAuth } from '@convex-dev/auth/react'
 import { api } from '../../convex/_generated/api'
 import { Button } from '#/components/ui/button'
+import { AuthModal } from '#/components/auth-modal'
 import {
   TRIM_SIZE_SPECS,
   DEFAULT_PRINT_SETTINGS,
@@ -45,8 +47,10 @@ interface BookPageData {
 
 export function BookPrintPdfPage() {
   const { id } = Route.useParams()
+  const { isAuthenticated, isLoading: authLoading } = useConvexAuth()
   const book = useQuery(api.books.get, { id: id as any })
   const updatePrintSettings = useMutation(api.books.updatePrintSettings)
+  const [authModalOpen, setAuthModalOpen] = React.useState(false)
 
   // Local print settings
   const [settings, setSettings] = React.useState<PrintSettings>(DEFAULT_PRINT_SETTINGS)
@@ -165,9 +169,10 @@ export function BookPrintPdfPage() {
     )
   }
 
-  const isRtl = book.direction === 'rtl'
+  const isRtl = book?.direction === 'rtl'
 
   const handleSaveSettings = async () => {
+    if (!book) return
     try {
       await updatePrintSettings({
         id: book._id,
@@ -190,7 +195,7 @@ export function BookPrintPdfPage() {
     setDropCaps(true)
   }
 
-  const printStyles = generatePrintStylesheet(settings, book.title)
+  const printStyles = generatePrintStylesheet(settings, book?.title || 'Book')
 
   // Calculate base pixel dimensions from physical inches (96 DPI standard CSS pixel mapping)
   const baseSheetWidthPx = trimSpec.widthIn * 96
@@ -417,6 +422,52 @@ export function BookPrintPdfPage() {
             {page.pageNumber}
           </div>
         )}
+      </div>
+    )
+  }
+
+  if (authLoading || book === undefined) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6 font-mono text-xs">
+        <p className="animate-pulse">Loading print layout engine...</p>
+      </div>
+    )
+  }
+
+  if (book === null) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+        <header className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <Link
+            to="/books"
+            className="text-xs font-mono text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Library</span>
+          </Link>
+        </header>
+
+        <main className="flex-1 max-w-lg mx-auto px-6 py-24 text-center space-y-4">
+          <h1 className="font-serif text-3xl font-medium">Private Manuscript</h1>
+          <p className="text-sm text-muted-foreground">
+            {!isAuthenticated
+              ? 'This book is a private draft or unpublished work. Please sign in with your author account to configure print settings.'
+              : 'This manuscript could not be found or you do not have permission to view it.'}
+          </p>
+          <div className="pt-2 flex items-center justify-center gap-3">
+            {!isAuthenticated ? (
+              <Button size="sm" onClick={() => setAuthModalOpen(true)}>
+                Sign in
+              </Button>
+            ) : null}
+            <Link to="/books">
+              <Button variant="outline" size="sm">
+                Browse Public Books
+              </Button>
+            </Link>
+          </div>
+        </main>
+        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
       </div>
     )
   }
@@ -941,6 +992,8 @@ export function BookPrintPdfPage() {
           </aside>
         )}
       </div>
+
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   )
 }

@@ -30,7 +30,17 @@ export function IntegrationsPage() {
   const [authModalOpen, setAuthModalOpen] = React.useState(false)
 
   // Navigation tab: 'keys' | 'console' | 'guides'
-  const [activeTab, setActiveTab] = React.useState<'keys' | 'console' | 'guides'>('keys')
+  const [activeTab, setActiveTab] = React.useState<'keys' | 'console' | 'guides'>(
+    isAuthenticated ? 'keys' : 'guides'
+  )
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      setActiveTab('guides')
+    } else {
+      setActiveTab('keys')
+    }
+  }, [isAuthenticated])
 
   // API Keys & Analytics from Convex
   const apiKeys = useQuery(api.apiKeys.list) || []
@@ -188,28 +198,44 @@ export function IntegrationsPage() {
           }
           description="Connect your technical articles to your personal Astro, Next.js, or Hugo site via secure REST endpoints. Query published content and test responses in real-time."
           stats={
-            <>
-              <span>{apiKeys.length} keys configured</span>
-              <span>·</span>
-              <span className="text-[#5ea500]">{activeKeysCount} active</span>
-              <span>·</span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-[#f5f5f4] dark:bg-[#1c1917] border border-[#e7e5e4] dark:border-[#292524] text-foreground">
-                <span className="text-[#79716b] dark:text-[#a6a09b]">Base:</span>
-                <code className="select-all">{CONVEX_SITE_URL.replace(/^https?:\/\//, '')}</code>
+            isAuthenticated ? (
+              <>
+                <span>{apiKeys.length} keys configured</span>
+                <span>·</span>
+                <span className="text-[#5ea500]">{activeKeysCount} active</span>
+                <span>·</span>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-[#f5f5f4] dark:bg-[#1c1917] border border-[#e7e5e4] dark:border-[#292524] text-foreground">
+                  <span className="text-[#79716b] dark:text-[#a6a09b]">Base:</span>
+                  <code className="select-all">{CONVEX_SITE_URL.replace(/^https?:\/\//, '')}</code>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(CONVEX_SITE_URL, 'base-endpoint')}
+                    className="hover:text-foreground text-[#79716b] dark:text-[#a6a09b] transition-colors ml-0.5"
+                    title="Copy base URL"
+                  >
+                    {copiedId === 'base-endpoint' ? (
+                      <Check className="w-3 h-3 text-[#5ea500]" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                  </button>
+                </span>
+              </>
+            ) : (
+              <>
+                <span>REST & JSON API v1</span>
+                <span>·</span>
+                <span>Framework Connectors</span>
+                <span>·</span>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard(CONVEX_SITE_URL, 'base-endpoint')}
-                  className="hover:text-foreground text-[#79716b] dark:text-[#a6a09b] transition-colors ml-0.5"
-                  title="Copy base URL"
+                  onClick={() => setAuthModalOpen(true)}
+                  className="text-amber-500 hover:underline"
                 >
-                  {copiedId === 'base-endpoint' ? (
-                    <Check className="w-3 h-3 text-[#5ea500]" />
-                  ) : (
-                    <Copy className="w-3 h-3" />
-                  )}
+                  Sign in to create API tokens
                 </button>
-              </span>
-            </>
+              </>
+            )
           }
           actions={
             isAuthenticated ? (
@@ -535,8 +561,28 @@ export function IntegrationsPage() {
 
         {/* TAB 2: INTERACTIVE LIVE CONSOLE */}
         {activeTab === 'console' && (
-          <div className="space-y-6">
-            <div className="p-4 rounded-[12px] bg-card border border-border space-y-4">
+          !isAuthenticated ? (
+            <div className="p-8 text-center rounded-[12px] bg-card border border-border space-y-3">
+              <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto">
+                <Play className="w-5 h-5" />
+              </div>
+              <h4 className="text-sm font-semibold text-foreground">
+                Sign In to Test the Console
+              </h4>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                Sign in with your author account to test live queries against your content API with personal API keys.
+              </p>
+              <Button
+                size="sm"
+                onClick={() => setAuthModalOpen(true)}
+                className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs"
+              >
+                Sign In or Register
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="p-4 rounded-[12px] bg-card border border-border space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2 font-mono text-foreground font-semibold">
                   <Play className="w-3.5 h-3.5 text-amber-500" />
@@ -681,7 +727,7 @@ export function IntegrationsPage() {
                 </pre>
               )}
             </div>
-          </div>
+          )
         )}
 
         {/* TAB 3: FRAMEWORK QUICKSTART */}
