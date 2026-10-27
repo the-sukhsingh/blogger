@@ -10,8 +10,6 @@ import {
   Clock,
   Check,
   Eye,
-  Sparkles,
-  Wand2,
   FileCode,
   Layers,
   Image,
@@ -24,8 +22,6 @@ import {
 import { Button } from '#/components/ui/button'
 import { NotionEditor } from '#/components/notion-editor'
 import { PreviewModal } from '#/components/preview-modal'
-import { ResearchModal } from '#/components/research-modal'
-import { AiAssistModal } from '#/components/ai-assist-modal'
 import { BlogStore } from '#/lib/blog-store'
 import type { Article } from '#/lib/blog-store'
 import { useMutation, useQuery } from 'convex/react'
@@ -123,8 +119,6 @@ Write your step-by-step technical implementation here.
   // Modals & Drawers
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const [previewOpen, setPreviewOpen] = React.useState(false)
-  const [researchOpen, setResearchOpen] = React.useState(false)
-  const [aiAssistOpen, setAiAssistOpen] = React.useState(false)
 
   const [saveStatus, setSaveStatus] = React.useState<
     'saved' | 'saving' | 'unsaved'
@@ -337,27 +331,8 @@ Write your step-by-step technical implementation here.
             </span>
           </div>
 
-          {/* Right: AI Research, AI Assist, Editor Mode, Preview, Settings & Save */}
+          {/* Right: Editor Mode, Preview, Settings & Save */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* AI Research Agent */}
-            <button
-              onClick={() => setResearchOpen(true)}
-              className="flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-[6px] border border-[#615fff]/30 bg-[#615fff]/5 text-[#615fff] hover:bg-[#615fff]/10 transition-colors"
-              title="Launch AI Research Agent"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span className="hidden md:inline">Research</span>
-            </button>
-
-            {/* AI Agent & Diff Review */}
-            <button
-              onClick={() => setAiAssistOpen(true)}
-              className="flex items-center gap-1 text-xs font-mono px-2.5 py-1 rounded-[6px] border border-[#e7e5e4] dark:border-[#292524] text-[#79716b] hover:text-[#292524] dark:hover:text-[#fafaf9] transition-colors"
-              title="AI Agent: Polish Flow, Strengthen AEO, and Generate Diffs"
-            >
-              <Wand2 className="h-3.5 w-3.5 text-[#615fff]" />
-              <span className="hidden md:inline">AI Agent</span>
-            </button>
 
             {/* Visual vs Markdown Source toggle */}
             <div className="hidden sm:flex items-center border border-[#e7e5e4] dark:border-[#292524] rounded-lg p-0.5 bg-muted/20 text-xs font-mono">
@@ -675,12 +650,6 @@ Write your step-by-step technical implementation here.
                   <span>Reading Time:</span>
                   <span>{readingTimeEstimate}</span>
                 </div>
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span>AEO Definition:</span>
-                  <span className={content.includes('>') ? 'text-[#5ea500]' : 'text-[#d97757]'}>
-                    {content.includes('>') ? 'Present' : 'Add quote/def'}
-                  </span>
-                </div>
               </div>
             </div>
           </aside>
@@ -700,36 +669,6 @@ Write your step-by-step technical implementation here.
         author={author}
         readingTime={readingTimeEstimate}
         coverImage={coverImage}
-      />
-
-      <ResearchModal
-        isOpen={researchOpen}
-        onClose={() => setResearchOpen(false)}
-        currentTopic={topics[0] || 'Modern Architecture'}
-        currentTitle={title}
-        existingArticles={
-          (convexArticles || []).map((a) => ({
-            id: a._id,
-            slug: a.slug,
-            title: a.title,
-            topics: a.topics || [],
-          })) as any
-        }
-        onApplyOutline={(markdown) => {
-          setContent(markdown)
-          setSaveStatus('unsaved')
-        }}
-      />
-
-      <AiAssistModal
-        isOpen={aiAssistOpen}
-        onClose={() => setAiAssistOpen(false)}
-        title={title}
-        content={content}
-        onAcceptDiff={(newContent) => {
-          setContent(newContent)
-          setSaveStatus('unsaved')
-        }}
       />
     </div>
   )
