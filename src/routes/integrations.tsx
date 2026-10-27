@@ -727,8 +727,9 @@ export function IntegrationsPage() {
                 </pre>
               )}
             </div>
-          )
-        )}
+          </div>
+        )
+      )}
 
         {/* TAB 3: FRAMEWORK QUICKSTART */}
         {activeTab === 'guides' && (
