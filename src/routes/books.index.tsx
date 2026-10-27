@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
+import { useConvexAuth } from '@convex-dev/auth/react'
 import { api } from '../../convex/_generated/api'
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
@@ -34,6 +35,7 @@ type FilterTab = 'all' | 'published' | 'draft'
 
 function BooksLibraryPage() {
   const navigate = useNavigate()
+  const { isAuthenticated } = useConvexAuth()
   const books = useQuery(api.books.list, {})
   const createBook = useMutation(api.books.create)
   const removeBook = useMutation(api.books.remove)
@@ -179,21 +181,23 @@ function BooksLibraryPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={() => setCreateModalOpen(true)}
-              className="text-xs h-9 px-4 font-sans gap-1.5"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Create Book</span>
-            </Button>
-          </div>
+          {isAuthenticated && (
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => setCreateModalOpen(true)}
+                className="text-xs h-9 px-4 font-sans gap-1.5"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Create Book</span>
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Toolbar: Filter Tabs, Language Selector & Search */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="flex items-center gap-1 border-b border-border sm:border-b-0 pb-2 sm:pb-0">
-            {(['all', 'published', 'draft'] as FilterTab[]).map((tab) => (
+            {(isAuthenticated ? (['all', 'published', 'draft'] as FilterTab[]) : (['all', 'published'] as FilterTab[])).map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -366,22 +370,24 @@ function BooksLibraryPage() {
                         )}
                       </button>
 
-                      <DeleteConfirmPopover
-                        onConfirm={async () => {
-                          await removeBook({ id: book._id })
-                        }}
-                        title="Delete this book?"
-                        description={`"${book.title}" and all its chapters will be permanently removed.`}
-                        align="left"
-                      >
-                        <button
-                          type="button"
-                          className="p-2 text-xs text-muted-foreground hover:text-destructive rounded hover:bg-muted transition-colors"
-                          title="Delete Book"
+                      {isAuthenticated && (
+                        <DeleteConfirmPopover
+                          onConfirm={async () => {
+                            await removeBook({ id: book._id })
+                          }}
+                          title="Delete this book?"
+                          description={`"${book.title}" and all its chapters will be permanently removed.`}
+                          align="left"
                         >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </DeleteConfirmPopover>
+                          <button
+                            type="button"
+                            className="p-2 text-xs text-muted-foreground hover:text-destructive rounded hover:bg-muted transition-colors"
+                            title="Delete Book"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </DeleteConfirmPopover>
+                      )}
                     </div>
 
                     <Link to="/books/$id" params={{ id: book._id as any }}>

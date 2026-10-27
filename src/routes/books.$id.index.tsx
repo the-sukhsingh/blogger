@@ -15,6 +15,7 @@ import {
   Sliders,
 } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
+import { useConvexAuth } from '@convex-dev/auth/react'
 import { api } from '../../convex/_generated/api'
 import { Navbar } from '#/components/navbar'
 import { Footer } from '#/components/footer'
@@ -35,6 +36,7 @@ export const Route = createFileRoute('/books/$id/')({
 function BookDetailPage() {
   const { id } = Route.useParams()
   const navigate = useNavigate()
+  const { isAuthenticated } = useConvexAuth()
 
   const book = useQuery(api.books.get, { id: id as any })
   const updateBook = useMutation(api.books.update)
@@ -196,19 +198,21 @@ function BookDetailPage() {
               </Button>
             </Link>
 
-            <DeleteConfirmPopover
-              onConfirm={async () => {
-                await removeBook({ id: book._id })
-                navigate({ to: '/books' })
-              }}
-              title="Delete this entire book?"
-              description={`"${book.title}" and all its chapters will be permanently deleted.`}
-              align="right"
-            >
-              <Button variant="ghost" size="sm" className="text-xs h-8 px-2 text-destructive hover:text-destructive">
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </DeleteConfirmPopover>
+            {isAuthenticated && (
+              <DeleteConfirmPopover
+                onConfirm={async () => {
+                  await removeBook({ id: book._id })
+                  navigate({ to: '/books' })
+                }}
+                title="Delete this entire book?"
+                description={`"${book.title}" and all its chapters will be permanently deleted.`}
+                align="right"
+              >
+                <Button variant="ghost" size="sm" className="text-xs h-8 px-2 text-destructive hover:text-destructive">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </DeleteConfirmPopover>
+            )}
           </div>
         </div>
 
@@ -233,13 +237,15 @@ function BookDetailPage() {
               )}
             </div>
 
-            <button
-              onClick={() => setEditMetaModalOpen(true)}
-              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 font-mono transition-colors"
-            >
-              <Sliders className="h-3.5 w-3.5" />
-              <span>Edit Details</span>
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => setEditMetaModalOpen(true)}
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 font-mono transition-colors"
+              >
+                <Sliders className="h-3.5 w-3.5" />
+                <span>Edit Details</span>
+              </button>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -282,14 +288,16 @@ function BookDetailPage() {
               </p>
             </div>
 
-            <Button
-              onClick={() => setAddChapterModalOpen(true)}
-              size="sm"
-              className="text-xs h-8 px-3 gap-1.5 font-sans"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add Chapter</span>
-            </Button>
+            {isAuthenticated && (
+              <Button
+                onClick={() => setAddChapterModalOpen(true)}
+                size="sm"
+                className="text-xs h-8 px-3 gap-1.5 font-sans"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add Chapter</span>
+              </Button>
+            )}
           </div>
 
           {chapters.length === 0 ? (
@@ -345,52 +353,66 @@ function BookDetailPage() {
                     </div>
 
                     <div className="flex items-center gap-1.5 self-end sm:self-center">
-                      <button
-                        type="button"
-                        onClick={() => handleMoveChapter(idx, 'up')}
-                        disabled={idx === 0}
-                        title="Move Up"
-                        className="p-1.5 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                      >
-                        <ArrowUp className="h-3.5 w-3.5" />
-                      </button>
+                      {isAuthenticated ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveChapter(idx, 'up')}
+                            disabled={idx === 0}
+                            title="Move Up"
+                            className="p-1.5 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                          >
+                            <ArrowUp className="h-3.5 w-3.5" />
+                          </button>
 
-                      <button
-                        type="button"
-                        onClick={() => handleMoveChapter(idx, 'down')}
-                        disabled={idx === chapters.length - 1}
-                        title="Move Down"
-                        className="p-1.5 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                      >
-                        <ArrowDown className="h-3.5 w-3.5" />
-                      </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveChapter(idx, 'down')}
+                            disabled={idx === chapters.length - 1}
+                            title="Move Down"
+                            className="p-1.5 rounded border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                          >
+                            <ArrowDown className="h-3.5 w-3.5" />
+                          </button>
 
-                      <Link
-                        to="/books/$id/chapters/$chapterId"
-                        params={{ id: book._id as any, chapterId: chapter._id as any }}
-                      >
-                        <Button variant="outline" size="sm" className="text-xs h-7 px-2.5 gap-1">
-                          <Edit3 className="h-3 w-3" />
-                          <span>Edit</span>
-                        </Button>
-                      </Link>
+                          <Link
+                            to="/books/$id/chapters/$chapterId"
+                            params={{ id: book._id as any, chapterId: chapter._id as any }}
+                          >
+                            <Button variant="outline" size="sm" className="text-xs h-7 px-2.5 gap-1">
+                              <Edit3 className="h-3 w-3" />
+                              <span>Edit</span>
+                            </Button>
+                          </Link>
 
-                      <DeleteConfirmPopover
-                        onConfirm={async () => {
-                          await deleteChapter({ id: chapter._id })
-                        }}
-                        title="Delete chapter?"
-                        description={`"${chapter.title}" will be permanently removed.`}
-                        align="right"
-                      >
-                        <button
-                          type="button"
-                          className="p-1.5 rounded text-muted-foreground hover:text-destructive transition-colors"
-                          title="Delete Chapter"
+                          <DeleteConfirmPopover
+                            onConfirm={async () => {
+                              await deleteChapter({ id: chapter._id })
+                            }}
+                            title="Delete chapter?"
+                            description={`"${chapter.title}" will be permanently removed.`}
+                            align="right"
+                          >
+                            <button
+                              type="button"
+                              className="p-1.5 rounded text-muted-foreground hover:text-destructive transition-colors"
+                              title="Delete Chapter"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </DeleteConfirmPopover>
+                        </>
+                      ) : (
+                        <Link
+                          to="/books/$id/preview"
+                          params={{ id: book._id as any }}
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </DeleteConfirmPopover>
+                          <Button variant="outline" size="sm" className="text-xs h-7 px-2.5 gap-1">
+                            <BookOpen className="h-3 w-3" />
+                            <span>Read</span>
+                          </Button>
+                        </Link>
+                      )}
                     </div>
                   </div>
                 )
