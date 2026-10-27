@@ -1,29 +1,21 @@
 import * as React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Navbar } from '#/components/navbar'
-import { PageHeader } from '#/components/page-header'
+import { Footer } from '#/components/footer'
 import { Button } from '#/components/ui/button'
 import {
   BookOpen,
-  Code2,
-  FolderGit2,
-  Sparkles,
-  Search,
-  CheckCircle2,
-  Copy,
-  Check,
-  ChevronRight,
-  ExternalLink,
-  Layers,
-  Terminal,
-  Zap,
-  ArrowRight,
-  ArrowLeft,
-  Key,
-  Database,
+  Printer,
+  Share2,
   FileText,
-  Compass,
+  Search,
+  Check,
+  Copy,
+  ArrowRight,
+  Globe,
 } from 'lucide-react'
+import { TRIM_SIZE_SPECS, SUPPORTED_LANGUAGES } from '#/lib/book-store'
+import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/docs')({
   component: DocsPage,
@@ -33,14 +25,13 @@ interface DocSection {
   id: string
   title: string
   category: string
-  badge?: string
   summary: string
   toc: { id: string; label: string }[]
   content: React.ReactNode
 }
 
 export function DocsPage() {
-  const [activeSectionId, setActiveSectionId] = React.useState('getting-started')
+  const [activeSectionId, setActiveSectionId] = React.useState('introduction')
   const [searchQuery, setSearchQuery] = React.useState('')
   const [copiedId, setCopiedId] = React.useState<string | null>(null)
   const searchInputRef = React.useRef<HTMLInputElement>(null)
@@ -51,672 +42,364 @@ export function DocsPage() {
     setTimeout(() => setCopiedId(null), 2000)
   }
 
-  // Keyboard shortcut to focus search
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) && document.activeElement !== searchInputRef.current) {
-        e.preventDefault()
-        searchInputRef.current?.focus()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
-
   const sections: DocSection[] = [
     {
-      id: 'getting-started',
+      id: 'introduction',
       category: 'Overview',
-      title: 'Introduction to Beelog',
-      badge: 'Core',
-      summary: 'Beelog is an AI-native publishing workspace that treats a technical blog like a production codebase.',
+      title: 'Introduction to Beelog Press',
+      summary: 'A quiet, distraction-free publishing workspace for authors to write multi-chapter books, articles, and format print-ready PDFs.',
       toc: [
-        { id: 'philosophy', label: 'Core Philosophy' },
-        { id: 'git-first', label: 'Git-Friendly Workflow' },
-        { id: 'three-pillars', label: 'Three Pillars' },
+        { id: 'vision', label: 'Product Vision' },
+        { id: 'core-tenets', label: 'Core Tenets' },
       ],
       content: (
-        <div className="space-y-8 text-[15px] leading-relaxed text-muted-foreground">
+        <div className="space-y-6 text-sm leading-relaxed text-muted-foreground">
           <p>
-            <strong className="text-foreground font-semibold">Beelog is not another CMS.</strong>{' '}
-            It is an AI-powered publishing workspace designed for developers, engineering teams, and technical writers who maintain Markdown/MDX blogs. Instead of demanding database migrations or proprietary themes, Beelog sits above your existing workflow.
+            <strong className="text-foreground font-semibold">Beelog Press</strong> is a purposeful publishing environment built for authors, technical writers, and researchers. Unlike complex content management systems loaded with unnecessary widgets and popups, Beelog prioritizes calm typography, clean whitespace, and long-form writing flow.
           </p>
 
-          <div id="philosophy" className="border-l-2 border-amber-500 pl-4 py-1.5 space-y-1 bg-amber-500/[0.04] rounded-r-[8px]">
-            <div className="flex items-center gap-2 text-foreground font-semibold text-[13px]">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              The Central Premise
-            </div>
-            <p className="text-[13px] text-muted-foreground leading-relaxed">
-              A codebase has Git branches, review diffs, linters, automated tests, and CI/CD pipelines. A technical blog requires the same discipline: content intelligence, gap discovery, answer engine optimization (AEO), and automated freshness tracking.
+          <div id="vision" className="border-l-2 border-foreground pl-4 py-1 space-y-1">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Words over Widgets
+            </h4>
+            <p className="text-xs leading-relaxed">
+              Whether you are writing a 300-page computer science monograph, a collection of technical essays, or a handbook in Spanish, Beelog gives you structured chapter management and precision print formatting.
             </p>
           </div>
 
-          <div id="git-first" className="space-y-3 pt-2">
-            <h3 className="text-lg font-sans font-bold text-foreground">
-              Git-Friendly, Not Git-Hostile
-            </h3>
-            <p>
-              Traditional publishing platforms force you to migrate your content into their locked database. Beelog respects your source of truth:
-            </p>
+          <div id="core-tenets" className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div className="p-4 rounded-lg border border-border bg-card space-y-1.5">
+              <span className="font-mono text-[10px] uppercase font-semibold text-foreground">
+                01 · Multi-Chapter
+              </span>
+              <h5 className="font-serif text-sm font-medium text-foreground">Books & Essays</h5>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Organize full manuscripts with sequenced chapters and seamless reordering.
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-              <div className="p-4 rounded-[10px] bg-muted/40 border border-border/80 space-y-1.5">
-                <div className="text-[10px] font-mono font-bold uppercase text-amber-600 dark:text-amber-400">
-                  01. Connect
-                </div>
-                <h4 className="text-sm font-semibold text-foreground">Your Markdown Repo</h4>
-                <p className="text-[12px] text-muted-foreground">
-                  Works with Astro, Next.js, Hugo, Docusaurus, or any Git repository.
-                </p>
-              </div>
+            <div className="p-4 rounded-lg border border-border bg-card space-y-1.5">
+              <span className="font-mono text-[10px] uppercase font-semibold text-foreground">
+                02 · Multilingual
+              </span>
+              <h5 className="font-serif text-sm font-medium text-foreground">Any Language</h5>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Native support for Latin, Cyrillic, CJK, and right-to-left scripts like Arabic and Hebrew.
+              </p>
+            </div>
 
-              <div className="p-4 rounded-[10px] bg-muted/40 border border-border/80 space-y-1.5">
-                <div className="text-[10px] font-mono font-bold uppercase text-amber-600 dark:text-amber-400">
-                  02. Review
-                </div>
-                <h4 className="text-sm font-semibold text-foreground">AI Review Diffs</h4>
-                <p className="text-[12px] text-muted-foreground">
-                  AI suggestions are rendered as Git diffs. Author retains final editorial control.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-[10px] bg-muted/40 border border-border/80 space-y-1.5">
-                <div className="text-[10px] font-mono font-bold uppercase text-amber-600 dark:text-amber-400">
-                  03. Publish
-                </div>
-                <h4 className="text-sm font-semibold text-foreground">Convex & REST API</h4>
-                <p className="text-[12px] text-muted-foreground">
-                  Sync changes instantly or query articles dynamically via authenticated endpoints.
-                </p>
-              </div>
+            <div className="p-4 rounded-lg border border-border bg-card space-y-1.5">
+              <span className="font-mono text-[10px] uppercase font-semibold text-foreground">
+                03 · Print PDFs
+              </span>
+              <h5 className="font-serif text-sm font-medium text-foreground">POD Formatting</h5>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                KDP and IngramSpark compliant trim sizes, spine gutters, and pagination.
+              </p>
             </div>
           </div>
         </div>
       ),
     },
     {
-      id: 'quickstart',
-      category: 'Overview',
-      title: 'Quickstart Guide',
-      badge: '5 Min',
-      summary: 'Get Beelog running locally in minutes and connect to your Convex deployment.',
+      id: 'books-guide',
+      category: 'Books',
+      title: 'Writing Books & Chapters',
+      summary: 'How to structure multi-chapter manuscripts, reorder chapters, and draft in any language.',
       toc: [
-        { id: 'install', label: '1. Dependencies & Convex' },
-        { id: 'dev-server', label: '2. Start Local App' },
-        { id: 'seed', label: '3. Seed Articles' },
+        { id: 'creating-books', label: 'Creating a Book' },
+        { id: 'managing-chapters', label: 'Managing & Reordering Chapters' },
+        { id: 'multilingual-support', label: 'Multilingual & RTL Support' },
       ],
       content: (
-        <div className="space-y-6 text-[15px] leading-relaxed text-muted-foreground">
+        <div className="space-y-6 text-sm leading-relaxed text-muted-foreground">
           <p>
-            Follow this 3-step setup to launch the local editing workspace and reactive Convex backend.
+            The Books studio lets you maintain multiple independent books simultaneously. Each book has its own metadata, chapter hierarchy, language settings, and print specifications.
           </p>
 
-          <div className="space-y-5">
-            <div id="install" className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-foreground font-semibold">1. Install dependencies & launch Convex</span>
-                <button
-                  type="button"
-                  onClick={() => handleCopy('npm install\nnpx convex dev', 'code-qs-1')}
-                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
-                >
-                  {copiedId === 'code-qs-1' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                  {copiedId === 'code-qs-1' ? 'Copied' : 'Copy'}
-                </button>
-              </div>
-              <pre className="p-3.5 rounded-[10px] bg-muted/50 border border-border font-mono text-xs text-foreground overflow-x-auto">
-{`npm install
-npx convex dev`}
-              </pre>
-            </div>
-
-            <div id="dev-server" className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-foreground font-semibold">2. Start development server</span>
-                <button
-                  type="button"
-                  onClick={() => handleCopy('npm run dev -- --port 3001', 'code-qs-2')}
-                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
-                >
-                  {copiedId === 'code-qs-2' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                  {copiedId === 'code-qs-2' ? 'Copied' : 'Copy'}
-                </button>
-              </div>
-              <pre className="p-3.5 rounded-[10px] bg-muted/50 border border-border font-mono text-xs text-foreground overflow-x-auto">
-{`npm run dev -- --port 3001`}
-              </pre>
-            </div>
-
-            <div id="seed" className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-foreground font-semibold">3. Seed initial technical articles</span>
-                <button
-                  type="button"
-                  onClick={() => handleCopy('npx convex run blogs:seed \'{"force":true}\'', 'code-qs-3')}
-                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
-                >
-                  {copiedId === 'code-qs-3' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                  {copiedId === 'code-qs-3' ? 'Copied' : 'Copy'}
-                </button>
-              </div>
-              <pre className="p-3.5 rounded-[10px] bg-muted/50 border border-border font-mono text-xs text-foreground overflow-x-auto">
-{`npx convex run blogs:seed '{"force":true}'`}
-              </pre>
-            </div>
+          <div id="creating-books" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              1. Creating a New Book
+            </h4>
+            <p>
+              Navigate to <Link to="/books" className="text-foreground underline">Books</Link> and click <strong>Create Book</strong>. Enter your title, author name, language, and initial trim size. Beelog will automatically generate Chapter 1 to start your draft.
+            </p>
           </div>
 
-          <div className="pt-2 flex items-center gap-3">
-            <Link
-              to="/blog/new"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-[8px] bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs transition-colors shadow-xs"
-            >
-              Open Editor <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-            <Link
-              to="/blogs"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-[8px] bg-muted hover:bg-muted/80 text-foreground text-xs transition-colors"
-            >
-              Browse Articles
+          <div id="managing-chapters" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              2. Managing & Reordering Chapters
+            </h4>
+            <p>
+              Inside any book's overview, you can add new chapters with a single click. Use the up and down arrow controls to adjust the sequential order of chapters. The sequence updates instantly across the table of contents and print sheets.
+            </p>
+          </div>
+
+          <div id="multilingual-support" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              3. Multilingual & RTL Support
+            </h4>
+            <p>
+              Books can be authored in any language. When creating or editing a book, selecting Arabic, Hebrew, or Persian automatically sets text direction to Right-to-Left (<code>dir="rtl"</code>), adjusting alignment, indentation, and navigation controls.
+            </p>
+          </div>
+
+          <div className="pt-2">
+            <Link to="/books">
+              <Button size="sm" className="text-xs h-8 px-3 font-sans gap-1">
+                <span>Open Books Studio</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
             </Link>
           </div>
         </div>
       ),
     },
     {
-      id: 'writing-workspace',
-      category: 'Editor',
-      title: 'Writing Workspace & Diffs',
-      badge: 'Editor',
-      summary: 'A minimalist, typography-first markdown editor with keyboard slash commands and AI diff reviews.',
+      id: 'print-formatting',
+      category: 'Print PDF',
+      title: 'Print-on-Demand & PDF Formatting',
+      summary: 'Specifications for 6"x9" trade paperbacks, spine binding gutters, typography, and browser printing.',
       toc: [
-        { id: 'slash-commands', label: 'Slash Commands' },
-        { id: 'diff-rule', label: 'Human-in-the-Loop Diffs' },
+        { id: 'trim-sizes', label: 'Standard Trim Sizes' },
+        { id: 'gutters', label: 'Margins & Spine Gutters' },
+        { id: 'typography-rules', label: 'Interior Typography Rules' },
+        { id: 'export-pdf', label: 'Exporting to PDF' },
       ],
       content: (
-        <div className="space-y-6 text-[15px] leading-relaxed text-muted-foreground">
+        <div className="space-y-6 text-sm leading-relaxed text-muted-foreground">
           <p>
-            The writing experience is distraction-free, optimized for long-form technical prose and code snippets.
+            Formatting a book for Print-on-Demand (POD) platforms like Amazon KDP or IngramSpark requires strict adherence to physical page dimensions and spine margins.
           </p>
 
-          <div id="slash-commands" className="space-y-3">
-            <h3 className="text-lg font-sans font-bold text-foreground">
-              Slash Commands
-            </h3>
-            <p>
-              Type <code className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs text-foreground">/</code> on a blank line to insert blocks:
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-              <div className="p-3 rounded-[8px] bg-muted/30 border border-border space-y-1">
-                <span className="font-mono text-amber-600 dark:text-amber-400 font-bold">/code</span>
-                <p className="text-muted-foreground text-[11px]">
-                  Syntax-highlighted code block with language dropdown.
-                </p>
-              </div>
-              <div className="p-3 rounded-[8px] bg-muted/30 border border-border space-y-1">
-                <span className="font-mono text-amber-600 dark:text-amber-400 font-bold">/callout</span>
-                <p className="text-muted-foreground text-[11px]">
-                  Highlight technical caveats, RFC notes, or warnings.
-                </p>
-              </div>
-              <div className="p-3 rounded-[8px] bg-muted/30 border border-border space-y-1">
-                <span className="font-mono text-amber-600 dark:text-amber-400 font-bold">/aeo-verify</span>
-                <p className="text-muted-foreground text-[11px]">
-                  Audit answer extractability and definition placement.
-                </p>
-              </div>
-              <div className="p-3 rounded-[8px] bg-muted/30 border border-border space-y-1">
-                <span className="font-mono text-amber-600 dark:text-amber-400 font-bold">/diff-review</span>
-                <p className="text-muted-foreground text-[11px]">
-                  Generate an AI revision formatted cleanly as accept/reject diffs.
-                </p>
-              </div>
+          <div id="trim-sizes" className="space-y-3">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Standard Trim Sizes
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+              {Object.entries(TRIM_SIZE_SPECS).map(([k, spec]) => (
+                <div key={k} className="p-3 rounded border border-border bg-card space-y-1">
+                  <span className="font-semibold text-foreground">{spec.name}</span>
+                  <p className="text-muted-foreground">{spec.label} · {spec.description}</p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div id="diff-rule" className="space-y-2 pt-2">
-            <h3 className="text-lg font-sans font-bold text-foreground">
-              The Diff Review Rule
-            </h3>
+          <div id="gutters" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Spine Gutters & Facing Pages
+            </h4>
             <p>
-              Beelog strictly enforces: <strong className="text-foreground font-semibold">AI proposes. Author decides.</strong> No AI suggestion is ever applied silently. Every modification appears in the Review tab as a visual Git diff so you verify technical accuracy.
+              Because physical books are bound at the spine, inner margins must be wider than outer margins. Beelog uses CSS Paged Media (<code>@page :left</code> and <code>@page :right</code>) to mirror margins automatically:
+            </p>
+            <ul className="list-disc ml-6 space-y-1 text-xs">
+              <li><strong>Left Page (Verso):</strong> Inner binding gutter sits on the right.</li>
+              <li><strong>Right Page (Recto):</strong> Inner binding gutter sits on the left.</li>
+              <li><strong>Gutter recommendations:</strong> 0.625" to 0.75" for books up to 300 pages; 0.875" for 400+ pages.</li>
+            </ul>
+          </div>
+
+          <div id="typography-rules" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Interior Typography Rules
+            </h4>
+            <ul className="list-disc ml-6 space-y-1 text-xs">
+              <li><strong>Font Choice:</strong> Standard serif (Lora / Georgia) at 10.5pt to 11.5pt.</li>
+              <li><strong>Leading / Line Spacing:</strong> 115% to 125% of font size for optimal eye tracking without fatigue.</li>
+              <li><strong>Paragraph Indent:</strong> Traditional first-line indent of 0.25" with 0pt space between paragraphs.</li>
+              <li><strong>Chapters:</strong> Start on right-hand (odd) pages with running headers indicating book title on verso and chapter title on recto.</li>
+            </ul>
+          </div>
+
+          <div id="export-pdf" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Exporting to Print PDF
+            </h4>
+            <p>
+              Open any book's print layout, adjust the sliders for font size, trim size, and spine gutter, then click <strong>Print / Save PDF</strong>. In your browser's print dialog, select <em>"Save as PDF"</em> and set Margins to <em>"None"</em> so the stylesheet's exact dimensions are preserved.
             </p>
           </div>
         </div>
       ),
     },
     {
-      id: 'aeo-intelligence',
-      category: 'Intelligence',
-      title: 'Answer Engine Optimization (AEO)',
-      badge: 'AEO',
-      summary: 'Ensure your articles are accurately cited, extracted, and summarized by LLM answer engines.',
+      id: 'sharing-feedback',
+      category: 'Sharing',
+      title: 'Sharing Over Link & Reader Modes',
+      summary: 'Generate private preview links for editors and customize reader themes.',
       toc: [
-        { id: 'why-aeo', label: 'Why AEO Matters' },
-        { id: 'checklist', label: 'Audit Checklist' },
+        { id: 'share-links', label: 'Private Share Links' },
+        { id: 'reader-modes', label: 'Reader Themes & Sizing' },
       ],
       content: (
-        <div className="space-y-6 text-[15px] leading-relaxed text-muted-foreground">
-          <p id="why-aeo">
-            Modern engineers increasingly discover technical content via answer engines like Perplexity, ChatGPT Search, Claude Artifacts, and Google Gemini. AEO audits your writing for answer extractability.
+        <div className="space-y-6 text-sm leading-relaxed text-muted-foreground">
+          <p>
+            Feedback is essential when drafting a book. Rather than exporting loose files and emailing attachments, Beelog lets you share a private web link with editors, beta readers, or colleagues.
           </p>
 
-          <div id="checklist" className="space-y-3">
-            <h3 className="text-lg font-sans font-bold text-foreground">
-              What the AEO Engine Audits
-            </h3>
-
-            <div className="space-y-2.5">
-              <div className="flex items-start gap-2.5 p-3 rounded-[8px] bg-muted/30 border border-border text-xs">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                <div>
-                  <strong className="text-foreground block font-semibold">Early Definition Placement</strong>
-                  <span className="text-muted-foreground">
-                    Primary concepts must be defined in the opening 200 words rather than buried in implementation steps.
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5 p-3 rounded-[8px] bg-muted/30 border border-border text-xs">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                <div>
-                  <strong className="text-foreground block font-semibold">Entity Disambiguation</strong>
-                  <span className="text-muted-foreground">
-                    Explicit naming of libraries, RFC specs, protocols, and exact version requirements.
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5 p-3 rounded-[8px] bg-muted/30 border border-border text-xs">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                <div>
-                  <strong className="text-foreground block font-semibold">Intent-Oriented Headings</strong>
-                  <span className="text-muted-foreground">
-                    Headers phrased as direct developer questions (e.g. &quot;How do I configure session cookies?&quot;).
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: 'content-graph',
-      category: 'Intelligence',
-      title: 'Knowledge Graph & Freshness',
-      badge: 'Audits',
-      summary: 'Map conceptual connections across your publication and automatically catch outdated technical claims.',
-      toc: [
-        { id: 'clustering', label: 'Topic Clusters' },
-        { id: 'stale-detection', label: 'Stale Claims Agent' },
-      ],
-      content: (
-        <div className="space-y-6 text-[15px] leading-relaxed text-muted-foreground">
-          <p id="clustering">
-            Beelog models your publication as a connected knowledge graph. When you draft a new article, it automatically recommends internal links and prevents near-duplicate content overlap.
-          </p>
-
-          <pre className="p-3.5 rounded-[10px] bg-muted/50 border border-border font-mono text-xs text-foreground overflow-x-auto leading-relaxed">
-{`AI Agents (Cluster)
-├── Model Context Protocol (MCP) [Article: /blog/mcp-server-architecture]
-│   └── Transport Handlers (Concept)
-│       └── STDIO vs SSE (Link suggested to WebSocket guide)
-└── Vector DB RAG Pipeline [Article: /blog/rag-embeddings-guide]
-    └── Embeddings Chunking (Concept)`}
-          </pre>
-
-          <div id="stale-detection" className="space-y-2 pt-2">
-            <h3 className="text-lg font-sans font-bold text-foreground">
-              Automated Freshness Monitoring
-            </h3>
+          <div id="share-links" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Private Share Links
+            </h4>
             <p>
-              The Content Health Agent periodically evaluates published posts for broken API endpoints, superseded npm/cargo packages, and changed specifications, creating actionable refresh notices.
+              Every book has a unique, cryptographically random share token (e.g. <code>/share/xyz123</code>). Anyone with this link can read your manuscript directly in their browser without creating an account. You can enable, disable, or regenerate the link at any time from the book overview.
             </p>
           </div>
+
+          <div id="reader-modes" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Reader Themes & Sizing
+            </h4>
+            <p>
+              Both public share links and the preview studio offer custom reading modes:
+            </p>
+            <ul className="list-disc ml-6 space-y-1 text-xs">
+              <li><strong>Light Theme:</strong> Crisp paper-white reading.</li>
+              <li><strong>Sepia Theme:</strong> Warm amber canvas for reduced eye fatigue during long reading sessions.</li>
+              <li><strong>Dark Theme:</strong> Deep charcoal background with soft off-white typography.</li>
+              <li><strong>Type Scaling:</strong> Adjustable font sizing (A- / A+) and serif/sans/mono switching.</li>
+            </ul>
+          </div>
         </div>
       ),
     },
     {
-      id: 'convex-backend',
-      category: 'Architecture',
-      title: 'Convex Database & Schema',
-      badge: 'Database',
-      summary: 'Reactive TypeScript database with real-time updates, auth sessions, and indexed article storage.',
+      id: 'articles-guide',
+      category: 'Articles',
+      title: 'Writing Technical Articles & Essays',
+      summary: 'Using the distraction-free visual and markdown canvas for standalone technical articles.',
       toc: [
-        { id: 'schema-def', label: 'Schema Definition' },
-        { id: 'indexing', label: 'Index Optimization' },
+        { id: 'visual-markdown', label: 'Visual vs Markdown Mode' },
+        { id: 'import-export', label: 'Importing & Backing Up' },
       ],
       content: (
-        <div className="space-y-6 text-[15px] leading-relaxed text-muted-foreground">
-          <p id="schema-def">
-            Beelog persists content reactively using Convex. Every change is validated with 100% type-safety:
+        <div className="space-y-6 text-sm leading-relaxed text-muted-foreground">
+          <p>
+            In addition to multi-chapter books, Beelog provides a dedicated editor for standalone technical essays, documentation, and blog posts.
           </p>
 
-          <pre className="p-3.5 rounded-[10px] bg-muted/50 border border-border font-mono text-xs text-foreground overflow-x-auto leading-relaxed">
-{`// convex/schema.ts
-blogs: defineTable({
-  title: v.string(),
-  slug: v.string(),
-  content: v.string(),
-  excerpt: v.optional(v.string()),
-  status: v.union(v.literal("draft"), v.literal("published")),
-  topics: v.optional(v.array(v.string())),
-  author: v.optional(v.string()),
-  authorId: v.optional(v.id("users")),
-  publishedAt: v.optional(v.number()),
-  updatedAt: v.optional(v.number()),
-  readingTime: v.optional(v.string()),
-})
-  .index("by_slug", ["slug"])
-  .index("by_status", ["status"])
-  .index("by_status_and_publishedAt", ["status", "publishedAt"])`}
-          </pre>
-        </div>
-      ),
-    },
-    {
-      id: 'api-reference',
-      category: 'Architecture',
-      title: 'REST API & Integrations',
-      badge: 'REST',
-      summary: 'Query your published articles via authenticated HTTP endpoints on your custom website.',
-      toc: [
-        { id: 'api-endpoints', label: 'API Endpoints' },
-        { id: 'auth-headers', label: 'Authentication' },
-        { id: 'frameworks', label: 'Framework Examples' },
-      ],
-      content: (
-        <div className="space-y-6 text-[15px] leading-relaxed text-muted-foreground">
-          <p id="api-endpoints">
-            Integrate your Beelog articles into your personal Astro, Next.js, or Hugo site. Manage credentials in the{' '}
-            <Link to="/integrations" className="text-amber-500 font-semibold underline hover:text-amber-600">
-              Integrations Dashboard
-            </Link>.
-          </p>
-
-          <div id="auth-headers" className="space-y-2">
-            <span className="text-xs font-mono font-semibold text-foreground">
-              GET /api/v1/blogs
-            </span>
-            <pre className="p-3.5 rounded-[10px] bg-muted/50 border border-border font-mono text-xs text-foreground overflow-x-auto">
-{`curl -X GET 'https://quick-mole-268.convex.site/api/v1/blogs?status=published' \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json"`}
-            </pre>
+          <div id="visual-markdown" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Visual vs Markdown Source Mode
+            </h4>
+            <p>
+              Switch freely between a Notion-style rich text canvas (with headings, code blocks, and blockquotes) and raw Markdown source. Your content remains clean plain-text underneath.
+            </p>
           </div>
 
-          <div id="frameworks" className="space-y-2">
-            <span className="text-xs font-mono font-semibold text-foreground">
-              Astro / Next.js Fetch Snippet
-            </span>
-            <pre className="p-3.5 rounded-[10px] bg-muted/50 border border-border font-mono text-xs text-foreground overflow-x-auto leading-relaxed">
-{`const res = await fetch('https://quick-mole-268.convex.site/api/v1/blogs', {
-  headers: {
-    'Authorization': \`Bearer \${process.env.BEELOG_API_KEY}\`,
-  },
-  next: { revalidate: 60 } // Next.js ISR
-});
-
-const { data: articles } = await res.json();`}
-            </pre>
+          <div id="import-export" className="space-y-2">
+            <h4 className="font-serif text-base font-medium text-foreground">
+              Importing & Backing Up
+            </h4>
+            <p>
+              You can import existing <code>.md</code> files directly into your archive, or export your entire publication archive as a clean JSON backup with a single click.
+            </p>
           </div>
         </div>
       ),
     },
   ]
 
-  const filteredSections = sections.filter(
-    (s) =>
-      s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.category.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  // Filter sections by search query
+  const filteredSections = React.useMemo(() => {
+    if (!searchQuery.trim()) return sections
+    const q = searchQuery.toLowerCase()
+    return sections.filter(
+      (s) =>
+        s.title.toLowerCase().includes(q) ||
+        s.summary.toLowerCase().includes(q) ||
+        s.category.toLowerCase().includes(q)
+    )
+  }, [sections, searchQuery])
 
   const activeSection =
     sections.find((s) => s.id === activeSectionId) || sections[0]
 
-  const categories = Array.from(new Set(sections.map((s) => s.category)))
-
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
       <Navbar />
 
-      <main className="flex-1 max-w-[1120px] w-full mx-auto px-6 py-12 space-y-8">
-        {/* =================================================================
-            1. REFINED EDITORIAL HEADER (MATCHING /blogs)
-            ================================================================= */}
-        <PageHeader
-          eyebrow="DOCUMENTATION & GUIDES"
-          title={
-            <>
-              System architecture &{' '}
-              <span className="italic font-normal">reference</span>.
-            </>
-          }
-          description="Architecture documentation, Git-first workflows, and REST API integration guides for running Beelog with your custom publication."
-          stats={
-            <>
-              <span>{sections.length} guides</span>
-              <span>·</span>
-              <span className="text-[#5ea500]">Git-first</span>
-              <span>·</span>
-              <span className="text-[#d97757]">v1.0 API</span>
-            </>
-          }
-          actions={
-            <>
-              <Link to="/integrations">
-                <Button variant="outline" size="sm">
-                  <Key className="h-3.5 w-3.5" />
-                  <span>API Keys</span>
-                </Button>
-              </Link>
-              <Link to="/blogs">
-                <Button variant="default" size="sm">
-                  <BookOpen className="h-3.5 w-3.5" />
-                  <span>Browse Articles</span>
-                </Button>
-              </Link>
-            </>
-          }
-        />
+      <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-12 sm:py-16 space-y-10">
+        {/* Header */}
+        <div className="space-y-3 pb-6 border-b border-border">
+          <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            Documentation & Standards
+          </span>
+          <h1 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-foreground">
+            Publishing Guide
+          </h1>
+          <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
+            Everything you need to know about authoring books, managing chapters, adjusting print PDF specifications, and sharing manuscripts.
+          </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Left Navigation Sidebar */}
-          <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-20">
-            {/* Minimal Search Bar */}
+          {/* Search Bar */}
+          <div className="pt-2 max-w-md">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Search docs... (/)"
+                placeholder="Search documentation..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-[8px] bg-muted/50 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber-500 focus:bg-background transition-colors"
+                className="w-full pl-9 pr-3 py-2 text-xs rounded border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground"
               />
             </div>
+          </div>
+        </div>
 
-            {/* Navigation Category Groups */}
-            <nav className="space-y-5">
-              {categories.map((category) => {
-                const categorySections = filteredSections.filter(
-                  (s) => s.category === category
-                )
-                if (categorySections.length === 0) return null
-
-                return (
-                  <div key={category} className="space-y-1">
-                    <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground/80 px-2.5">
-                      {category}
-                    </div>
-                    <div className="space-y-0.5">
-                      {categorySections.map((section) => {
-                        const isActive = section.id === activeSection.id
-                        return (
-                          <button
-                            key={section.id}
-                            type="button"
-                            onClick={() => {
-                              setActiveSectionId(section.id)
-                              window.scrollTo({ top: 0, behavior: 'smooth' })
-                            }}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-[6px] text-xs transition-colors flex items-center justify-between ${
-                              isActive
-                                ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
-                            }`}
-                          >
-                            <span className="truncate">{section.title}</span>
-                            {section.badge && (
-                              <span
-                                className={`text-[10px] font-mono px-1 py-0.2 rounded ${
-                                  isActive
-                                    ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 font-semibold'
-                                    : 'text-muted-foreground'
-                                }`}
-                              >
-                                {section.badge}
-                              </span>
-                            )}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              })}
+        {/* Documentation Layout: Sidebar + Content */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
+          {/* Left Navigation */}
+          <aside className="md:col-span-4 space-y-2 border-r border-border pr-6">
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground block mb-2">
+              Sections
+            </span>
+            <nav className="space-y-1 text-xs font-mono">
+              {filteredSections.map((sec) => (
+                <button
+                  key={sec.id}
+                  onClick={() => setActiveSectionId(sec.id)}
+                  className={cn(
+                    'w-full text-left p-2.5 rounded transition-colors block',
+                    activeSectionId === sec.id
+                      ? 'bg-muted text-foreground font-semibold'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                  )}
+                >
+                  <span className="text-[10px] text-muted-foreground uppercase block font-sans">
+                    {sec.category}
+                  </span>
+                  <span>{sec.title}</span>
+                </button>
+              ))}
             </nav>
-
-            {/* Quick Links */}
-            <div className="pt-4 border-t border-border space-y-2 text-xs">
-              <div className="text-[10px] font-mono uppercase text-muted-foreground/80 font-bold px-2.5">
-                Quick Shortcuts
-              </div>
-              <ul className="space-y-1 text-muted-foreground text-[11px]">
-                <li>
-                  <Link to="/integrations" className="px-2.5 py-1 rounded-[6px] hover:text-foreground hover:bg-muted/40 flex items-center gap-1.5 transition-colors">
-                    <Key className="w-3 h-3 text-amber-500" /> API Keys & Testing
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/blogs" className="px-2.5 py-1 rounded-[6px] hover:text-foreground hover:bg-muted/40 flex items-center gap-1.5 transition-colors">
-                    <BookOpen className="w-3 h-3 text-amber-500" /> Published Blogs
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/blog/new" className="px-2.5 py-1 rounded-[6px] hover:text-foreground hover:bg-muted/40 flex items-center gap-1.5 transition-colors">
-                    <FileText className="w-3 h-3 text-amber-500" /> Article Editor
-                  </Link>
-                </li>
-              </ul>
-            </div>
           </aside>
 
           {/* Main Content Area */}
-          <section className="lg:col-span-9 space-y-10">
-            <article className="space-y-6">
-              {/* Clean Breadcrumb & Header */}
-              <div className="space-y-2 pb-4 border-b border-border">
-                <div className="flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground">
-                  <span>Docs</span>
-                  <span>/</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-medium">{activeSection.category}</span>
-                </div>
+          <article className="md:col-span-8 space-y-8">
+            <div className="space-y-2 border-b border-border pb-4">
+              <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                {activeSection.category}
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl font-medium text-foreground tracking-tight">
+                {activeSection.title}
+              </h2>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {activeSection.summary}
+              </p>
+            </div>
 
-                <div className="flex items-center gap-3">
-                  <h2 className="text-2xl sm:text-3xl font-sans font-bold text-foreground tracking-tight">
-                    {activeSection.title}
-                  </h2>
-                  {activeSection.badge && (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/20">
-                      {activeSection.badge}
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-[14px] text-muted-foreground leading-relaxed">
-                  {activeSection.summary}
-                </p>
-
-                {/* In-page Table of Contents anchor chips */}
-                {activeSection.toc && activeSection.toc.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-2 pt-2">
-                    <span className="text-[10px] font-mono uppercase text-muted-foreground">On this page:</span>
-                    {activeSection.toc.map((item) => (
-                      <a
-                        key={item.id}
-                        href={`#${item.id}`}
-                        className="text-[11px] font-mono px-2 py-0.5 rounded bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {item.label}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Section Body */}
-              <div className="pt-2">{activeSection.content}</div>
-
-              {/* Prev / Next Continuous Reading Cards */}
-              <div className="pt-8 border-t border-border flex items-center justify-between gap-4 text-xs">
-                {(() => {
-                  const currentIndex = sections.findIndex((s) => s.id === activeSection.id)
-                  const prevSection = currentIndex > 0 ? sections[currentIndex - 1] : null
-                  const nextSection = currentIndex < sections.length - 1 ? sections[currentIndex + 1] : null
-
-                  return (
-                    <>
-                      {prevSection ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveSectionId(prevSection.id)
-                            window.scrollTo({ top: 0, behavior: 'smooth' })
-                          }}
-                          className="p-3 rounded-[8px] border border-border hover:border-amber-500/50 bg-card hover:bg-muted/20 text-left transition-all space-y-0.5 group max-w-[200px]"
-                        >
-                          <div className="flex items-center gap-1 text-[10px] font-mono uppercase text-muted-foreground">
-                            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
-                            Previous
-                          </div>
-                          <div className="font-semibold text-foreground text-xs truncate">
-                            {prevSection.title}
-                          </div>
-                        </button>
-                      ) : (
-                        <div />
-                      )}
-
-                      {nextSection && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveSectionId(nextSection.id)
-                            window.scrollTo({ top: 0, behavior: 'smooth' })
-                          }}
-                          className="p-3 rounded-[8px] border border-border hover:border-amber-500/50 bg-card hover:bg-muted/20 text-right transition-all space-y-0.5 group max-w-[200px] ml-auto"
-                        >
-                          <div className="flex items-center justify-end gap-1 text-[10px] font-mono uppercase text-muted-foreground">
-                            Next
-                            <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                          </div>
-                          <div className="font-semibold text-foreground text-xs truncate">
-                            {nextSection.title}
-                          </div>
-                        </button>
-                      )}
-                    </>
-                  )
-                })()}
-              </div>
-            </article>
-          </section>
+            {/* Rendered Content */}
+            <div className="pt-2">
+              {activeSection.content}
+            </div>
+          </article>
         </div>
       </main>
+
+      <Footer />
     </div>
   )
 }
